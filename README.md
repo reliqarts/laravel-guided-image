@@ -1,4 +1,4 @@
-# Guided Image
+# Guided Image for Laravel 5
 
 Simplified and ready image manipulation for Laravel 5 through intervention image.
 
