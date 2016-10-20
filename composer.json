@@ -1,0 +1,25 @@
+{
+    "name": "reliqarts/guided-image",
+    "description": "Simplified and ready image manipulation for Laravel 5 through intervention image.",
+    "keywords": ["image", "route", "generation", "laravel", "photo", "laravel5"],
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "reliq",
+            "email": "reliq@reliqarts.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.6.4",
+        "illuminate/support": "5.*",
+        "intervention/image": "^2.3",
+        "intervention/imagecache": "^2.3"
+    },
+    "autoload": {
+        "psr-4": {
+            "ReliQArts\\GuidedImage\\": "src/"
+        }
+    },
+    "minimum-stability": "dev",
+}
