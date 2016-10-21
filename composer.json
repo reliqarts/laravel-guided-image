@@ -25,5 +25,10 @@
             "ReliQArts\\GuidedImage\\": "./src/"
         }
     },
+    "autoload-dev": {
+        "classmap": [
+            "src"
+        ]
+    },
     "minimum-stability": "dev"
 }
