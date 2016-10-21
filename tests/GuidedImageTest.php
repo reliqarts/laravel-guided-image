@@ -18,8 +18,6 @@ class GuidedImageTest extends \Orchestra\Testbench\TestCase
      */
     public function testInstance()
     {
-        var_dump(get_declared_classes());
-        die();
         $image = new GuidedImage();
         $this->expectOutputString($image->getClass());
 
