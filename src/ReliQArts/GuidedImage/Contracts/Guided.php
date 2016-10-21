@@ -16,7 +16,6 @@ namespace ReliQArts\GuidedImage\Contracts;
  */
 interface Guided
 {
-
     /**
      * Retrieve the creator (uploader) of the image.
      */
@@ -57,10 +56,9 @@ interface Guided
      *  Get upload directory.
      */
     public static function getUploadDir();
-    
+
     /**
      *  Upload and save image.
      */
     public static function upload($imageFile);
-
 }

@@ -36,7 +36,7 @@ class RouteHelper
 
     /**
      * Get image model for guided image routes.
-     * @param bool|boolean $lowered Whether model should be returned in lowercase form.
+     * @param bool|bool $lowered Whether model should be returned in lowercase form.
      * @return string Model.
      */
     public static function getRouteModel($lowered = false)
@@ -48,11 +48,11 @@ class RouteHelper
 
     /**
      * Get image model namespace for guided image routes.
-     * @param bool|boolean $lowered Whether model should be returned in lowercase form.
+     * @param bool|bool $lowered Whether model should be returned in lowercase form.
      * @return string Model.
      */
     public static function getRouteModelNamespace($lowered = false)
-    {  
+    {
         $routeModelNamespace = Config::get('guidedimage.model_namespace', 'App\\');
 
         return $lowered ? strtolower($routeModelNamespace) : $routeModelNamespace;

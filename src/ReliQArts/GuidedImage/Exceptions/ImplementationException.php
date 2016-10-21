@@ -14,6 +14,8 @@ namespace ReliQArts\GuidedImage\Exceptions;
 use Exception;
 
 /**
- * {@inheritdoc} 
+ * {@inheritdoc}
  */
-class ImplementationException extends Exception {}
+class ImplementationException extends Exception
+{
+}

@@ -17,7 +17,7 @@ use ReliQArts\GuidedImage\GuidedImage;
 use ReliQArts\GuidedImage\Helpers\RouteHelper;
 
 /**
- *  GuidedImageServiceProvider
+ *  GuidedImageServiceProvider.
  */
 class GuidedImageServiceProvider extends ServiceProvider
 {
@@ -43,7 +43,7 @@ class GuidedImageServiceProvider extends ServiceProvider
         $routeModelNamespace = RouteHelper::getRouteModelNamespace();
 
         // get absolute guided model class
-        $absGuidedModel = $routeModelNamespace . $routeModel;
+        $absGuidedModel = $routeModelNamespace.$routeModel;
 
         // explicitly bind guidedimage instance to router
         $router->model(strtolower($routeModel), $absGuidedModel);
@@ -51,7 +51,7 @@ class GuidedImageServiceProvider extends ServiceProvider
 
     /**
      * Publish assets.
-     * 
+     *
      * @return void
      */
     protected function publishAssets()
@@ -61,7 +61,7 @@ class GuidedImageServiceProvider extends ServiceProvider
         ], 'config');
 
         $this->publishes([
-            "$this->assetsDir/database/migrations/" => database_path('migrations')
+            "$this->assetsDir/database/migrations/" => database_path('migrations'),
         ], 'migrations');
     }
 
@@ -76,7 +76,7 @@ class GuidedImageServiceProvider extends ServiceProvider
 
     /**
      * Register routes.
-     * 
+     *
      * @return void
      */
     protected function registerRoutes(Router $router)
@@ -96,8 +96,9 @@ class GuidedImageServiceProvider extends ServiceProvider
     public function boot(Router $router)
     {
         // register routes
-        if (! $this->app->routesAreCached())
+        if (!$this->app->routesAreCached()) {
             $this->registerRoutes($router);
+        }
 
         $this->publishAssets();
     }
@@ -117,5 +118,4 @@ class GuidedImageServiceProvider extends ServiceProvider
             'ReliQArts\GuidedImage\GuidedImage'
         );
     }
-
 }

@@ -23,8 +23,10 @@ class CreateGuidedImageablesTable extends Migration
     public function up()
     {
         $table = SchemaHelper::getImageablesTable();
-        if (Schema::hasTable($table)) return;
-        
+        if (Schema::hasTable($table)) {
+            return;
+        }
+
         Schema::create($table, function (Blueprint $table) {
             $table->increments('id');
             $table->integer('image_id')->unsigned();

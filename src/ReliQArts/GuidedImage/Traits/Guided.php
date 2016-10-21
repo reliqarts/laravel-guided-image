@@ -22,13 +22,12 @@ use ReliQArts\GuidedImage\Exceptions\ImplementationException;
 
 /**
  * Get guided by acquiring these traits.
- * 
+ *
  * @author Patrick Reid (@IAmReliQ)
  * @since  2016
  * @uses ReliQArts\GuidedImage\ViewModels\Result;
- * @package ReliQArts\GuidedImage
  */
-Trait Guided
+trait Guided
 {
     // Class instance.
     private $class;
@@ -65,7 +64,7 @@ Trait Guided
     /**
      * Whether image is safe for deleting.
      * Since a single image may be re-used this method is used to determine when an image can be safely deleted from disk.
-     * @param integer $safeAmount A photo is safe to delete if it is used by $safe_num amount of records.
+     * @param int $safeAmount A photo is safe to delete if it is used by $safe_num amount of records.
      */
     public function isSafeForDelete($safeAmount = 1)
     {
@@ -109,6 +108,14 @@ Trait Guided
         array_unshift($params, $this->id);
 
         return route("{$guidedModel}.{$type}", $params);
+    }
+
+    /**
+     * Get class.
+     */
+    public function getClass()
+    {
+        return $this->class;
     }
 
     /**

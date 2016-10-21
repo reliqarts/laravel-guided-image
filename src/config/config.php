@@ -17,8 +17,8 @@ return [
     'model' => env('GUIDED_IMAGE_MODEL', 'Image'),
 
     // Set the guided model namespace.
-    'model_namespace' => env('GUIDED_IMAGE_MODEL_NAMESPACE', "App\\"),
-    
+    'model_namespace' => env('GUIDED_IMAGE_MODEL_NAMESPACE', 'App\\'),
+
     // Where uploaded images should be stored. This is relative to the application's public directory.
     'upload_dir' => env('GUIDED_IMAGE_UPLOAD_DIR', 'uploads/images'),
 
@@ -30,7 +30,7 @@ return [
         // Guided imageables table.
         'imageables_table' => env('GUIDED_IMAGEABLES_TABLE', 'imageables'),
     ],
-    
+
     // Route related options.
     'routes' => [
         // Define controllers here which guided routes should be added onto:
@@ -51,16 +51,16 @@ return [
             // admin
             'admin' => [
                 'middleware' => 'admin',
-            ]
+            ],
         ],
 
         // Route values to be treated as null.
-        'nulls' => ['n', 'none', 'no', 'empty', 'false', 'auto', '_']
+        'nulls' => ['n', 'none', 'no', 'empty', 'false', 'auto', '_'],
     ],
 
     // storage
     'storage' => [
-        // Temporary storage directory for images already generated. 
+        // Temporary storage directory for images already generated.
         // This directory will live inside your application's storage directory.
         'skim_dir' => env('GUIDED_IMAGE_SKIM_DIR', 'images'),
 
@@ -69,7 +69,7 @@ return [
 
         // Generated resized images will be temporarily kept inside this directory.
         'skim_resized' => env('GUIDED_IMAGE_SKIM_RESIZED', '.resized'),
-    ], 
+    ],
 
     // headers
     'headers' => [

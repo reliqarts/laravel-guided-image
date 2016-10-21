@@ -23,14 +23,13 @@ use ReliQArts\GuidedImage\ViewModels\Result;
 
 /**
  * Guide by acquiring these traits.
- * 
+ *
  * @author Patrick Reid (@IAmReliQ)
  * @since  2016
  * @uses Intervention\Image\Facades\Image;
  * @uses ReliQArts\GuidedImage\ViewModels\Result;
- * @package ReliQArts\GuidedImage
  */
-Trait ImageGuider
+trait ImageGuider
 {
     /**
      * List of headers.
@@ -62,10 +61,10 @@ Trait ImageGuider
      */
     public function __construct(Config $config)
     {
-        $this->skimDir      = storage_path($config->get('guidedimage.storage.skim_dir'));
-        $this->skimThumbs   = "$this->skimDir/" . $config->get('guidedimage.storage.skim_thumbs');
-        $this->skimResized  = "$this->skimDir/" . $config->get('guidedimage.storage.skim_resized');
-        $this->nulls        = array_merge($this->nulls, $config->get('guidedimage.routes.nulls', []));
+        $this->skimDir = storage_path($config->get('guidedimage.storage.skim_dir'));
+        $this->skimThumbs = "$this->skimDir/".$config->get('guidedimage.storage.skim_thumbs');
+        $this->skimResized = "$this->skimDir/".$config->get('guidedimage.storage.skim_resized');
+        $this->nulls = array_merge($this->nulls, $config->get('guidedimage.routes.nulls', []));
 
         // create or avail needed directories
         if (!File::isDirectory($this->skimThumbs)) {
@@ -83,7 +82,7 @@ Trait ImageGuider
         ], $config->get('guidedimage.headers.additional', []));
     }
 
-     /**
+    /**
      * Empty skim cache by removing SkimDir.
      * @return ViewModels\Result
      */
@@ -204,7 +203,7 @@ Trait ImageGuider
     /**
      * Get image headers. Improved caching
      * If the image has not been modified say 304 Not Modified.
-     * @param Intervention\Image\Facades\Image $image 
+     * @param Intervention\Image\Facades\Image $image
      * @return array Image headers.
      */
     private function getImageHeaders(Request $request, InterventionImage $image)
