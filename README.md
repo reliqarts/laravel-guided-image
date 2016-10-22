@@ -3,11 +3,11 @@
 Guided Image is an image utility package for Laravel 5.x based on Intervention Image.
 
 ![Build Status](https://img.shields.io/circleci/project/ReliQArts/laravel-guided-image.svg?style=flat-square)
-[![Total Downloads](https://poser.pugx.org/reliqarts/guided-image/downloads?style=flat-square)](https://packagist.org/packages/reliqarts/guided-image)
-[![Latest Stable Version](https://poser.pugx.org/reliqarts/guided-image/version?style=flat-square)](https://packagist.org/packages/reliqarts/guided-image)
-[![Latest Unstable Version](https://poser.pugx.org/reliqarts/guided-image/v/unstable?style=flat-square)](//packagist.org/packages/reliqarts/guided-image)
-[![License](https://poser.pugx.org/reliqarts/guided-image/license?style=flat-square)](https://packagist.org/packages/reliqarts/guided-image)
-[![composer.lock available](https://poser.pugx.org/reliqarts/guided-image/composerlock?style=flat-square)](https://packagist.org/packages/reliqarts/guided-image)
+[![Total Downloads](https://poser.pugx.org/reliqarts/guided-image/downloads?format=flat-square)](https://packagist.org/packages/reliqarts/guided-image)
+[![Latest Stable Version](https://poser.pugx.org/reliqarts/guided-image/version?format=flat-square)](https://packagist.org/packages/reliqarts/guided-image)
+[![Latest Unstable Version](https://poser.pugx.org/reliqarts/guided-image/v/unstable?format=flat-square)](//packagist.org/packages/reliqarts/guided-image)
+[![License](https://poser.pugx.org/reliqarts/guided-image/license?format=flat-square)](https://packagist.org/packages/reliqarts/guided-image)
+[![composer.lock available](https://poser.pugx.org/reliqarts/guided-image/composerlock?format=flat-square)](https://packagist.org/packages/reliqarts/guided-image)
 
 &nbsp;
 
