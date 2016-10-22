@@ -18,7 +18,7 @@
     </testsuites>
 
     <php>
-        <env name="GUIDED_IMAGE_MODEL" value="ReliQArts\GuidedImage\GuidedImage" />
+        <env name="GUIDED_IMAGE_MODEL" value="GuidedImage" />
     </php>
 
 </phpunit>

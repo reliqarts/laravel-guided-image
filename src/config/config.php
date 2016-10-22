@@ -50,7 +50,7 @@ return [
 
             // admin
             'admin' => [
-                'middleware' => 'admin',
+                // 'middleware' => 'admin',
             ],
         ],
 

@@ -18,6 +18,7 @@ use Schema;
 use Validator;
 use ErrorException;
 use ReliQArts\GuidedImage\ViewModels\Result;
+use ReliQArts\GuidedImage\Helpers\RouteHelper;
 use ReliQArts\GuidedImage\Exceptions\ImplementationException;
 
 /**
@@ -65,6 +66,7 @@ trait Guided
      * Whether image is safe for deleting.
      * Since a single image may be re-used this method is used to determine when an image can be safely deleted from disk.
      * @param int $safeAmount A photo is safe to delete if it is used by $safe_num amount of records.
+     * @return bool|boolean Whether image is safe for delete.
      */
     public function isSafeForDelete($safeAmount = 1)
     {
@@ -100,7 +102,7 @@ trait Guided
      */
     public function routeResized($params = false, $type = 'resize')
     {
-        $guidedModel = strtolower(Config::get('guidedimage.routes.model'));
+        $guidedModel = strtolower(RouteHelper::getRouteModel(true));
 
         if (!(in_array($type, ['resize', 'thumb'])) && is_array($params)) {
             return $this->url();
