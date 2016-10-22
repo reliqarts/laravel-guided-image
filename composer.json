@@ -1,7 +1,7 @@
 {
     "name": "reliqarts/guided-image",
     "description": "Simplified and ready image manipulation for Laravel 5 through intervention image.",
-    "keywords": ["image", "route", "generation", "laravel", "photo", "laravel5"],
+    "keywords": ["image", "route", "generation", "laravel", "photo", "laravel5", "resize", "thumb", "dummy" , "route"],
     "type": "library",
     "license": "MIT",
     "authors": [
