@@ -1,4 +1,4 @@
-![Guided Image for Laravel](https://raw.githubusercontent.com/reliqarts/laravel-guided-image/master/docs/images/logo.png)]
+![Guided Image for Laravel](https://raw.githubusercontent.com/reliqarts/laravel-guided-image/master/docs/images/logo.png)
 
 Guided Image is an image utility package for Laravel 5.x. It can be integrated seemlessly with your existing image model.
 
