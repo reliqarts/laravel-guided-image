@@ -1,4 +1,6 @@
-![Guided Image for Laravel](https://raw.githubusercontent.com/reliqarts/laravel-guided-image/master/docs/images/logo.png)
+# Laravel Guided Image
+
+Guided Image is an image utility package for Laravel 5.x based on Intervention Image.
 
 ![Build Status](https://img.shields.io/circleci/project/ReliQArts/laravel-guided-image.svg?style=flat-square)
 [![Total Downloads](https://poser.pugx.org/reliqarts/guided-image/downloads?style=flat-square)](https://packagist.org/packages/reliqarts/guided-image)
@@ -7,11 +9,11 @@
 [![License](https://poser.pugx.org/reliqarts/guided-image/license?style=flat-square)](https://packagist.org/packages/reliqarts/guided-image)
 [![composer.lock available](https://poser.pugx.org/reliqarts/guided-image/composerlock?style=flat-square)](https://packagist.org/packages/reliqarts/guided-image)
 
-Guided Image is an image utility package for Laravel 5.x. It can be integrated seemlessly with your existing image model.
-
----
+![Guided Image for Laravel](https://raw.githubusercontent.com/reliqarts/laravel-guided-image/master/docs/images/logo.png)
 
 ## Key Features
+
+Guided Image can be integrated seemlessly with your existing image model.
 
 ### Guided Routes
 
