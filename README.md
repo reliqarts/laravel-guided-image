@@ -101,5 +101,5 @@ class ImageController extends Controller
 
 ```
 
-
+---
 And... you're done! :ok_hand:
