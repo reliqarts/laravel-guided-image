@@ -4,6 +4,8 @@ Guided Image is an image utility package for Laravel 5.x. It can be integrated s
 
 ![Build Status](https://img.shields.io/circleci/project/ReliQArts/laravel-guided-image.svg?style=flat-square)
 
+---
+
 ## Key Features
 
 ### Guided Routes
@@ -101,5 +103,4 @@ class ImageController extends Controller
 
 ```
 
----
 And... you're done! :ok_hand:
