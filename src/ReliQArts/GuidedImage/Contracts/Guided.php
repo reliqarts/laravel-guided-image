@@ -38,6 +38,9 @@ interface Guided
 
     /**
      * Whether image is safe for deleting.
+     * Since a single image may be re-used this method is used to determine when an image can be safely deleted from disk.
+     * @param int $safeAmount A photo is safe to delete if it is used by $safe_num amount of records.
+     * @return bool|bool Whether image is safe for delete.
      */
     public function isSafeForDelete();
 
@@ -49,16 +52,21 @@ interface Guided
 
     /**
      * Get routed link to photo.
+     * @param array $params Parameters to pass to route.
+     * @param string $type Operation to be performed on instance. (resize, thumb)
      */
     public function routeResized($params = false, $type = 'resize');
 
     /**
-     *  Get upload directory.
+     * Get upload directory.
+     * @param Config $config App config.
      */
     public static function getUploadDir();
 
     /**
      *  Upload and save image.
+     * @param Illuminate\Http\UploadedFile $imageFile Actual file from request. e.g. $request->file('image');
+     * @return ReliQArts\GuidedImage\ViewModels\Result Result object.
      */
     public static function upload($imageFile);
 }

@@ -75,7 +75,7 @@ trait Guided
 
     /**
      *  Removes image from database, and filesystem, if not in use.
-     *  @param $force       Override safety constraints.
+     *  @param $force Override safety constraints.
      */
     public function remove($force = false)
     {
@@ -163,6 +163,8 @@ trait Guided
 
     /**
      *  Upload and save image.
+     * @param Illuminate\Http\UploadedFile $imageFile Actual file from request. e.g. $request->file('image');
+     * @return ReliQArts\GuidedImage\ViewModels\Result Result object.
      */
     public static function upload($imageFile)
     {

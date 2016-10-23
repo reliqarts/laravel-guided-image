@@ -25,8 +25,8 @@ The package provides routes for generating resized/cropped/dummy images.
 ### Image file reuse
 
 For situations where different instances of models use the same image.
-- Image files are not actually deleted until they are no longer needed.  
-- The package provides an overridable method used to determine when an image should be considered *safe* to delete. 
+- The package provides a safe removal feature which allows images to be detached and only deleted from disk if not being used elsewhere.
+- An overridable method used to determine when an image should be considered *safe* to delete. 
 
 ## Installation & Usage
 
@@ -79,6 +79,8 @@ GUIDED_IMAGE_SKIM_DIR=images
 
 These variables, and more are explained within the [config](https://github.com/ReliQArts/laravel-guided-image/blob/master/src/config/config.php) file.
 
+And... it's ready! :ok_hand:
+
 ### Usage
 
 To *use* Guided Image you must do just that from your *Image* model. :smirk:
@@ -111,4 +113,51 @@ class ImageController extends Controller
 
 ```
 
-And... you're done! :ok_hand:
+#### Features
+
+##### Safely Remove Image (dissociate & conditionally delete the image)
+
+An guided image instance is removed by calling the *remove* method. e.g:
+
+```php
+$oldImage->remove($force);
+```
+`$force` is optional and is `false` by default.
+
+##### Link Generation
+
+You may retrieve guided links to resized or cropped images like so:
+
+```php
+// get a resized image:
+$linkToImage = photo->routeResized([
+    '550',      // width
+    '_',        // height, 'null' is OK 
+    '_',        // keep aspect ratio? true by default so 'null' is OK
+    '_',        // allow upsize?
+]);
+
+// get a thumbnail:
+$linkToImage = photo->routeResized([
+    'crop',     // method: crop|fit
+    '550',      // width
+    '_',        // height, 'null' is OK 
+], 'thumb');
+```
+**NB:** In the above example "_" is treated as *null*. You may specify which strings should be treated as *null* by the routes in `config/guidedimage.php`. 
+
+Have a look at the [Guided contract](https://github.com/ReliQArts/laravel-guided-image/blob/master/src/ReliQArts/GuidedImage/Contracts/Guided.php) for more info on model functions.
+
+For more info on controller functions see the [ImageGuider contract](https://github.com/ReliQArts/laravel-guided-image/blob/master/src/ReliQArts/GuidedImage/Contracts/ImageGuider.php).
+
+##### Routes
+
+Your actually routes will depend heavily on your custom configuration. Here is an example of what the routes may look like:
+
+```
+|        | GET|HEAD | image/.dummy\\{width}-{height}/{color?}/{fill?}/{object?}            | image.dummy           | App\Http\Controllers\ImageController@dummy                             | web          |
+|        | GET|HEAD | image/.image\\{image}\\{width}-{height}\\{aspect?}\\{upsize?}\\{object?} | image.resize          | App\Http\Controllers\ImageController@resized                           | web          |
+|        | GET|HEAD | image/.thumb\\{image}\\m.{method}\\{width}-{height}\\{object?}          | image.thumb           | App\Http\Controllers\ImageController@thumb                             | web          |
+|        | GET|HEAD | image/empty-cache                                                   | image.empty-cache     | App\Http\Controllers\ImageController@emptyCache                        | web          |
+
+```

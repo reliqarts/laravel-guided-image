@@ -84,6 +84,7 @@ trait ImageGuider
 
     /**
      * Empty skim cache by removing SkimDir.
+     * @param Request $request
      * @return ViewModels\Result
      */
     public function emptyCache(Request $request)
@@ -106,7 +107,13 @@ trait ImageGuider
 
     /**
      * Get a thumbnail.
-     * @return Intervention Image object or actual image.
+     * @param Request $request
+     * @param Guided $guidedImage
+     * @param string $method crop|fit
+     * @param integer $width 
+     * @param integer $height 
+     * @param bool|boolean $object Whether Intervention Image should be returned.
+     * @return Image|string Intervention Image object or actual image url.
      */
     public function thumb(Request $request, Guided $guidedImage, $method = 'crop', $width, $height, $object = false)
     {
@@ -141,8 +148,15 @@ trait ImageGuider
     }
 
     /**
-     * Get a resized Guided.
-     * @return Intervention Image object or actual image.
+     * Get a resized Guided Image.
+     * @param Request $request
+     * @param Guided $guidedImage
+     * @param integer $width 
+     * @param integer $height 
+     * @param bool|boolean $aspect Keep aspect ratio?
+     * @param bool|boolean $upsize Allow upsize?
+     * @param bool|boolean $object Whether Intervention Image should be returned.
+     * @return Image|string Intervention Image object or actual image url.
      */
     public function resized(Request $request, Guided $guidedImage, $width, $height, $aspect = true, $upsize = false, $object = false)
     {
@@ -183,7 +197,11 @@ trait ImageGuider
 
     /**
      * Get dummy Guided.
-     * @return Intervention Image object or actual image.
+     * @param integer $width 
+     * @param integer $height 
+     * @param string $color 
+     * @param bool|boolean $fill 
+     * @return Image|string Intervention Image object or actual image url.
      */
     public function dummy($width, $height, $color = '#eefefe', $fill = false, $object = false)
     {
