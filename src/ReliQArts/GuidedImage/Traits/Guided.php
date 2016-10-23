@@ -66,7 +66,7 @@ trait Guided
      * Whether image is safe for deleting.
      * Since a single image may be re-used this method is used to determine when an image can be safely deleted from disk.
      * @param int $safeAmount A photo is safe to delete if it is used by $safe_num amount of records.
-     * @return bool|boolean Whether image is safe for delete.
+     * @return bool|bool Whether image is safe for delete.
      */
     public function isSafeForDelete($safeAmount = 1)
     {

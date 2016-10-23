@@ -42,5 +42,4 @@ class Image extends Model implements GuidedContract
 
         return $usage <= $safeAmount;
     }
-
 }
