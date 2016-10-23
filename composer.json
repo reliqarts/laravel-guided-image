@@ -22,12 +22,7 @@
     },
     "autoload": {
         "psr-4": {
-            "ReliQArts\\GuidedImage\\": "src/"
+            "ReliQArts\\GuidedImage\\": "src/ReliQArts/GuidedImage"
         }
-    },
-    "autoload-dev": {
-        "classmap": [
-            "src"
-        ]
     }
 }
