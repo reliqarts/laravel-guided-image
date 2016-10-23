@@ -104,13 +104,13 @@ See full example [here](https://github.com/ReliQArts/laravel-guided-image/blob/m
 Use the *ReliQArts\GuidedImage\Traits\ImageGuider* trait from your *ImageController*, e.g:
 
 ```php
-use ReliQArts\GuidedImage\Traits\ImageGuider;
+use ReliQArts\GuidedImage\Contracts\ImageGuider as ImageGuiderContract;
+use ReliQArts\GuidedImage\Traits\ImageGuider as ImageGuiderTrait;
 
-class ImageController extends Controller
+class ImageController extends Controller implements ImageGuiderContract
 {
-    use ImageGuider;
+    use ImageGuiderTrait;
 }
-
 ```
 
 #### Features
@@ -155,9 +155,9 @@ For more info on controller functions see the [ImageGuider contract](https://git
 Your actually routes will depend heavily on your custom configuration. Here is an example of what the routes may look like:
 
 ```
-|        | GET|HEAD | image/.dummy\\{width}-{height}/{color?}/{fill?}/{object?}            | image.dummy           | App\Http\Controllers\ImageController@dummy                             | web          |
-|        | GET|HEAD | image/.image\\{image}\\{width}-{height}\\{aspect?}\\{upsize?}\\{object?} | image.resize          | App\Http\Controllers\ImageController@resized                           | web          |
-|        | GET|HEAD | image/.thumb\\{image}\\m.{method}\\{width}-{height}\\{object?}          | image.thumb           | App\Http\Controllers\ImageController@thumb                             | web          |
+|        | GET|HEAD | image/.dummy\{width}-{height}/{color?}/{fill?}/{object?}            | image.dummy           | App\Http\Controllers\ImageController@dummy                             | web          |
+|        | GET|HEAD | image/.image\{image}\{width}-{height}\{aspect?}\{upsize?}\{object?} | image.resize          | App\Http\Controllers\ImageController@resized                           | web          |
+|        | GET|HEAD | image/.thumb\{image}\m.{method}\{width}-{height}\{object?}          | image.thumb           | App\Http\Controllers\ImageController@thumb                             | web          |
 |        | GET|HEAD | image/empty-cache                                                   | image.empty-cache     | App\Http\Controllers\ImageController@emptyCache                        | web          |
 
 ```
