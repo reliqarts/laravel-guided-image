@@ -134,8 +134,8 @@ You may retrieve guided links to resized or cropped images like so:
 $linkToImage = photo->routeResized([
     '550',      // width
     '_',        // height, 'null' is OK 
-    '_',        // keep aspect ratio? true by default so 'null' is OK
-    '_',        // allow upsize?
+    '_',        // keep aspect ratio? true by default, 'null' is OK
+    '_',        // allow upsize? false by default, 'null' is OK
 ]);
 
 // get a thumbnail:
