@@ -130,7 +130,7 @@ $oldImage->remove($force);
 You may retrieve guided links to resized or cropped images like so:
 
 ```php
-// get a resized image:
+// resized image:
 $linkToImage = photo->routeResized([
     '550',      // width
     '_',        // height, 'null' is OK 
@@ -138,7 +138,7 @@ $linkToImage = photo->routeResized([
     '_',        // allow upsize? false by default, 'null' is OK
 ]);
 
-// get a thumbnail:
+// thumbnail:
 $linkToImage = photo->routeResized([
     'crop',     // method: crop|fit
     '550',      // width
