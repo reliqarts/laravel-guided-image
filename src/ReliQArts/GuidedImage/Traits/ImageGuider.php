@@ -110,9 +110,9 @@ trait ImageGuider
      * @param Request $request
      * @param Guided $guidedImage
      * @param string $method crop|fit
-     * @param integer $width 
-     * @param integer $height 
-     * @param bool|boolean $object Whether Intervention Image should be returned.
+     * @param int $width
+     * @param int $height
+     * @param bool|bool $object Whether Intervention Image should be returned.
      * @return Image|string Intervention Image object or actual image url.
      */
     public function thumb(Request $request, Guided $guidedImage, $method = 'crop', $width, $height, $object = false)
@@ -151,11 +151,11 @@ trait ImageGuider
      * Get a resized Guided Image.
      * @param Request $request
      * @param Guided $guidedImage
-     * @param integer $width 
-     * @param integer $height 
-     * @param bool|boolean $aspect Keep aspect ratio?
-     * @param bool|boolean $upsize Allow upsize?
-     * @param bool|boolean $object Whether Intervention Image should be returned.
+     * @param int $width
+     * @param int $height
+     * @param bool|bool $aspect Keep aspect ratio?
+     * @param bool|bool $upsize Allow upsize?
+     * @param bool|bool $object Whether Intervention Image should be returned.
      * @return Image|string Intervention Image object or actual image url.
      */
     public function resized(Request $request, Guided $guidedImage, $width, $height, $aspect = true, $upsize = false, $object = false)
@@ -197,10 +197,10 @@ trait ImageGuider
 
     /**
      * Get dummy Guided.
-     * @param integer $width 
-     * @param integer $height 
-     * @param string $color 
-     * @param bool|boolean $fill 
+     * @param int $width
+     * @param int $height
+     * @param string $color
+     * @param bool|bool $fill
      * @return Image|string Intervention Image object or actual image url.
      */
     public function dummy($width, $height, $color = '#eefefe', $fill = false, $object = false)
