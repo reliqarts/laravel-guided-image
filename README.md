@@ -101,7 +101,7 @@ class Image extends Model implements GuidedContract
 ```
 See full example [here](https://github.com/ReliQArts/laravel-guided-image/blob/master/docs/examples/Image.php).
 
-Use the *ReliQArts\GuidedImage\Traits\ImageGuider* trait from your *ImageController*, e.g:
+Implement the *ReliQArts\GuidedImage\Contracts\ImageGuider* contract and use the *ReliQArts\GuidedImage\Traits\ImageGuider* trait from your *ImageController*, e.g:
 
 ```php
 use ReliQArts\GuidedImage\Contracts\ImageGuider as ImageGuiderContract;
