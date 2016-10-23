@@ -85,7 +85,7 @@ And... it's ready! :ok_hand:
 
 To *use* Guided Image you must do just that from your *Image* model. :smirk:
 
-Implement the *ReliQArts\GuidedImage\Contracts\Guided* contract and use the *ReliQArts\GuidedImage\Traits\Guided* trait, e.g:
+Implement the `ReliQArts\GuidedImage\Contracts\Guided` contract and use the `ReliQArts\GuidedImage\Traits\Guided` trait, e.g:
 
 ```php
 use Illuminate\Database\Eloquent\Model;
@@ -99,9 +99,9 @@ class Image extends Model implements GuidedContract
     // ... properties and methods
 }
 ```
-See full example [here](https://github.com/ReliQArts/laravel-guided-image/blob/master/docs/examples/Image.php).
+See example [here](https://github.com/ReliQArts/laravel-guided-image/blob/master/docs/examples/Image.php).
 
-Implement the *ReliQArts\GuidedImage\Contracts\ImageGuider* contract and use the *ReliQArts\GuidedImage\Traits\ImageGuider* trait from your *ImageController*, e.g:
+Implement the `ReliQArts\GuidedImage\Contracts\ImageGuider` contract and use the `ReliQArts\GuidedImage\Traits\ImageGuider` trait from your *ImageController*, e.g:
 
 ```php
 use ReliQArts\GuidedImage\Contracts\ImageGuider as ImageGuiderContract;
@@ -112,6 +112,7 @@ class ImageController extends Controller implements ImageGuiderContract
     use ImageGuiderTrait;
 }
 ```
+See example [here](https://github.com/ReliQArts/laravel-guided-image/blob/master/docs/examples/ImageController.php).
 
 #### Features
 
