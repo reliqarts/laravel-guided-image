@@ -8,6 +8,7 @@ use Config;
 use Schema;
 use Validator;
 use ErrorException;
+use Illuminate\Http\UploadedFile;
 use ReliQArts\GuidedImage\ViewModels\Result;
 use ReliQArts\GuidedImage\Helpers\RouteHelper;
 use ReliQArts\GuidedImage\Exceptions\ImplementationException;
@@ -57,18 +58,19 @@ trait Guided
      * Whether image is safe for deleting.
      * Since a single image may be re-used this method is used to determine when an image can be safely deleted from disk.
      * @param int $safeAmount A photo is safe to delete if it is used by $safe_num amount of records.
-     * @return bool|bool Whether image is safe for delete.
+     * @return bool Whether image is safe for delete.
      */
-    public function isSafeForDelete($safeAmount = 1)
+    public function isSafeForDelete(int $safeAmount = 1)
     {
         return true;
     }
 
     /**
-     *  Removes image from database, and filesystem, if not in use.
-     *  @param $force Override safety constraints.
+     * Removes image from database, and filesystem, if not in use.
+     * @param bool $force Override safety constraints.
+     * @return ReliQArts\GuidedImage\ViewModels\Result Result object.
      */
-    public function remove($force = false)
+    public function remove(bool $force = false)
     {
         $result = new Result();
         $img_name = $this->getName();
@@ -91,7 +93,7 @@ trait Guided
      * @param array $params Parameters to pass to route.
      * @param string $type Operation to be performed on instance. (resize, thumb)
      */
-    public function routeResized(array $params = null, $type = 'resize')
+    public function routeResized(array $params = null, string $type = 'resize')
     {
         $guidedModel = strtolower(RouteHelper::getRouteModel(true));
 
@@ -145,7 +147,7 @@ trait Guided
 
     /**
      * Get upload directory.
-     * @param Config $config App config.
+     * @return string Upload directory.
      */
     public static function getUploadDir()
     {
@@ -157,7 +159,7 @@ trait Guided
      * @param Illuminate\Http\UploadedFile $imageFile Actual file from request. e.g. $request->file('image');
      * @return ReliQArts\GuidedImage\ViewModels\Result Result object.
      */
-    public static function upload($imageFile)
+    public static function upload(UploadedFile $imageFile)
     {
         $validator = Validator::make(['file' => $imageFile], self::$rules);
         $result = new Result();
