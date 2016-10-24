@@ -60,7 +60,7 @@ trait Guided
      * @param int $safeAmount A photo is safe to delete if it is used by $safe_num amount of records.
      * @return bool Whether image is safe for delete.
      */
-    public function isSafeForDelete(int $safeAmount = 1)
+    public function isSafeForDelete($safeAmount = 1)
     {
         return true;
     }
@@ -70,7 +70,7 @@ trait Guided
      * @param bool $force Override safety constraints.
      * @return ReliQArts\GuidedImage\ViewModels\Result Result object.
      */
-    public function remove(bool $force = false)
+    public function remove($force = false)
     {
         $result = new Result();
         $img_name = $this->getName();
@@ -93,7 +93,7 @@ trait Guided
      * @param array $params Parameters to pass to route.
      * @param string $type Operation to be performed on instance. (resize, thumb)
      */
-    public function routeResized(array $params = null, string $type = 'resize')
+    public function routeResized($params = null, $type = 'resize')
     {
         $guidedModel = strtolower(RouteHelper::getRouteModel(true));
 
