@@ -33,7 +33,7 @@ interface Guided
      * @param int $safeAmount A photo is safe to delete if it is used by $safe_num amount of records.
      * @return bool|bool Whether image is safe for delete.
      */
-    public function isSafeForDelete();
+    public function isSafeForDelete($safeAmount = 1);
 
     /**
      *  Removes image from database, and filesystem, if not in use.
@@ -46,7 +46,7 @@ interface Guided
      * @param array $params Parameters to pass to route.
      * @param string $type Operation to be performed on instance. (resize, thumb)
      */
-    public function routeResized($params = false, $type = 'resize');
+    public function routeResized(array $params = null, $type = 'resize');
 
     /**
      * Get upload directory.

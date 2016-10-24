@@ -91,11 +91,11 @@ trait Guided
      * @param array $params Parameters to pass to route.
      * @param string $type Operation to be performed on instance. (resize, thumb)
      */
-    public function routeResized($params = false, $type = 'resize')
+    public function routeResized(array $params = null, $type = 'resize')
     {
         $guidedModel = strtolower(RouteHelper::getRouteModel(true));
 
-        if (!(in_array($type, ['resize', 'thumb'])) && is_array($params)) {
+        if (! (in_array($type, ['resize', 'thumb']) && is_array($params))) {
             return $this->url();
         }
         array_unshift($params, $this->id);
