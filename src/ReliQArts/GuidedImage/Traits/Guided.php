@@ -36,14 +36,15 @@ trait Guided
     /**
      * Ensure things are ready.
      */
-    public function __construct()
+    public function __construct(array $attributes=[])
     {
         $this->class = get_class($this);
-
         // Instance must be of class which extends Eloquent Model.
         if (!is_subclass_of($this, $this->eloquentAncestor)) {
             throw new ImplementationException("Guided model ({$this->class}) must extend {$this->eloquentAncestor}.");
         }
+
+        parent::__construct($attributes);   
     }
 
     /**
