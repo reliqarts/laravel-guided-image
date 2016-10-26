@@ -49,7 +49,7 @@ interface Guided
      * @param array $params Parameters to pass to route.
      * @param string $type Operation to be performed on instance. (resize, thumb)
      */
-    public function routeResized($params = null, $type = 'resize');
+    public function routeResized(array $params = null, $type = 'resize');
 
     /**
      * Get upload directory.

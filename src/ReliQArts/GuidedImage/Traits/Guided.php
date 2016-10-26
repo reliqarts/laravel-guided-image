@@ -36,7 +36,7 @@ trait Guided
     /**
      * Ensure things are ready.
      */
-    public function __construct(array $attributes=[])
+    public function __construct(array $attributes = [])
     {
         $this->class = get_class($this);
         // Instance must be of class which extends Eloquent Model.
@@ -94,7 +94,7 @@ trait Guided
      * @param array $params Parameters to pass to route.
      * @param string $type Operation to be performed on instance. (resize, thumb)
      */
-    public function routeResized($params = null, $type = 'resize')
+    public function routeResized(array $params = null, $type = 'resize')
     {
         $guidedModel = strtolower(RouteHelper::getRouteModel(true));
 
