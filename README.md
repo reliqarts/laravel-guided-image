@@ -132,7 +132,7 @@ You may retrieve guided links to resized or cropped images like so:
 
 ```php
 // resized image:
-$linkToImage = photo->routeResized([
+$linkToImage = $photo->routeResized([
     '550',      // width
     '_',        // height, 'null' is OK 
     '_',        // keep aspect ratio? true by default, 'null' is OK
@@ -140,7 +140,7 @@ $linkToImage = photo->routeResized([
 ]);
 
 // thumbnail:
-$linkToImage = photo->routeResized([
+$linkToImage = $photo->routeResized([
     'crop',     // method: crop|fit
     '550',      // width
     '_',        // height, 'null' is OK 
