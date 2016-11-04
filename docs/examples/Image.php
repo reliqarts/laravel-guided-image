@@ -3,8 +3,8 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
-use ReliQArts\GuidedImage\Traits\Guided as GuidedTrait;
 use ReliQArts\GuidedImage\Contracts\Guided as GuidedContract;
+use ReliQArts\GuidedImage\Traits\Guided as GuidedTrait;
 
 /**
  *  Image model.
@@ -32,7 +32,7 @@ class Image extends Model implements GuidedContract
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function isSafeForDelete($safeAmount = 1)
     {
