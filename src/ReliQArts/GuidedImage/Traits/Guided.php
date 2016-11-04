@@ -8,7 +8,6 @@ use Config;
 use Schema;
 use Validator;
 use ErrorException;
-use Illuminate\Http\UploadedFile;
 use ReliQArts\GuidedImage\ViewModels\Result;
 use ReliQArts\GuidedImage\Helpers\RouteHelper;
 use ReliQArts\GuidedImage\Exceptions\ImplementationException;
@@ -157,10 +156,10 @@ trait Guided
 
     /**
      *  Upload and save image.
-     * @param Illuminate\Http\UploadedFile $imageFile Actual file from request. e.g. $request->file('image');
+     * @param Illuminate\Http\UploadedFile|Symfony\Component\HttpFoundation\File\UploadedFile $imageFile Actual file from request. e.g. $request->file('image');
      * @return ReliQArts\GuidedImage\ViewModels\Result Result object.
      */
-    public static function upload(UploadedFile $imageFile)
+    public static function upload($imageFile)
     {
         $validator = Validator::make(['file' => $imageFile], self::$rules);
         $result = new Result();
