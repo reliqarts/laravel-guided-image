@@ -8,7 +8,9 @@ class RouteHelper
 {
     /**
      * Get list of controllers onto which guided image routes should be binded.
+     *
      * @param array $controllers Preset controllers for guided route binds.
+     *
      * @return array Array of controllers for route binding.
      */
     public static function getContollersForRoutes(array $controllers = [])
@@ -18,6 +20,7 @@ class RouteHelper
 
     /**
      * Get route prefix for guided image routes.
+     *
      * @return string Prefix.
      */
     public static function getRoutePrefix()
@@ -27,7 +30,9 @@ class RouteHelper
 
     /**
      * Get image model for guided image routes.
+     *
      * @param bool|bool $lowered Whether model should be returned in lowercase form.
+     *
      * @return string Model.
      */
     public static function getRouteModel($lowered = false)
@@ -39,7 +44,9 @@ class RouteHelper
 
     /**
      * Get image model namespace for guided image routes.
+     *
      * @param bool|bool $lowered Whether model should be returned in lowercase form.
+     *
      * @return string Model.
      */
     public static function getRouteModelNamespace($lowered = false)

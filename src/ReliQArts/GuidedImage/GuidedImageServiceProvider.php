@@ -4,7 +4,6 @@ namespace ReliQArts\GuidedImage;
 
 use Illuminate\Routing\Router;
 use Illuminate\Support\ServiceProvider;
-use ReliQArts\GuidedImage\GuidedImage;
 use ReliQArts\GuidedImage\Helpers\RouteHelper;
 
 /**
