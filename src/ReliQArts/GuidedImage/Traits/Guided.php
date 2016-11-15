@@ -2,21 +2,21 @@
 
 namespace ReliQArts\GuidedImage\Traits;
 
-use URL;
-use File;
 use Config;
-use Schema;
-use Validator;
-use ErrorException;
-use ReliQArts\GuidedImage\ViewModels\Result;
-use ReliQArts\GuidedImage\Helpers\RouteHelper;
+use File;
 use ReliQArts\GuidedImage\Exceptions\ImplementationException;
+use ReliQArts\GuidedImage\Helpers\RouteHelper;
+use ReliQArts\GuidedImage\ViewModels\Result;
+use URL;
+use Validator;
 
 /**
  * Get guided by acquiring these traits.
  *
  * @author Patrick Reid (@IAmReliQ)
+ *
  * @since  2016
+ *
  * @uses ReliQArts\GuidedImage\ViewModels\Result;
  */
 trait Guided
@@ -43,7 +43,7 @@ trait Guided
             throw new ImplementationException("Guided model ({$this->class}) must extend {$this->eloquentAncestor}.");
         }
 
-        parent::__construct($attributes);   
+        parent::__construct($attributes);
     }
 
     /**
@@ -57,7 +57,9 @@ trait Guided
     /**
      * Whether image is safe for deleting.
      * Since a single image may be re-used this method is used to determine when an image can be safely deleted from disk.
+     *
      * @param int $safeAmount A photo is safe to delete if it is used by $safe_num amount of records.
+     *
      * @return bool Whether image is safe for delete.
      */
     public function isSafeForDelete($safeAmount = 1)
@@ -67,7 +69,9 @@ trait Guided
 
     /**
      * Removes image from database, and filesystem, if not in use.
+     *
      * @param bool $force Override safety constraints.
+     *
      * @return ReliQArts\GuidedImage\ViewModels\Result Result object.
      */
     public function remove($force = false)
@@ -90,14 +94,15 @@ trait Guided
 
     /**
      * Get routed link to photo.
-     * @param array $params Parameters to pass to route.
-     * @param string $type Operation to be performed on instance. (resize, thumb)
+     *
+     * @param array  $params Parameters to pass to route.
+     * @param string $type   Operation to be performed on instance. (resize, thumb)
      */
     public function routeResized(array $params = null, $type = 'resize')
     {
         $guidedModel = strtolower(RouteHelper::getRouteModel(true));
 
-        if (! (in_array($type, ['resize', 'thumb']) && is_array($params))) {
+        if (!(in_array($type, ['resize', 'thumb']) && is_array($params))) {
             return $this->url();
         }
         array_unshift($params, $this->id);
@@ -147,6 +152,7 @@ trait Guided
 
     /**
      * Get upload directory.
+     *
      * @return string Upload directory.
      */
     public static function getUploadDir()
@@ -156,7 +162,9 @@ trait Guided
 
     /**
      *  Upload and save image.
+     *
      * @param Illuminate\Http\UploadedFile|Symfony\Component\HttpFoundation\File\UploadedFile $imageFile Actual file from request. e.g. $request->file('image');
+     *
      * @return ReliQArts\GuidedImage\ViewModels\Result Result object.
      */
     public static function upload($imageFile)
