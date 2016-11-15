@@ -3,7 +3,6 @@
 namespace ReliQArts\GuidedImage\Contracts;
 
 use Illuminate\Http\Request;
-use ReliQArts\GuidedImage\Contracts\Guided;
 
 /**
  * A true guider defines.
