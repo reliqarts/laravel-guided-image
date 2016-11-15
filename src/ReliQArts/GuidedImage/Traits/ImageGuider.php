@@ -9,7 +9,7 @@ use Illuminate\Http\Response;
 use Intervention\Image\Exception\NotReadableException;
 use Intervention\Image\Facades\Image;
 use Intervention\Image\Image as InterventionImage;
-use ReliQArts\GuidedImage\Contracts\Guided;
+use ReliQArts\GuidedImage\Contracts\Guided as GuidedContract;
 use ReliQArts\GuidedImage\ViewModels\Result;
 
 /**
@@ -112,7 +112,7 @@ trait ImageGuider
      *
      * @return Image|string Intervention Image object or actual image url.
      */
-    public function thumb(Request $request, Guided $guidedImage, $method, $width, $height, $object = false)
+    public function thumb(Request $request, GuidedContract $guidedImage, $method, $width, $height, $object = false)
     {
         $width = (in_array($width, $this->nulls)) ? null : $width;
         $height = (in_array($height, $this->nulls)) ? null : $height;
@@ -157,7 +157,7 @@ trait ImageGuider
      *
      * @return Image|string Intervention Image object or actual image url.
      */
-    public function resized(Request $request, Guided $guidedImage, $width, $height, $aspect = true, $upsize = false, $object = false)
+    public function resized(Request $request, GuidedContract $guidedImage, $width, $height, $aspect = true, $upsize = false, $object = false)
     {
         $width = (in_array($width, $this->nulls)) ? null : $width;
         $height = (in_array($height, $this->nulls)) ? null : $height;
