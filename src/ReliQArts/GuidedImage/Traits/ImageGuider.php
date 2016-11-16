@@ -157,7 +157,7 @@ trait ImageGuider
      *
      * @return Image|string Intervention Image object or actual image url.
      */
-    public function resized(Request $request, GuidedContract $guidedImage, $width, $height, $aspect = true, 
+    public function resized(Request $request, GuidedContract $guidedImage, $width, $height, $aspect = true,
         $upsize = false, $object = false)
     {
         $width = (in_array($width, $this->nulls)) ? null : $width;
