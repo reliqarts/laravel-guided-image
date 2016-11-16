@@ -189,7 +189,9 @@ trait ImageGuider
         }
 
         // if no image; abort
-        if (!$image) abort(404);
+        if (!$image) {
+            abort(404);
+        }
 
         // Setup response with appropriate headers
         $response = ($object) ? $image : new Response(File::get($skimFile), 200, $this->getImageHeaders($request, $image));
