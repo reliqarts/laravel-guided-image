@@ -195,7 +195,11 @@ trait ImageGuider
         }
 
         // Setup response with appropriate headers
-        $response = ($object) ? $image : new Response(File::get($skimFile), 200, $this->getImageHeaders($request, $image) ?: []);
+        $response = ($object) ? $image : new Response(
+            File::get($skimFile), 
+            200,
+            $this->getImageHeaders($request, $image) ?: []
+        );
 
         // Return object or actual image
         return $response;
