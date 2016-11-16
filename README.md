@@ -3,13 +3,13 @@
 Guided Image is an image utility package for Laravel 5.x based on Intervention Image.
 
 ![Build Status](https://img.shields.io/circleci/project/reliqarts/laravel-guided-image.svg?style=flat-square)
-[![Built For Laravel](https://img.shields.io/badge/built%20for-laravel-red.svg?style=flat-square)](http://laravel.com)
+[![StyleCI](https://styleci.io/repos/71434979/shield?branch=master)](https://styleci.io/repos/71434979)
 [![Scrutinizer](https://img.shields.io/scrutinizer/g/reliqarts/laravel-guided-image.svg?style=flat-square)](https://scrutinizer-ci.com/g/reliqarts/laravel-guided-image/)
+[![Built For Laravel](https://img.shields.io/badge/built%20for-laravel-red.svg?style=flat-square)](http://laravel.com)
+[![License](https://poser.pugx.org/reliqarts/guided-image/license?format=flat-square)](https://packagist.org/packages/reliqarts/guided-image)
 [![Total Downloads](https://poser.pugx.org/reliqarts/guided-image/downloads?format=flat-square)](https://packagist.org/packages/reliqarts/guided-image)
 [![Latest Stable Version](https://poser.pugx.org/reliqarts/guided-image/version?format=flat-square)](https://packagist.org/packages/reliqarts/guided-image)
 [![Latest Unstable Version](https://poser.pugx.org/reliqarts/guided-image/v/unstable?format=flat-square)](//packagist.org/packages/reliqarts/guided-image)
-[![StyleCI](https://styleci.io/repos/71434979/shield?branch=master)](https://styleci.io/repos/71434979)
-[![License](https://poser.pugx.org/reliqarts/guided-image/license?format=flat-square)](https://packagist.org/packages/reliqarts/guided-image)
 
 &nbsp;
 
