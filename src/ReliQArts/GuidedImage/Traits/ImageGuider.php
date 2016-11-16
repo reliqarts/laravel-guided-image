@@ -166,6 +166,7 @@ trait ImageGuider
         $object = (in_array($object, $this->nulls)) ? false : true;
 
         $skimFile = "$this->skimResized/$width-$height-_-_".$guidedImage->getName();
+        $image = false;
 
         // Get intervention image
         try {
@@ -184,8 +185,11 @@ trait ImageGuider
                 $image = Image::make($skimFile);
             }
         } catch (NotReadableException $e) {
-            abort(404);
+            $image = false;
         }
+
+        // if no image; abort
+        if (!$image) abort(404);
 
         // Setup response with appropriate headers
         $response = ($object) ? $image : new Response(File::get($skimFile), 200, $this->getImageHeaders($request, $image));
