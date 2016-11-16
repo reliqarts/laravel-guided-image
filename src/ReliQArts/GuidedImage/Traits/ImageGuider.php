@@ -157,7 +157,8 @@ trait ImageGuider
      *
      * @return Image|string Intervention Image object or actual image url.
      */
-    public function resized(Request $request, GuidedContract $guidedImage, $width, $height, $aspect = true, $upsize = false, $object = false)
+    public function resized(Request $request, GuidedContract $guidedImage, $width, $height, $aspect = true, 
+        $upsize = false, $object = false)
     {
         $width = (in_array($width, $this->nulls)) ? null : $width;
         $height = (in_array($height, $this->nulls)) ? null : $height;
@@ -192,7 +193,7 @@ trait ImageGuider
         if (!$image) abort(404);
 
         // Setup response with appropriate headers
-        $response = ($object) ? $image : new Response(File::get($skimFile), 200, $this->getImageHeaders($request, $image));
+        $response = ($object) ? $image : new Response(File::get($skimFile), 200, $this->getImageHeaders($request, $image) ?: []);
 
         // Return object or actual image
         return $response;
