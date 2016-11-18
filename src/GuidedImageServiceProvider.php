@@ -21,7 +21,7 @@ class GuidedImageServiceProvider extends ServiceProvider
     /**
      * Assets location.
      */
-    protected $assetsDir = __DIR__.'/../..';
+    protected $assetsDir = __DIR__.'/..';
 
     /**
      * Explicitly bind guided model instance to router, hence

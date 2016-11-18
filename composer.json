@@ -22,7 +22,7 @@
     },
     "autoload": {
         "psr-4": {
-            "ReliQArts\\GuidedImage\\": "src/ReliQArts/GuidedImage"
+            "ReliQArts\\GuidedImage\\": "src/"
         }
     }
 }
