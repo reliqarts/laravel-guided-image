@@ -90,6 +90,7 @@ class GuidedImageServiceProvider extends ServiceProvider
             $this->registerRoutes($router);
         }
 
+        // publish assets
         $this->publishAssets();
     }
 
