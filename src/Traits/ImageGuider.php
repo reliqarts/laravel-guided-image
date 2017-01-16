@@ -3,14 +3,14 @@
 namespace ReliQArts\GuidedImage\Traits;
 
 use File;
-use Illuminate\Config\Repository as Config;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Intervention\Image\Exception\NotReadableException;
 use Intervention\Image\Facades\Image;
-use Intervention\Image\Image as InterventionImage;
-use ReliQArts\GuidedImage\Contracts\Guided as GuidedContract;
+use Illuminate\Config\Repository as Config;
 use ReliQArts\GuidedImage\ViewModels\Result;
+use Intervention\Image\Image as InterventionImage;
+use Intervention\Image\Exception\NotReadableException;
+use ReliQArts\GuidedImage\Contracts\Guided as GuidedContract;
 
 /**
  * Guide by acquiring these traits.

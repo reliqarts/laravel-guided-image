@@ -2,13 +2,13 @@
 
 namespace ReliQArts\GuidedImage\Traits;
 
-use Config;
-use File;
-use ReliQArts\GuidedImage\Exceptions\ImplementationException;
-use ReliQArts\GuidedImage\Helpers\RouteHelper;
-use ReliQArts\GuidedImage\ViewModels\Result;
 use URL;
+use File;
+use Config;
 use Validator;
+use ReliQArts\GuidedImage\ViewModels\Result;
+use ReliQArts\GuidedImage\Helpers\RouteHelper;
+use ReliQArts\GuidedImage\Exceptions\ImplementationException;
 
 /**
  * Get guided by acquiring these traits.
