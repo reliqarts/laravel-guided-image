@@ -1,7 +1,7 @@
 <?php
 
-use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Migrations\Migration;
 use ReliQArts\GuidedImage\Helpers\SchemaHelper;
 
 class CreateGuidedImagesTable extends Migration
@@ -26,8 +26,14 @@ class CreateGuidedImagesTable extends Migration
                 $table->string('location');
                 $table->string('full_path');
                 $table->timestamps();
-                $table->integer('creator_id')->unsigned();
-                $table->foreign('creator_id')->references('id')->on('users');
+                $table->integer('creator_id')
+                    ->unsigned()
+                    ->nullable();
+                $table->foreign('creator_id')
+                    ->references('id')
+                    ->on('users')
+                    ->onUpdate('cascade')
+                    ->onDelete('set null');
             });
         }
     }

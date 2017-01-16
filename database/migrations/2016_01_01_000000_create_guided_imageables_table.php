@@ -1,7 +1,7 @@
 <?php
 
-use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Migrations\Migration;
 use ReliQArts\GuidedImage\Helpers\SchemaHelper;
 
 class CreateGuidedImageablesTable extends Migration
@@ -21,7 +21,10 @@ class CreateGuidedImageablesTable extends Migration
         Schema::create($table, function (Blueprint $table) {
             $table->increments('id');
             $table->integer('image_id')->unsigned();
-            $table->foreign('image_id')->references('id')->on('images')->onDelete('cascade');
+            $table->foreign('image_id')
+                ->references('id')
+                ->on('images')
+                ->onDelete('CASCADE');
             $table->integer('imageable_id');
             $table->string('imageable_type');
         });
