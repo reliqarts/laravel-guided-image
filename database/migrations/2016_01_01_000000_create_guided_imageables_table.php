@@ -21,7 +21,10 @@ class CreateGuidedImageablesTable extends Migration
         Schema::create($table, function (Blueprint $table) {
             $table->increments('id');
             $table->integer('image_id')->unsigned();
-            $table->foreign('image_id')->references('id')->on('images')->onDelete('cascade');
+            $table->foreign('image_id')
+                ->references('id')
+                ->on('images')
+                ->onDelete('CASCADE');
             $table->integer('imageable_id');
             $table->string('imageable_type');
         });

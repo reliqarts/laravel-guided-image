@@ -14,7 +14,7 @@ class CreateGuidedImagesTable extends Migration
     public function up()
     {
         $table = SchemaHelper::getImageTable();
-        if (! Schema::hasTable($table)) {
+        if (!Schema::hasTable($table)) {
             Schema::create($table, function (Blueprint $table) {
                 $table->increments('id');
                 $table->string('name', 50);
@@ -26,8 +26,14 @@ class CreateGuidedImagesTable extends Migration
                 $table->string('location');
                 $table->string('full_path');
                 $table->timestamps();
-                $table->integer('creator_id')->unsigned();
-                $table->foreign('creator_id')->references('id')->on('users');
+                $table->integer('creator_id')
+                    ->unsigned()
+                    ->nullable();
+                $table->foreign('creator_id')
+                    ->references('id')
+                    ->on('users')
+                    ->onUpdate('cascade')
+                    ->onDelete('set null');
             });
         }
     }
