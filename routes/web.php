@@ -17,7 +17,7 @@ $guidedModel = RouteHelper::getRouteModel(true);
 foreach (RouteHelper::getContollersForRoutes() as $guidedController) {
 
     // if controller name's empty skip
-    if (!$guidedController) {
+    if (! $guidedController) {
         continue;
     }
 
