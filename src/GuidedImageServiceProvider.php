@@ -86,7 +86,7 @@ class GuidedImageServiceProvider extends ServiceProvider
     public function boot(Router $router)
     {
         // register routes
-        if (! $this->app->routesAreCached()) {
+        if (!$this->app->routesAreCached()) {
             $this->registerRoutes($router);
         }
 
