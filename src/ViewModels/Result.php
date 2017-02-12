@@ -11,4 +11,5 @@ class Result
     public $error = null;
     public $extra = null;
     public $message = null;
+    public $reused = null;
 }
