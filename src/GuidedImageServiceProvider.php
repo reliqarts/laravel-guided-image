@@ -5,6 +5,7 @@ namespace ReliQArts\GuidedImage;
 use Illuminate\Routing\Router;
 use Illuminate\Support\ServiceProvider;
 use ReliQArts\GuidedImage\Helpers\RouteHelper;
+use ReliQArts\GuidedImage\Console\Commands\DumpImageCache;
 
 /**
  *  GuidedImageServiceProvider.
@@ -22,6 +23,15 @@ class GuidedImageServiceProvider extends ServiceProvider
      * Assets location.
      */
     protected $assetsDir = __DIR__.'/..';
+
+    /**
+     * List of commands.
+     *
+     * @var array
+     */
+    protected $commands = [
+        DumpImageCache::class,
+    ];
 
     /**
      * Explicitly bind guided model instance to router, hence
@@ -44,7 +54,7 @@ class GuidedImageServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    protected function publishAssets()
+    protected function handleAssets()
     {
         $this->publishes([
             "$this->assetsDir/config/config.php" => config_path('guidedimage.php'),
@@ -56,9 +66,20 @@ class GuidedImageServiceProvider extends ServiceProvider
     }
 
     /**
+     * Command files.
+     */
+    private function handleCommands()
+    {
+        // Register the commands...
+        if ($this->app->runningInConsole()) {
+            $this->commands($this->commands);
+        }
+    }
+
+    /**
      * Register Configuraion.
      */
-    protected function registerConfig()
+    protected function handleConfig()
     {
         // merge config
         $this->mergeConfigFrom("$this->assetsDir/config/config.php", 'guidedimage');
@@ -69,13 +90,14 @@ class GuidedImageServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    protected function registerRoutes(Router $router)
+    protected function handleRoutes(Router $router)
     {
-        // explicitly bind guided image model
-        $this->bindRouteModel($router);
-
-        // get the routes
-        require_once "$this->assetsDir/routes/web.php";
+        if (!$this->app->routesAreCached()) {
+            // explicitly bind guided image model
+            $this->bindRouteModel($router);
+            // get the routes
+            require_once "$this->assetsDir/routes/web.php";
+        }
     }
 
     /**
@@ -86,12 +108,13 @@ class GuidedImageServiceProvider extends ServiceProvider
     public function boot(Router $router)
     {
         // register routes
-        if (! $this->app->routesAreCached()) {
-            $this->registerRoutes($router);
-        }
-
+        $this->handleRoutes($router);
+        // register config
+        $this->handleConfig();
         // publish assets
-        $this->publishAssets();
+        $this->handleAssets();
+        // publish commands
+        $this->handleCommands();
     }
 
     /**
@@ -101,8 +124,6 @@ class GuidedImageServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->registerConfig();
-
         // bind guided contract to resolve to model
         $this->app->bind(
             'ReliQArts\GuidedImage\Contracts\Guided',
