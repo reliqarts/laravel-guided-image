@@ -36,7 +36,7 @@ foreach (RouteHelper::getContollersForRoutes() as $guidedController) {
         Route::get(".res/{{$guidedModel}}//{width}-{height}/{aspect?}/{upsize?}/{object?}", ['as' => "$guidedModel.resize", 'uses' => "$guidedController@resized"]);
 
         // Dummy $guidedModel
-        Route::get(".dum/{width}-{height}/{color?}/{fill?}/{object?}", ['as' => "$guidedModel.dummy", 'uses' => "$guidedController@dummy"]);
+        Route::get('.dum/{width}-{height}/{color?}/{fill?}/{object?}', ['as' => "$guidedModel.dummy", 'uses' => "$guidedController@dummy"]);
 
         // admin route group
         Route::group(RouteHelper::getRouteGroupBindings([], 'admin'), function () use ($guidedController, $guidedModel) {
