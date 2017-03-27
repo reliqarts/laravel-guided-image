@@ -30,18 +30,18 @@ foreach (RouteHelper::getContollersForRoutes() as $guidedController) {
     Route::group(RouteHelper::getRouteGroupBindings(), function () use ($guidedController, $guidedModel) {
 
         // $guidedModel thumbnail
-        Route::get(".thumb\{$guidedModel}\m.{method}\{width}-{height}\{object?}", ['as' => "$guidedModel.thumb", 'uses' => "$guidedController@thumb"]);
+        Route::get(".tmb/{{$guidedModel}}//m.{method}/{width}-{height}/{object?}", ['as' => "$guidedModel.thumb", 'uses' => "$guidedController@thumb"]);
 
         // Resized $guidedModel
-        Route::get(".{$guidedModel}\{$guidedModel}\{width}-{height}\{aspect?}\{upsize?}\{object?}", ['as' => "{$guidedModel}.resize", 'uses' => "$guidedController@resized"]);
+        Route::get(".res/{{$guidedModel}}//{width}-{height}/{aspect?}/{upsize?}/{object?}", ['as' => "$guidedModel.resize", 'uses' => "$guidedController@resized"]);
 
         // Dummy $guidedModel
-        Route::get(".dummy\{width}-{height}/{color?}/{fill?}/{object?}", ['as' => "{$guidedModel}.dummy", 'uses' => "$guidedController@dummy"]);
+        Route::get('.dum/{width}-{height}/{color?}/{fill?}/{object?}', ['as' => "$guidedModel.dummy", 'uses' => "$guidedController@dummy"]);
 
         // admin route group
         Route::group(RouteHelper::getRouteGroupBindings([], 'admin'), function () use ($guidedController, $guidedModel) {
             // Used to empty directory photo cache (skimDir)
-            Route::get('empty-cache', ['as' => "{$guidedModel}.empty-cache", 'uses' => "$guidedController@emptyCache"]);
+            Route::get('empty-cache', ['as' => "$guidedModel.empty-cache", 'uses' => "$guidedController@emptyCache"]);
         });
     });
 }
