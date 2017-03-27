@@ -20,7 +20,7 @@ use ReliQArts\GuidedImage\Contracts\Guided as GuidedContract;
  * @since  2016
 
  * @uses Intervention\Image\Facades\Image to manipulate images.
- * @uses ReliQArts\GuidedImage\ViewModels\Result 
+ * @uses ReliQArts\GuidedImage\ViewModels\Result
  */
 trait ImageGuider
 {
