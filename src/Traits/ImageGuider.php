@@ -18,7 +18,7 @@ use ReliQArts\GuidedImage\Contracts\Guided as GuidedContract;
  * @author Patrick Reid (@IAmReliQ)
  *
  * @since  2016
-
+ *
  * @uses Intervention\Image\Facades\Image to manipulate images.
  * @uses ReliQArts\GuidedImage\ViewModels\Result
  */
