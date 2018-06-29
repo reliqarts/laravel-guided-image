@@ -88,7 +88,7 @@ class GuidedImageServiceProvider extends ServiceProvider
      */
     protected function handleRoutes(Router $router)
     {
-        if (!$this->app->routesAreCached()) {
+        if (! $this->app->routesAreCached()) {
             // explicitly bind guided image model
             $this->bindRouteModel($router);
             // get the routes
