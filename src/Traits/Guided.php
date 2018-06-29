@@ -46,7 +46,7 @@ trait Guided
     {
         $this->class = get_class($this);
         // Instance must be of class which extends Eloquent Model.
-        if (!is_subclass_of($this, $this->eloquentAncestor)) {
+        if (! is_subclass_of($this, $this->eloquentAncestor)) {
             throw new ImplementationException("Guided model ({$this->class}) must extend {$this->eloquentAncestor}.");
         }
 
@@ -109,7 +109,7 @@ trait Guided
     {
         $guidedModel = strtolower(RouteHelper::getRouteModel(true));
 
-        if (!(in_array($type, ['resize', 'thumb']) && is_array($params))) {
+        if (! (in_array($type, ['resize', 'thumb']) && is_array($params))) {
             return $this->url();
         }
         array_unshift($params, $this->id);
@@ -193,7 +193,7 @@ trait Guided
 
             // explicitly check extension against whitelist
             if (in_array(strtolower($extension), $extWhitelist)) {
-                if (!$existing->count()) {
+                if (! $existing->count()) {
                     $im['size'] = $size;
                     $im['name'] = $filename;
                     $im['mime_type'] = $mimeType;
