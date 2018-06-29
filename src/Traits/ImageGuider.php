@@ -60,10 +60,10 @@ trait ImageGuider
         $this->nulls = array_merge($this->nulls, $config->get('guidedimage.routes.nulls', []));
 
         // create or avail needed directories
-        if (! File::isDirectory($this->skimThumbs)) {
+        if (!File::isDirectory($this->skimThumbs)) {
             File::makeDirectory($this->skimThumbs, 0777, true);
         }
-        if (! File::isDirectory($this->skimResized)) {
+        if (!File::isDirectory($this->skimResized)) {
             File::makeDirectory($this->skimResized, 0777, true);
         }
 
@@ -84,7 +84,7 @@ trait ImageGuider
      */
     public function emptyCache(Request $request)
     {
-        if (! $request->ajax()) {
+        if (!$request->ajax()) {
             return 'Use JSON.';
         }
 
@@ -122,12 +122,12 @@ trait ImageGuider
 
         // accept methods crop and thumb
         $acceptMethods = ['crop', 'fit'];
-        if (! in_array($method, $acceptMethods)) {
+        if (!in_array($method, $acceptMethods)) {
             abort(404);
         }
         // Get intervention image
         try {
-            if (! File::exists($skimFile)) {
+            if (!File::exists($skimFile)) {
                 $image = Image::make($guidedImage->getUrl())->{$method}($width, $height);
                 $image->save($skimFile);
             } else {
@@ -181,7 +181,7 @@ trait ImageGuider
 
         // Get intervention image
         try {
-            if (! File::exists($skimFile)) {
+            if (!File::exists($skimFile)) {
                 $image = Image::make($guidedImage->getUrl());
                 $image->resize($width, $height, function ($constraint) use ($aspect, $upsize) {
                     if ($aspect) {
@@ -200,7 +200,7 @@ trait ImageGuider
         }
 
         // if no image; abort
-        if (! $image) {
+        if (!$image) {
             abort(404);
         }
 

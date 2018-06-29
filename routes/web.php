@@ -16,7 +16,7 @@ $guidedModel = RouteHelper::getRouteModel(true);
 // get controllers for routes and create the routes for each
 foreach (RouteHelper::getContollersForRoutes() as $guidedController) {
     // if controller name's empty skip
-    if (! $guidedController) {
+    if (!$guidedController) {
         continue;
     }
 

@@ -12,7 +12,7 @@ class CreateGuidedImagesTable extends Migration
     public function up()
     {
         $table = SchemaHelper::getImageTable();
-        if (! Schema::hasTable($table)) {
+        if (!Schema::hasTable($table)) {
             Schema::create($table, function (Blueprint $table) {
                 $table->increments('id');
                 $table->string('name', 50);
