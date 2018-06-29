@@ -2,10 +2,13 @@
 
 use ReliQArts\GuidedImage\GuidedImage;
 
+/**
+ * @coversDefaultClass \ReliQArts\GuidedImage\GuidedImage
+ */
 class GuidedImageTest extends \Orchestra\Testbench\TestCase
 {
     /**
-     * Test instance creation.
+     * @covers ::__construct
      */
     public function testCreate()
     {

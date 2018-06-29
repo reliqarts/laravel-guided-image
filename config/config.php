@@ -49,6 +49,9 @@ return [
         'nulls' => ['n', 'none', 'no', 'empty', 'false', 'auto', '_'],
     ],
 
+    // allowed extensions
+    'allowed_extensions' => ['gif', 'jpg', 'jpeg', 'png'],
+
     // storage
     'storage' => [
         // Temporary storage directory for images already generated.
@@ -68,7 +71,7 @@ return [
         'cache_days' => env('GUIDED_IMAGE_CACHE_DAYS', 2),
 
         // any aditional headers for guided images
-        'additional'  => [],
+        'additional' => [],
     ],
 
 ];

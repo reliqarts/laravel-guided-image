@@ -26,9 +26,9 @@ interface ImageGuider
      * @param string  $method      crop|fit
      * @param int     $width
      * @param int     $height
-     * @param bool    $object      Whether Intervention Image should be returned.
+     * @param bool    $object      whether Intervention Image should be returned
      *
-     * @return Image|string Intervention Image object or actual image url.
+     * @return Image|string intervention Image object or actual image url
      */
     public function thumb(Request $request, Guided $guidedImage, $method, $width, $height, $object = false);
 
@@ -41,9 +41,9 @@ interface ImageGuider
      * @param int     $height
      * @param bool    $aspect      Keep aspect ratio?
      * @param bool    $upsize      Allow upsize?
-     * @param bool    $object      Whether Intervention Image should be returned.
+     * @param bool    $object      whether Intervention Image should be returned
      *
-     * @return Image|string Intervention Image object or actual image url.
+     * @return Image|string intervention Image object or actual image url
      */
     public function resized(Request $request, Guided $guidedImage, $width, $height, $aspect = true, $upsize = false, $object = false);
 
@@ -54,8 +54,9 @@ interface ImageGuider
      * @param int    $height
      * @param string $color
      * @param bool   $fill
+     * @param mixed  $object
      *
-     * @return Image|string Intervention Image object or actual image url.
+     * @return Image|string intervention Image object or actual image url
      */
     public function dummy($width, $height, $color = '#eefefe', $fill = false, $object = false);
 }
