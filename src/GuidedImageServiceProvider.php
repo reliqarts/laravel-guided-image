@@ -34,6 +34,69 @@ class GuidedImageServiceProvider extends ServiceProvider
     ];
 
     /**
+     * Perform post-registration booting of services.
+     */
+    public function boot(Router $router)
+    {
+        // register routes
+        $this->handleRoutes($router);
+        // register config
+        $this->handleConfig();
+        // publish assets
+        $this->handleAssets();
+        // publish commands
+        $this->handleCommands();
+    }
+
+    /**
+     * Register bindings in the container.
+     */
+    public function register()
+    {
+        // bind guided contract to resolve to model
+        $this->app->bind(
+            'ReliQArts\GuidedImage\Contracts\Guided',
+            'ReliQArts\GuidedImage\GuidedImage'
+        );
+    }
+
+    /**
+     * Publish assets.
+     */
+    protected function handleAssets()
+    {
+        $this->publishes([
+            "{$this->assetsDir}/config/config.php" => config_path('guidedimage.php'),
+        ], 'config');
+
+        $this->publishes([
+            "{$this->assetsDir}/database/migrations/" => database_path('migrations'),
+        ], 'migrations');
+    }
+
+    /**
+     * Register Configuraion.
+     */
+    protected function handleConfig()
+    {
+        // merge config
+        $this->mergeConfigFrom("{$this->assetsDir}/config/config.php", 'guidedimage');
+    }
+
+    /**
+     * Register routes.
+     */
+    protected function handleRoutes(Router $router)
+    {
+        if (!$this->app->routesAreCached()) {
+            // explicitly bind guided image model
+            $this->bindRouteModel($router);
+            // get the routes
+            require_once "{$this->assetsDir}/routes/web.php";
+        }
+    }
+
+    /**
      * Explicitly bind guided model instance to router, hence
      * overriding binded GuidedImage model (since they both implement the Guided contract).
      */
@@ -50,22 +113,6 @@ class GuidedImageServiceProvider extends ServiceProvider
     }
 
     /**
-     * Publish assets.
-     *
-     * @return void
-     */
-    protected function handleAssets()
-    {
-        $this->publishes([
-            "$this->assetsDir/config/config.php" => config_path('guidedimage.php'),
-        ], 'config');
-
-        $this->publishes([
-            "$this->assetsDir/database/migrations/" => database_path('migrations'),
-        ], 'migrations');
-    }
-
-    /**
      * Command files.
      */
     private function handleCommands()
@@ -74,60 +121,5 @@ class GuidedImageServiceProvider extends ServiceProvider
         if ($this->app->runningInConsole()) {
             $this->commands($this->commands);
         }
-    }
-
-    /**
-     * Register Configuraion.
-     */
-    protected function handleConfig()
-    {
-        // merge config
-        $this->mergeConfigFrom("$this->assetsDir/config/config.php", 'guidedimage');
-    }
-
-    /**
-     * Register routes.
-     *
-     * @return void
-     */
-    protected function handleRoutes(Router $router)
-    {
-        if (! $this->app->routesAreCached()) {
-            // explicitly bind guided image model
-            $this->bindRouteModel($router);
-            // get the routes
-            require_once "$this->assetsDir/routes/web.php";
-        }
-    }
-
-    /**
-     * Perform post-registration booting of services.
-     *
-     * @return void
-     */
-    public function boot(Router $router)
-    {
-        // register routes
-        $this->handleRoutes($router);
-        // register config
-        $this->handleConfig();
-        // publish assets
-        $this->handleAssets();
-        // publish commands
-        $this->handleCommands();
-    }
-
-    /**
-     * Register bindings in the container.
-     *
-     * @return void
-     */
-    public function register()
-    {
-        // bind guided contract to resolve to model
-        $this->app->bind(
-            'ReliQArts\GuidedImage\Contracts\Guided',
-            'ReliQArts\GuidedImage\GuidedImage'
-        );
     }
 }

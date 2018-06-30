@@ -8,8 +8,8 @@ namespace ReliQArts\GuidedImage\ViewModels;
 class Result
 {
     public $success = false;
-    public $error = null;
-    public $extra = null;
-    public $message = null;
-    public $reused = null;
+    public $error;
+    public $extra;
+    public $message;
+    public $reused;
 }

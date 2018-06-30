@@ -17,20 +17,27 @@ use ReliQArts\GuidedImage\Exceptions\ImplementationException;
  *
  * @since  2016
  *
- * @uses ReliQArts\GuidedImage\ViewModels\Result;
+ * @uses \ReliQArts\GuidedImage\ViewModels\Result;
  */
 trait Guided
 {
-    // Class instance.
-    private $class;
-
-    // Mandatory ancestor eloguent model.
-    private $eloquentAncestor = 'Illuminate\Database\Eloquent\Model';
-
     /**
      * The rules that govern a guided image.
      */
     public static $rules = ['file' => 'required|mimes:png,gif,jpeg|max:2048'];
+    /**
+     * Class instance.
+     *
+     * @var stdClass
+     */
+    private $class;
+
+    /**
+     * Mandatory ancestor eloguent model.
+     *
+     * @var string
+     */
+    private $eloquentAncestor = 'Illuminate\Database\Eloquent\Model';
 
     /**
      * Ensure things are ready.
@@ -39,7 +46,7 @@ trait Guided
     {
         $this->class = get_class($this);
         // Instance must be of class which extends Eloquent Model.
-        if (! is_subclass_of($this, $this->eloquentAncestor)) {
+        if (!is_subclass_of($this, $this->eloquentAncestor)) {
             throw new ImplementationException("Guided model ({$this->class}) must extend {$this->eloquentAncestor}.");
         }
 
@@ -58,9 +65,9 @@ trait Guided
      * Whether image is safe for deleting.
      * Since a single image may be re-used this method is used to determine when an image can be safely deleted from disk.
      *
-     * @param int $safeAmount A photo is safe to delete if it is used by $safe_num amount of records.
+     * @param int $safeAmount a photo is safe to delete if it is used by $safe_num amount of records
      *
-     * @return bool Whether image is safe for delete.
+     * @return bool whether image is safe for delete
      */
     public function isSafeForDelete($safeAmount = 1)
     {
@@ -70,9 +77,9 @@ trait Guided
     /**
      * Removes image from database, and filesystem, if not in use.
      *
-     * @param bool $force Override safety constraints.
+     * @param bool $force override safety constraints
      *
-     * @return ReliQArts\GuidedImage\ViewModels\Result Result object.
+     * @return \ReliQArts\GuidedImage\ViewModels\Result result object
      */
     public function remove($force = false)
     {
@@ -95,14 +102,14 @@ trait Guided
     /**
      * Get routed link to photo.
      *
-     * @param array  $params Parameters to pass to route.
+     * @param array  $params parameters to pass to route
      * @param string $type   Operation to be performed on instance. (resize, thumb)
      */
     public function routeResized(array $params = null, $type = 'resize')
     {
         $guidedModel = strtolower(RouteHelper::getRouteModel(true));
 
-        if (! (in_array($type, ['resize', 'thumb']) && is_array($params))) {
+        if (!(in_array($type, ['resize', 'thumb']) && is_array($params))) {
             return $this->url();
         }
         array_unshift($params, $this->id);
@@ -131,7 +138,7 @@ trait Guided
      */
     public function getTitle()
     {
-        return title_case(preg_replace("/[\-_]/", ' ', $this->getName()));
+        return title_case(preg_replace('/[\\-_]/', ' ', $this->getName()));
     }
 
     /**
@@ -153,7 +160,7 @@ trait Guided
     /**
      * Get upload directory.
      *
-     * @return string Upload directory.
+     * @return string upload directory
      */
     public static function getUploadDir()
     {
@@ -163,53 +170,59 @@ trait Guided
     /**
      *  Upload and save image.
      *
-     * @param Illuminate\Http\UploadedFile|Symfony\Component\HttpFoundation\File\UploadedFile $imageFile Actual file from request. e.g. $request->file('image');
+     * @param \Illuminate\Http\UploadedFile|Symfony\Component\HttpFoundation\File\UploadedFile $imageFile Actual file from request. e.g. $request->file('image');
      *
-     * @return ReliQArts\GuidedImage\ViewModels\Result Result object.
+     * @return \ReliQArts\GuidedImage\ViewModels\Result result object
      */
     public static function upload($imageFile)
     {
-        $validator = Validator::make(['file' => $imageFile], self::$rules);
         $result = new Result();
+        $validator = Validator::make(['file' => $imageFile], self::$rules);
+        $extWhitelist = Config::get('guidedimage.allowed_extensions', ['gif', 'jpg', 'jpeg', 'png']);
+        $result->message = 'Invalid file size or type.';
+        $result->error = 'Invalid image.';
 
         if ($validator->passes()) {
-            $full_name = $imageFile->getClientOriginalName();
-            $file_spl = pathinfo($full_name);
-            $filename = str_slug($file_spl['filename']);
-            $existing = self::where('name', $filename)
-                            ->where('size', $imageFile->getSize());
+            $size = $imageFile->getSize();
+            $mimeType = $imageFile->getMimeType();
+            $extension = $imageFile->getClientOriginalExtension();
+            $fullName = $imageFile->getClientOriginalName();
+            $filePathInfo = pathinfo($fullName);
+            $filename = str_slug($filePathInfo['filename']);
+            $existing = self::where('name', $filename)->where('size', $size);
 
-            if (! $existing->count()) {
-                $im['extension'] = $imageFile->getClientOriginalExtension();
-                $im['mime_type'] = $imageFile->getMimeType();
-                $im['size'] = $imageFile->getSize();
-                $im['name'] = $filename;
-                $im['location'] = self::getUploadDir();
-                $im['creator_id'] = auth()->user()->id;
-                $im['full_path'] = urlencode($im['location'].'/'.$filename.'.'.$im['extension']);
-                list($im['width'], $im['height']) = getimagesize($imageFile);
+            // explicitly check extension against whitelist
+            if (in_array(strtolower($extension), $extWhitelist)) {
+                if (!$existing->count()) {
+                    $im['size'] = $size;
+                    $im['name'] = $filename;
+                    $im['mime_type'] = $mimeType;
+                    $im['extension'] = $extension;
+                    $im['location'] = self::getUploadDir();
+                    $im['creator_id'] = auth()->user()->id;
+                    $im['full_path'] = urlencode($im['location'].'/'.$filename.'.'.$im['extension']);
+                    list($im['width'], $im['height']) = getimagesize($imageFile);
 
-                try {
-                    $file = $imageFile->move($im['location'], $im['name'].'.'.$im['extension']);
-                    $newImage = new self();
+                    try {
+                        $file = $imageFile->move($im['location'], $im['name'].'.'.$im['extension']);
+                        $newImage = new self();
 
-                    // file moved, save
-                    $newImage->fill($im);
-                    if ($newImage->save()) {
-                        $result->success = true;
-                        $result->extra = $newImage;
+                        // file moved, save
+                        $newImage->fill($im);
+                        if ($newImage->save()) {
+                            $result->success = true;
+                            $result->extra = $newImage;
+                        }
+                    } catch (Exception $e) {
+                        $result->error = $e->getMessage();
+                        $result->message = null;
                     }
-                } catch (Exception $e) {
-                    $result->error = $e->getMessage();
+                } else {
+                    $result->success = true;
+                    $result->extra = $existing->first();
+                    $result->message = 'Image reused.';
                 }
-            } else {
-                $result->success = true;
-                $result->extra = $existing->first();
-                $result->message = 'Image reused.';
             }
-        } else {
-            $result->error = 'Image not valid.';
-            $result->message = 'Image not valid. Please check size.';
         }
 
         return $result;
