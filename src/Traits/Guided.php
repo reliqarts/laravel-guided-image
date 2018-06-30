@@ -210,17 +210,19 @@ trait Guided
                         // file moved, save
                         $newImage->fill($im);
                         if ($newImage->save()) {
-                            $result->success = true;
                             $result->extra = $newImage;
+                            $result->success = true;
+                            $result->error = null;
                         }
                     } catch (Exception $e) {
                         $result->error = $e->getMessage();
                         $result->message = null;
                     }
                 } else {
-                    $result->success = true;
                     $result->extra = $existing->first();
                     $result->message = 'Image reused.';
+                    $result->success = true;
+                    $result->error = null;
                 }
             }
         }
