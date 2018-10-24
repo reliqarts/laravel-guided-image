@@ -73,5 +73,4 @@ return [
         // any aditional headers for guided images
         'additional' => [],
     ],
-
 ];

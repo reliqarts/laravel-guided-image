@@ -4,8 +4,8 @@ namespace ReliQArts\GuidedImage;
 
 use Illuminate\Routing\Router;
 use Illuminate\Support\ServiceProvider;
-use ReliQArts\GuidedImage\Helpers\RouteHelper;
 use ReliQArts\GuidedImage\Console\Commands\DumpImageCache;
+use ReliQArts\GuidedImage\Helpers\RouteHelper;
 
 /**
  *  GuidedImageServiceProvider.
@@ -22,7 +22,7 @@ class GuidedImageServiceProvider extends ServiceProvider
     /**
      * Assets location.
      */
-    protected $assetsDir = __DIR__.'/..';
+    protected $assetsDir = __DIR__ . '/..';
 
     /**
      * List of commands.
@@ -102,11 +102,11 @@ class GuidedImageServiceProvider extends ServiceProvider
      */
     private function bindRouteModel(Router $router)
     {
-        $routeModel = RouteHelper::getRouteModel();
+        $routeModel          = RouteHelper::getRouteModel();
         $routeModelNamespace = RouteHelper::getRouteModelNamespace();
 
         // get absolute guided model class
-        $absGuidedModel = $routeModelNamespace.$routeModel;
+        $absGuidedModel = $routeModelNamespace . $routeModel;
 
         // explicitly bind guidedimage instance to router
         $router->model(strtolower($routeModel), $absGuidedModel);

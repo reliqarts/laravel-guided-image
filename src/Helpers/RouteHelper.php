@@ -64,7 +64,7 @@ class RouteHelper
      */
     public static function getRouteGroupBindings($bindings = [], $groupKey = 'public')
     {
-        $defaults = ('public' == $groupKey) ? ['prefix' => self::getRoutePrefix()] : [];
+        $defaults = ('public' === $groupKey) ? ['prefix' => self::getRoutePrefix()] : [];
         $bindings = array_merge(Config::get("guidedimage.routes.bindings.{$groupKey}", []), $bindings);
 
         return array_merge($defaults, $bindings);
