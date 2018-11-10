@@ -23,7 +23,7 @@ $config = PhpCsFixer\Config::create()
         'array_indentation'            => true,
         'array_syntax'                 => ['syntax' => 'short'],
         'blank_line_before_statement'  => true,
-        'binary_operator_spaces'       => ['default' => 'align'],
+        'binary_operator_spaces'       => ['default' => 'single_space'],
         'combine_consecutive_issets'   => true,
         'combine_consecutive_unsets'   => true,
         'comment_to_phpdoc'            => true,

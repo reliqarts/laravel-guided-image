@@ -4,7 +4,7 @@ namespace ReliQArts\GuidedImage\Traits;
 
 use Config;
 use File;
-use ReliQArts\GuidedImage\Exceptions\ImplementationException;
+use ReliQArts\GuidedImage\Exceptions\BadImplementation;
 use ReliQArts\GuidedImage\Helpers\RouteHelper;
 use ReliQArts\GuidedImage\ViewModels\Result;
 use URL;
@@ -47,7 +47,7 @@ trait Guided
         $this->class = get_class($this);
         // Instance must be of class which extends Eloquent Model.
         if (!is_subclass_of($this, $this->eloquentAncestor)) {
-            throw new ImplementationException("Guided model ({$this->class}) must extend {$this->eloquentAncestor}.");
+            throw new BadImplementation("Guided model ({$this->class}) must extend {$this->eloquentAncestor}.");
         }
 
         parent::__construct($attributes);
@@ -83,9 +83,9 @@ trait Guided
      */
     public function remove($force = false)
     {
-        $result   = new Result();
+        $result = new Result();
         $img_name = $this->getName();
-        $safe     = $this->isSafeForDelete();
+        $safe = $this->isSafeForDelete();
 
         if ($safe || $force) {
             if (File::delete(urldecode($this->getFullPath()))) {
@@ -176,53 +176,53 @@ trait Guided
      */
     public static function upload($imageFile)
     {
-        $result          = new Result();
-        $validator       = Validator::make(['file' => $imageFile], self::$rules);
-        $extWhitelist    = Config::get('guidedimage.allowed_extensions', ['gif', 'jpg', 'jpeg', 'png']);
+        $result = new Result();
+        $validator = Validator::make(['file' => $imageFile], self::$rules);
+        $extWhitelist = Config::get('guidedimage.allowed_extensions', ['gif', 'jpg', 'jpeg', 'png']);
         $result->message = 'Invalid file size or type.';
-        $result->error   = 'Invalid image.';
+        $result->error = 'Invalid image.';
 
         if ($validator->passes()) {
-            $size         = $imageFile->getSize();
-            $mimeType     = $imageFile->getMimeType();
-            $extension    = $imageFile->getClientOriginalExtension();
-            $fullName     = $imageFile->getClientOriginalName();
+            $size = $imageFile->getSize();
+            $mimeType = $imageFile->getMimeType();
+            $extension = $imageFile->getClientOriginalExtension();
+            $fullName = $imageFile->getClientOriginalName();
             $filePathInfo = pathinfo($fullName);
-            $filename     = str_slug($filePathInfo['filename']);
-            $existing     = self::where('name', $filename)->where('size', $size);
+            $filename = str_slug($filePathInfo['filename']);
+            $existing = self::where('name', $filename)->where('size', $size);
 
             // explicitly check extension against whitelist
             if (in_array(strtolower($extension), $extWhitelist, true)) {
                 if (!$existing->count()) {
-                    $im['size']                       = $size;
-                    $im['name']                       = $filename;
-                    $im['mime_type']                  = $mimeType;
-                    $im['extension']                  = $extension;
-                    $im['location']                   = self::getUploadDir();
-                    $im['creator_id']                 = auth()->user()->id;
-                    $im['full_path']                  = urlencode($im['location'] . '/' . $filename . '.' . $im['extension']);
+                    $im['size'] = $size;
+                    $im['name'] = $filename;
+                    $im['mime_type'] = $mimeType;
+                    $im['extension'] = $extension;
+                    $im['location'] = self::getUploadDir();
+                    $im['creator_id'] = auth()->user()->id;
+                    $im['full_path'] = urlencode($im['location'] . '/' . $filename . '.' . $im['extension']);
                     list($im['width'], $im['height']) = getimagesize($imageFile);
 
                     try {
-                        $file     = $imageFile->move($im['location'], $im['name'] . '.' . $im['extension']);
+                        $file = $imageFile->move($im['location'], $im['name'] . '.' . $im['extension']);
                         $newImage = new self();
 
                         // file moved, save
                         $newImage->fill($im);
                         if ($newImage->save()) {
-                            $result->extra   = $newImage;
+                            $result->extra = $newImage;
                             $result->success = true;
-                            $result->error   = null;
+                            $result->error = null;
                         }
                     } catch (Exception $e) {
-                        $result->error   = $e->getMessage();
+                        $result->error = $e->getMessage();
                         $result->message = null;
                     }
                 } else {
-                    $result->extra   = $existing->first();
+                    $result->extra = $existing->first();
                     $result->message = 'Image reused.';
                     $result->success = true;
-                    $result->error   = null;
+                    $result->error = null;
                 }
             }
         }

@@ -54,10 +54,10 @@ trait ImageGuider
      */
     public function __construct(Config $config)
     {
-        $this->skimDir     = storage_path($config->get('guidedimage.storage.skim_dir'));
-        $this->skimThumbs  = "{$this->skimDir}/" . $config->get('guidedimage.storage.skim_thumbs');
+        $this->skimDir = storage_path($config->get('guidedimage.storage.skim_dir'));
+        $this->skimThumbs = "{$this->skimDir}/" . $config->get('guidedimage.storage.skim_thumbs');
         $this->skimResized = "{$this->skimDir}/" . $config->get('guidedimage.storage.skim_resized');
-        $this->nulls       = array_merge($this->nulls, $config->get('guidedimage.routes.nulls', []));
+        $this->nulls = array_merge($this->nulls, $config->get('guidedimage.routes.nulls', []));
 
         // create or avail needed directories
         if (!File::isDirectory($this->skimThumbs)) {
@@ -94,7 +94,7 @@ trait ImageGuider
             $result->message = 'Image directory cache successfully cleared.';
         } else {
             $result->message = 'Image directory cache could not be cleared.';
-            $result->error   = $result->message;
+            $result->error = $result->message;
         }
 
         return response()->json($result);
@@ -114,7 +114,7 @@ trait ImageGuider
      */
     public function thumb(Request $request, GuidedContract $guidedImage, $method, $width, $height, $object = false)
     {
-        $width  = (in_array($width, $this->nulls, true)) ? null : $width;
+        $width = (in_array($width, $this->nulls, true)) ? null : $width;
         $height = (in_array($height, $this->nulls, true)) ? null : $height;
         $object = (in_array($object, $this->nulls, true)) ? null : true;
 
@@ -169,14 +169,14 @@ trait ImageGuider
         $upsize = false,
         $object = false
     ) {
-        $width  = (in_array($width, $this->nulls, true)) ? null : $width;
+        $width = (in_array($width, $this->nulls, true)) ? null : $width;
         $height = (in_array($height, $this->nulls, true)) ? null : $height;
         $aspect = (in_array($aspect, $this->nulls, true)) ? true : false;
         $upsize = (in_array($upsize, $this->nulls, true)) ? false : true;
         $object = (in_array($object, $this->nulls, true)) ? false : true;
 
         $skimFile = "{$this->skimResized}/${width}-${height}-_-_" . $guidedImage->getName();
-        $image    = false;
+        $image = false;
 
         // Get intervention image
         try {
@@ -226,13 +226,13 @@ trait ImageGuider
      */
     public function dummy($width, $height, $color = '#eefefe', $fill = false, $object = false)
     {
-        $width  = (in_array($width, $this->nulls, true)) ? null : $width;
+        $width = (in_array($width, $this->nulls, true)) ? null : $width;
         $height = (in_array($height, $this->nulls, true)) ? null : $height;
-        $color  = (in_array($color, $this->nulls, true)) ? null : $color;
-        $fill   = (in_array($fill, $this->nulls, true)) ? null : $fill;
+        $color = (in_array($color, $this->nulls, true)) ? null : $color;
+        $fill = (in_array($fill, $this->nulls, true)) ? null : $fill;
         $object = (in_array($object, $this->nulls, true)) ? false : true;
 
-        $img   = Image::canvas($width, $height, $color);
+        $img = Image::canvas($width, $height, $color);
         $image = ($fill) ? $img->fill($fill) : $img;
 
         // Return object or actual image
@@ -249,11 +249,11 @@ trait ImageGuider
      */
     private function getImageHeaders(Request $request, InterventionImage $image)
     {
-        $filePath      = "{$image->dirname}/{$image->basename}";
-        $lastModified  = File::lastModified($filePath);
+        $filePath = "{$image->dirname}/{$image->basename}";
+        $lastModified = File::lastModified($filePath);
         $modifiedSince = ($request->header('If-Modified-Since')) ? $request->header('If-Modified-Since') : false;
-        $etagHeader    = ($request->header('If-None-Match')) ? trim($request->header('If-None-Match')) : null;
-        $etagFile      = md5_file($filePath);
+        $etagHeader = ($request->header('If-None-Match')) ? trim($request->header('If-None-Match')) : null;
+        $etagFile = md5_file($filePath);
 
         // check if image hasn't changed
         if (@strtotime($modifiedSince) === $lastModified || $etagFile === $etagHeader) {
@@ -265,10 +265,10 @@ trait ImageGuider
 
         // adjust headers and return
         return $this->headers = array_merge($this->headers, [
-            'Content-Type'        => $image->mime,
+            'Content-Type' => $image->mime,
             'Content-Disposition' => 'inline; filename=' . $image->filename,
-            'Last-Modified'       => date(DATE_RFC822, $lastModified),
-            'Etag'                => $etagFile,
+            'Last-Modified' => date(DATE_RFC822, $lastModified),
+            'Etag' => $etagFile,
         ]);
     }
 }

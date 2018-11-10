@@ -102,7 +102,7 @@ class GuidedImageServiceProvider extends ServiceProvider
      */
     private function bindRouteModel(Router $router)
     {
-        $routeModel          = RouteHelper::getRouteModel();
+        $routeModel = RouteHelper::getRouteModel();
         $routeModelNamespace = RouteHelper::getRouteModelNamespace();
 
         // get absolute guided model class
