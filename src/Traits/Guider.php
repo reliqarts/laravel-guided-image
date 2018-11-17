@@ -3,14 +3,14 @@
 namespace ReliQArts\GuidedImage\Traits;
 
 use File;
+use Illuminate\Config\Repository as Config;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Intervention\Image\Facades\Image;
-use Illuminate\Config\Repository as Config;
-use ReliQArts\GuidedImage\ViewModels\Result;
-use Intervention\Image\Image as InterventionImage;
 use Intervention\Image\Exception\NotReadableException;
+use Intervention\Image\Facades\Image;
+use Intervention\Image\Image as InterventionImage;
 use ReliQArts\GuidedImage\Contracts\Guided as GuidedContract;
+use ReliQArts\GuidedImage\ViewModels\Result;
 
 /**
  * Guide by acquiring these traits.
@@ -22,41 +22,53 @@ use ReliQArts\GuidedImage\Contracts\Guided as GuidedContract;
  * @uses \Intervention\Image\Facades\Image to manipulate images.
  * @uses \ReliQArts\GuidedImage\ViewModels\Result
  */
-trait ImageGuider
+trait Guider
 {
     /**
      * List of headers.
+     *
+     * @var array
      */
     protected $headers = [];
 
     /**
      * Guided image cache directory.
+     *
+     * @var string
      */
     protected $skimDir;
 
     /**
      * Thumbnail cache directory.
+     *
+     * @var string
      */
     protected $skimThumbs;
 
     /**
      * Resized images cache directory.
+     *
+     * @var string
      */
     protected $skimResized;
 
     /**
      * Route values to be treated as null.
+     *
+     * @var array
      */
     protected $nulls = [false, null, 'null'];
 
     /**
      * Constructor. Some prep.
+     *
+     * @param Config $config
      */
     public function __construct(Config $config)
     {
         $this->skimDir = storage_path($config->get('guidedimage.storage.skim_dir'));
-        $this->skimThumbs = "{$this->skimDir}/".$config->get('guidedimage.storage.skim_thumbs');
-        $this->skimResized = "{$this->skimDir}/".$config->get('guidedimage.storage.skim_resized');
+        $this->skimThumbs = "{$this->skimDir}/" . $config->get('guidedimage.storage.skim_thumbs');
+        $this->skimResized = "{$this->skimDir}/" . $config->get('guidedimage.storage.skim_resized');
         $this->nulls = array_merge($this->nulls, $config->get('guidedimage.routes.nulls', []));
 
         // create or avail needed directories
@@ -80,9 +92,9 @@ trait ImageGuider
      *
      * @param Request $request
      *
-     * @return ViewModels\Result
+     * @return Response
      */
-    public function emptyCache(Request $request)
+    public function emptyCache(Request $request): Response
     {
         if (!$request->ajax()) {
             return 'Use JSON.';
@@ -103,26 +115,26 @@ trait ImageGuider
     /**
      * Get a thumbnail.
      *
-     * @param Request $request
-     * @param Guided  $guidedImage
-     * @param string  $method      crop|fit
-     * @param int     $width
-     * @param int     $height
-     * @param bool    $object      whether Intervention Image should be returned
+     * @param Request     $request
+     * @param Guided      $guidedImage
+     * @param string      $method      crop|fit
+     * @param int|string  $width
+     * @param int|string  $height
+     * @param bool|string $object      whether Intervention Image should be returned
      *
      * @return \Intervention\Image\Facades\Image|string intervention Image object or actual image url
      */
-    public function thumb(Request $request, GuidedContract $guidedImage, $method, $width, $height, $object = false)
+    public function thumb(Request $request, GuidedContract $guidedImage, string $method, $width, $height, $object = false)
     {
-        $width = (in_array($width, $this->nulls)) ? null : $width;
-        $height = (in_array($height, $this->nulls)) ? null : $height;
-        $object = (in_array($object, $this->nulls)) ? null : true;
+        $width = (in_array($width, $this->nulls, true)) ? null : $width;
+        $height = (in_array($height, $this->nulls, true)) ? null : $height;
+        $object = (in_array($object, $this->nulls, true)) ? null : true;
 
-        $skimFile = "{$this->skimThumbs}/${width}-${height}-_-_".$guidedImage->getName();
+        $skimFile = "{$this->skimThumbs}/${width}-${height}-_-_" . $guidedImage->getName();
 
         // accept methods crop and thumb
         $acceptMethods = ['crop', 'fit'];
-        if (!in_array($method, $acceptMethods)) {
+        if (!in_array($method, $acceptMethods, true)) {
             abort(404);
         }
         // Get intervention image
@@ -138,26 +150,23 @@ trait ImageGuider
         }
 
         // Setup response with appropriate headers
-        $response = ($object) ? $image : new Response(
+        return ($object) ? $image : new Response(
             File::get($skimFile),
             200,
             $this->getImageHeaders($request, $image) ?: []
         );
-
-        // Return object or actual image
-        return $response;
     }
 
     /**
      * Get a resized Guided Image.
      *
-     * @param Request $request
-     * @param Guided  $guidedImage
-     * @param int     $width
-     * @param int     $height
-     * @param bool    $aspect      Keep aspect ratio?
-     * @param bool    $upsize      Allow upsize?
-     * @param bool    $object      whether Intervention Image should be returned
+     * @param Request     $request
+     * @param Guided      $guidedImage
+     * @param int|string  $width
+     * @param int|string  $height
+     * @param bool|string $aspect      Keep aspect ratio?
+     * @param bool|string $upsize      Allow upsize?
+     * @param bool|string $object      whether Intervention Image should be returned
      *
      * @return \Intervention\Image\Facades\Image|string intervention Image object or actual image url
      */
@@ -170,13 +179,13 @@ trait ImageGuider
         $upsize = false,
         $object = false
     ) {
-        $width = (in_array($width, $this->nulls)) ? null : $width;
-        $height = (in_array($height, $this->nulls)) ? null : $height;
-        $aspect = (in_array($aspect, $this->nulls)) ? true : false;
-        $upsize = (in_array($upsize, $this->nulls)) ? false : true;
-        $object = (in_array($object, $this->nulls)) ? false : true;
+        $width = (in_array($width, $this->nulls, true)) ? null : $width;
+        $height = (in_array($height, $this->nulls, true)) ? null : $height;
+        $aspect = (in_array($aspect, $this->nulls, true)) ? true : false;
+        $upsize = (in_array($upsize, $this->nulls, true)) ? false : true;
+        $object = (in_array($object, $this->nulls, true)) ? false : true;
 
-        $skimFile = "{$this->skimResized}/${width}-${height}-_-_".$guidedImage->getName();
+        $skimFile = "{$this->skimResized}/${width}-${height}-_-_" . $guidedImage->getName();
         $image = false;
 
         // Get intervention image
@@ -205,34 +214,33 @@ trait ImageGuider
         }
 
         // Setup response with appropriate headers
-        $response = ($object) ? $image : new Response(
+        return ($object) ? $image : new Response(
             File::get($skimFile),
             200,
             $this->getImageHeaders($request, $image) ?: []
         );
 
         // Return object or actual image
-        return $response;
     }
 
     /**
-     * Get dummy Guided.
+     * Get dummy Guided Image.
      *
-     * @param int    $width
-     * @param int    $height
-     * @param string $color
-     * @param bool   $fill
-     * @param mixed  $object
+     * @param int|string   $width
+     * @param int|string   $height
+     * @param string       $color
+     * @param bool|string  $fill
+     * @param mixed|string $object
      *
      * @return \Intervention\Image\Facades\Image|string intervention Image object or actual image url
      */
     public function dummy($width, $height, $color = '#eefefe', $fill = false, $object = false)
     {
-        $width = (in_array($width, $this->nulls)) ? null : $width;
-        $height = (in_array($height, $this->nulls)) ? null : $height;
-        $color = (in_array($color, $this->nulls)) ? null : $color;
-        $fill = (in_array($fill, $this->nulls)) ? null : $fill;
-        $object = (in_array($object, $this->nulls)) ? false : true;
+        $width = (in_array($width, $this->nulls, true)) ? null : $width;
+        $height = (in_array($height, $this->nulls, true)) ? null : $height;
+        $color = (in_array($color, $this->nulls, true)) ? null : $color;
+        $fill = (in_array($fill, $this->nulls, true)) ? null : $fill;
+        $object = (in_array($object, $this->nulls, true)) ? false : true;
 
         $img = Image::canvas($width, $height, $color);
         $image = ($fill) ? $img->fill($fill) : $img;
@@ -249,7 +257,7 @@ trait ImageGuider
      *
      * @return array image headers
      */
-    private function getImageHeaders(Request $request, InterventionImage $image)
+    private function getImageHeaders(Request $request, InterventionImage $image): array
     {
         $filePath = "{$image->dirname}/{$image->basename}";
         $lastModified = File::lastModified($filePath);
@@ -258,7 +266,7 @@ trait ImageGuider
         $etagFile = md5_file($filePath);
 
         // check if image hasn't changed
-        if (@strtotime($modifiedSince) == $lastModified || $etagFile == $etagHeader) {
+        if (@strtotime($modifiedSince) === $lastModified || $etagFile === $etagHeader) {
             // Say not modified and kill script
             header('HTTP/1.1 304 Not Modified');
             header("ETag: ${etagFile}");
@@ -268,7 +276,7 @@ trait ImageGuider
         // adjust headers and return
         return $this->headers = array_merge($this->headers, [
             'Content-Type' => $image->mime,
-            'Content-Disposition' => 'inline; filename='.$image->filename,
+            'Content-Disposition' => 'inline; filename=' . $image->filename,
             'Last-Modified' => date(DATE_RFC822, $lastModified),
             'Etag' => $etagFile,
         ]);

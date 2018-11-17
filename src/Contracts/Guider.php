@@ -3,20 +3,21 @@
 namespace ReliQArts\GuidedImage\Contracts;
 
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 
 /**
  * A true guider defines.
  */
-interface ImageGuider
+interface Guider
 {
     /**
      * Empty skim cache by removing SkimDir.
      *
      * @param Request $request
      *
-     * @return ViewModels\Result
+     * @return Response
      */
-    public function emptyCache(Request $request);
+    public function emptyCache(Request $request): Response;
 
     /**
      * Get a thumbnail.
@@ -30,7 +31,7 @@ interface ImageGuider
      *
      * @return Image|string intervention Image object or actual image url
      */
-    public function thumb(Request $request, Guided $guidedImage, $method, $width, $height, $object = false);
+    public function thumb(Request $request, Guided $guidedImage, string $method, $width, $height, $object = false);
 
     /**
      * Get a resized Guided Image.
@@ -45,18 +46,26 @@ interface ImageGuider
      *
      * @return Image|string intervention Image object or actual image url
      */
-    public function resized(Request $request, Guided $guidedImage, $width, $height, $aspect = true, $upsize = false, $object = false);
+    public function resized(
+        Request $request,
+        Guided $guidedImage,
+        $width,
+        $height,
+        $aspect = true,
+        $upsize = false,
+        $object = false
+    );
 
     /**
-     * Get dummy Guided.
+     * Get dummy Guided Image.
      *
-     * @param int    $width
-     * @param int    $height
-     * @param string $color
-     * @param bool   $fill
-     * @param mixed  $object
+     * @param int|string   $width
+     * @param int|string   $height
+     * @param string       $color
+     * @param bool|string  $fill
+     * @param mixed|string $object
      *
-     * @return Image|string intervention Image object or actual image url
+     * @return \Intervention\Image\Facades\Image|string intervention Image object or actual image url
      */
     public function dummy($width, $height, $color = '#eefefe', $fill = false, $object = false);
 }

@@ -1,11 +1,13 @@
 <?php
 
-use ReliQArts\GuidedImage\GuidedImage;
+use ReliQArts\GuidedImage\Models\GuidedImage;
 
 /**
  * @coversDefaultClass \ReliQArts\GuidedImage\GuidedImage
+ *
+ * @internal
  */
-class GuidedImageTest extends \Orchestra\Testbench\TestCase
+final class GuidedImageTest extends \Orchestra\Testbench\TestCase
 {
     /**
      * @covers ::__construct

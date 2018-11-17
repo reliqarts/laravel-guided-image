@@ -1,4 +1,10 @@
 preset: laravel
 
+enabled:
+  - alpha_ordered_imports
+  - concat_with_spaces
+
 disabled:
+  - concat_without_spaces
   - not_operator_with_successor_space
+  - length_ordered_imports

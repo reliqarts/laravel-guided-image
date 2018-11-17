@@ -3,14 +3,14 @@
 namespace ReliQArts\GuidedImage;
 
 use Illuminate\Routing\Router;
-use Illuminate\Support\ServiceProvider;
-use ReliQArts\GuidedImage\Helpers\RouteHelper;
+use Illuminate\Support\ServiceProvider as BaseServiceProvider;
 use ReliQArts\GuidedImage\Console\Commands\DumpImageCache;
+use ReliQArts\GuidedImage\Helpers\Config;
 
 /**
- *  GuidedImageServiceProvider.
+ *  Guided Image Service Provider.
  */
-class GuidedImageServiceProvider extends ServiceProvider
+class ServiceProvider extends BaseServiceProvider
 {
     /**
      * Indicates if loading of the provider is deferred.
@@ -22,7 +22,7 @@ class GuidedImageServiceProvider extends ServiceProvider
     /**
      * Assets location.
      */
-    protected $assetsDir = __DIR__.'/..';
+    protected $assetsDir = __DIR__ . '/..';
 
     /**
      * List of commands.
@@ -36,7 +36,7 @@ class GuidedImageServiceProvider extends ServiceProvider
     /**
      * Perform post-registration booting of services.
      */
-    public function boot(Router $router)
+    public function boot(Router $router): void
     {
         // register routes
         $this->handleRoutes($router);
@@ -51,7 +51,7 @@ class GuidedImageServiceProvider extends ServiceProvider
     /**
      * Register bindings in the container.
      */
-    public function register()
+    public function register(): void
     {
         // bind guided contract to resolve to model
         $this->app->bind(
@@ -63,7 +63,7 @@ class GuidedImageServiceProvider extends ServiceProvider
     /**
      * Publish assets.
      */
-    protected function handleAssets()
+    protected function handleAssets(): void
     {
         $this->publishes([
             "{$this->assetsDir}/config/config.php" => config_path('guidedimage.php'),
@@ -77,7 +77,7 @@ class GuidedImageServiceProvider extends ServiceProvider
     /**
      * Register Configuraion.
      */
-    protected function handleConfig()
+    protected function handleConfig(): void
     {
         // merge config
         $this->mergeConfigFrom("{$this->assetsDir}/config/config.php", 'guidedimage');
@@ -86,7 +86,7 @@ class GuidedImageServiceProvider extends ServiceProvider
     /**
      * Register routes.
      */
-    protected function handleRoutes(Router $router)
+    protected function handleRoutes(Router $router): void
     {
         if (!$this->app->routesAreCached()) {
             // explicitly bind guided image model
@@ -100,13 +100,13 @@ class GuidedImageServiceProvider extends ServiceProvider
      * Explicitly bind guided model instance to router, hence
      * overriding binded GuidedImage model (since they both implement the Guided contract).
      */
-    private function bindRouteModel(Router $router)
+    private function bindRouteModel(Router $router): void
     {
-        $routeModel = RouteHelper::getRouteModel();
-        $routeModelNamespace = RouteHelper::getRouteModelNamespace();
+        $routeModel = Config::getRouteModel();
+        $routeModelNamespace = Config::getRouteModelNamespace();
 
         // get absolute guided model class
-        $absGuidedModel = $routeModelNamespace.$routeModel;
+        $absGuidedModel = $routeModelNamespace . $routeModel;
 
         // explicitly bind guidedimage instance to router
         $router->model(strtolower($routeModel), $absGuidedModel);
@@ -115,7 +115,7 @@ class GuidedImageServiceProvider extends ServiceProvider
     /**
      * Command files.
      */
-    private function handleCommands()
+    private function handleCommands(): void
     {
         // Register the commands...
         if ($this->app->runningInConsole()) {
