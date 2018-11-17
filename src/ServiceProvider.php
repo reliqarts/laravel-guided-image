@@ -22,7 +22,7 @@ class ServiceProvider extends BaseServiceProvider
     /**
      * Assets location.
      */
-    protected $assetsDir = __DIR__.'/..';
+    protected $assetsDir = __DIR__ . '/..';
 
     /**
      * List of commands.
@@ -106,7 +106,7 @@ class ServiceProvider extends BaseServiceProvider
         $routeModelNamespace = Config::getRouteModelNamespace();
 
         // get absolute guided model class
-        $absGuidedModel = $routeModelNamespace.$routeModel;
+        $absGuidedModel = $routeModelNamespace . $routeModel;
 
         // explicitly bind guidedimage instance to router
         $router->model(strtolower($routeModel), $absGuidedModel);
