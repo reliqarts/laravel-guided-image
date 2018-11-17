@@ -2,7 +2,7 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
-use ReliQArts\GuidedImage\Helpers\SchemaHelper;
+use ReliQArts\GuidedImage\Helpers\Config;
 
 class CreateGuidedImagesTable extends Migration
 {
@@ -11,7 +11,7 @@ class CreateGuidedImagesTable extends Migration
      */
     public function up()
     {
-        $table = SchemaHelper::getImageTable();
+        $table = Config::getImageTable();
         if (!Schema::hasTable($table)) {
             Schema::create($table, function (Blueprint $table) {
                 $table->increments('id');
@@ -41,7 +41,7 @@ class CreateGuidedImagesTable extends Migration
      */
     public function down()
     {
-        $table = SchemaHelper::getImageTable();
+        $table = Config::getImageTable();
         Schema::dropIfExists($table);
     }
 }

@@ -22,35 +22,47 @@ use ReliQArts\GuidedImage\ViewModels\Result;
  * @uses \Intervention\Image\Facades\Image to manipulate images.
  * @uses \ReliQArts\GuidedImage\ViewModels\Result
  */
-trait ImageGuider
+trait Guider
 {
     /**
      * List of headers.
+     *
+     * @var array
      */
     protected $headers = [];
 
     /**
      * Guided image cache directory.
+     *
+     * @var string
      */
     protected $skimDir;
 
     /**
      * Thumbnail cache directory.
+     *
+     * @var string
      */
     protected $skimThumbs;
 
     /**
      * Resized images cache directory.
+     *
+     * @var string
      */
     protected $skimResized;
 
     /**
      * Route values to be treated as null.
+     *
+     * @var array
      */
     protected $nulls = [false, null, 'null'];
 
     /**
      * Constructor. Some prep.
+     *
+     * @param Config $config
      */
     public function __construct(Config $config)
     {
@@ -80,9 +92,9 @@ trait ImageGuider
      *
      * @param Request $request
      *
-     * @return ViewModels\Result
+     * @return Response
      */
-    public function emptyCache(Request $request)
+    public function emptyCache(Request $request): Response
     {
         if (!$request->ajax()) {
             return 'Use JSON.';
@@ -103,16 +115,16 @@ trait ImageGuider
     /**
      * Get a thumbnail.
      *
-     * @param Request $request
-     * @param Guided  $guidedImage
-     * @param string  $method      crop|fit
-     * @param int     $width
-     * @param int     $height
-     * @param bool    $object      whether Intervention Image should be returned
+     * @param Request     $request
+     * @param Guided      $guidedImage
+     * @param string      $method      crop|fit
+     * @param int|string  $width
+     * @param int|string  $height
+     * @param bool|string $object      whether Intervention Image should be returned
      *
      * @return \Intervention\Image\Facades\Image|string intervention Image object or actual image url
      */
-    public function thumb(Request $request, GuidedContract $guidedImage, $method, $width, $height, $object = false)
+    public function thumb(Request $request, GuidedContract $guidedImage, string $method, $width, $height, $object = false)
     {
         $width = (in_array($width, $this->nulls, true)) ? null : $width;
         $height = (in_array($height, $this->nulls, true)) ? null : $height;
@@ -143,20 +155,18 @@ trait ImageGuider
             200,
             $this->getImageHeaders($request, $image) ?: []
         );
-
-        // Return object or actual image
     }
 
     /**
      * Get a resized Guided Image.
      *
-     * @param Request $request
-     * @param Guided  $guidedImage
-     * @param int     $width
-     * @param int     $height
-     * @param bool    $aspect      Keep aspect ratio?
-     * @param bool    $upsize      Allow upsize?
-     * @param bool    $object      whether Intervention Image should be returned
+     * @param Request     $request
+     * @param Guided      $guidedImage
+     * @param int|string  $width
+     * @param int|string  $height
+     * @param bool|string $aspect      Keep aspect ratio?
+     * @param bool|string $upsize      Allow upsize?
+     * @param bool|string $object      whether Intervention Image should be returned
      *
      * @return \Intervention\Image\Facades\Image|string intervention Image object or actual image url
      */
@@ -214,13 +224,13 @@ trait ImageGuider
     }
 
     /**
-     * Get dummy Guided.
+     * Get dummy Guided Image.
      *
-     * @param int    $width
-     * @param int    $height
-     * @param string $color
-     * @param bool   $fill
-     * @param mixed  $object
+     * @param int|string   $width
+     * @param int|string   $height
+     * @param string       $color
+     * @param bool|string  $fill
+     * @param mixed|string $object
      *
      * @return \Intervention\Image\Facades\Image|string intervention Image object or actual image url
      */
@@ -247,7 +257,7 @@ trait ImageGuider
      *
      * @return array image headers
      */
-    private function getImageHeaders(Request $request, InterventionImage $image)
+    private function getImageHeaders(Request $request, InterventionImage $image): array
     {
         $filePath = "{$image->dirname}/{$image->basename}";
         $lastModified = File::lastModified($filePath);

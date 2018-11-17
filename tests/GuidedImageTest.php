@@ -1,6 +1,6 @@
 <?php
 
-use ReliQArts\GuidedImage\GuidedImage;
+use ReliQArts\GuidedImage\Models\GuidedImage;
 
 /**
  * @coversDefaultClass \ReliQArts\GuidedImage\GuidedImage

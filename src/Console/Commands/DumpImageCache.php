@@ -37,10 +37,8 @@ class DumpImageCache extends Command
 
     /**
      * Execute the console command.
-     *
-     * @return mixed
      */
-    public function handle(Config $config)
+    public function handle(Config $config): void
     {
         $this->skimDir = storage_path($config->get('guidedimage.storage.skim_dir'));
 

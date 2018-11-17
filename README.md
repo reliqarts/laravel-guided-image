@@ -47,10 +47,10 @@ or require in *composer.json*:
 ```
 then run `composer update` in your terminal to pull it in.
 
-Once this has finished, you will need to add the service provider to the providers array in your app.php config as follows:
+Once this has finished, you may need to add the service provider to the providers array  in your `config/app.php` depending on your Laravel version:
 
 ```php
-ReliQArts\GuidedImage\GuidedImageServiceProvider::class,
+ReliQArts\GuidedImage\ServiceProvider::class,
 ```
 
 Finally, publish package resources and configuration:
@@ -102,11 +102,11 @@ class Image extends Model implements GuidedContract
 ```
 See example [here](https://github.com/ReliQArts/laravel-guided-image/blob/master/docs/examples/Image.php).
 
-Implement the `ReliQArts\GuidedImage\Contracts\ImageGuider` contract and use the `ReliQArts\GuidedImage\Traits\ImageGuider` trait from your *ImageController*, e.g:
+Implement the `ReliQArts\GuidedImage\Contracts\Guider` contract and use the `ReliQArts\GuidedImage\Traits\Guider` trait from your *ImageController*, e.g:
 
 ```php
-use ReliQArts\GuidedImage\Contracts\ImageGuider as ImageGuiderContract;
-use ReliQArts\GuidedImage\Traits\ImageGuider as ImageGuiderTrait;
+use ReliQArts\GuidedImage\Contracts\Guider as ImageGuiderContract;
+use ReliQArts\GuidedImage\Traits\Guider as ImageGuiderTrait;
 
 class ImageController extends Controller implements ImageGuiderContract
 {

@@ -2,10 +2,10 @@
 
 namespace ReliQArts\GuidedImage\Traits;
 
-use Config;
 use File;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use ReliQArts\GuidedImage\Exceptions\BadImplementation;
-use ReliQArts\GuidedImage\Helpers\RouteHelper;
+use ReliQArts\GuidedImage\Helpers\Config;
 use ReliQArts\GuidedImage\ViewModels\Result;
 use URL;
 use Validator;
@@ -25,12 +25,13 @@ trait Guided
      * The rules that govern a guided image.
      */
     public static $rules = ['file' => 'required|mimes:png,gif,jpeg|max:2048'];
+
     /**
-     * Class instance.
+     * Class name.
      *
-     * @var stdClass
+     * @var string
      */
-    private $class;
+    private $className;
 
     /**
      * Mandatory ancestor eloguent model.
@@ -44,10 +45,10 @@ trait Guided
      */
     public function __construct(array $attributes = [])
     {
-        $this->class = get_class($this);
+        $this->className = get_class($this);
         // Instance must be of class which extends Eloquent Model.
         if (!is_subclass_of($this, $this->eloquentAncestor)) {
-            throw new BadImplementation("Guided model ({$this->class}) must extend {$this->eloquentAncestor}.");
+            throw new BadImplementation("Guided model ({$this->className}) must extend {$this->eloquentAncestor}.");
         }
 
         parent::__construct($attributes);
@@ -56,20 +57,21 @@ trait Guided
     /**
      * Retrieve the creator (uploader) of the image.
      */
-    public function creator()
+    public function creator(): BelongsTo
     {
         return $this->belongsTo('App\User', 'creator_id');
     }
 
     /**
      * Whether image is safe for deleting.
-     * Since a single image may be re-used this method is used to determine when an image can be safely deleted from disk.
+     * Since a single image may be re-used this method is used to determine
+     * when an image can be safely deleted from disk.
      *
      * @param int $safeAmount a photo is safe to delete if it is used by $safe_num amount of records
      *
      * @return bool whether image is safe for delete
      */
-    public function isSafeForDelete($safeAmount = 1)
+    public function isSafeForDelete(int $safeAmount = 1): bool
     {
         return true;
     }
@@ -79,9 +81,9 @@ trait Guided
      *
      * @param bool $force override safety constraints
      *
-     * @return \ReliQArts\GuidedImage\ViewModels\Result result object
+     * @return Result
      */
-    public function remove($force = false)
+    public function remove(bool $force = false): Result
     {
         $result = new Result();
         $img_name = $this->getName();
@@ -104,10 +106,12 @@ trait Guided
      *
      * @param array  $params parameters to pass to route
      * @param string $type   Operation to be performed on instance. (resize, thumb)
+     *
+     * @return string
      */
-    public function routeResized(array $params = null, $type = 'resize')
+    public function routeResized(array $params = null, string $type = 'resize'): string
     {
-        $guidedModel = strtolower(RouteHelper::getRouteModel(true));
+        $guidedModel = strtolower(Config::getRouteModel(true));
 
         if (!(in_array($type, ['resize', 'thumb'], true) && is_array($params))) {
             return $this->url();
@@ -119,40 +123,50 @@ trait Guided
 
     /**
      * Get class.
+     *
+     * @return string
      */
-    public function getClass()
+    public function getClassName(): string
     {
-        return $this->class;
+        return $this->className;
     }
 
     /**
      *  Get ready URL to image.
+     *
+     * @return string
      */
-    public function getUrl()
+    public function getUrl(): string
     {
         return urldecode($this->getFullPath());
     }
 
     /**
      *  Get ready image title.
+     *
+     * @return string
      */
-    public function getTitle()
+    public function getTitle(): string
     {
         return title_case(preg_replace('/[\\-_]/', ' ', $this->getName()));
     }
 
     /**
      * Get full path.
+     *
+     * @return string
      */
-    public function getFullPath()
+    public function getFullPath(): string
     {
         return $this->full_path;
     }
 
     /**
      * Get name.
+     *
+     * @return string
      */
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
@@ -162,7 +176,7 @@ trait Guided
      *
      * @return string upload directory
      */
-    public static function getUploadDir()
+    public static function getUploadDir(): string
     {
         return Config::get('guidedimage.upload_dir');
     }
@@ -170,11 +184,12 @@ trait Guided
     /**
      *  Upload and save image.
      *
-     * @param \Illuminate\Http\UploadedFile|Symfony\Component\HttpFoundation\File\UploadedFile $imageFile Actual file from request. e.g. $request->file('image');
+     * @param \Illuminate\Http\UploadedFile|Symfony\Component\HttpFoundation\File\UploadedFile $imageFile File
+     *                                                                                                    from request.e.g. $request->file('image');
      *
-     * @return \ReliQArts\GuidedImage\ViewModels\Result result object
+     * @return Result
      */
-    public static function upload($imageFile)
+    public static function upload($imageFile): Result
     {
         $result = new Result();
         $validator = Validator::make(['file' => $imageFile], self::$rules);

@@ -1,6 +1,6 @@
 <?php
 
-namespace ReliQArts\GuidedImage;
+namespace ReliQArts\GuidedImage\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use ReliQArts\GuidedImage\Contracts\Guided as GuidedContract;
