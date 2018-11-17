@@ -45,9 +45,9 @@ class DumpImageCache extends Command
         // remove skim dir
         if (File::isDirectory($this->skimDir)) {
             File::deleteDirectory($this->skimDir, true);
-            $this->line(PHP_EOL . '<info>✔</info> Success! Guided image cache cleared.');
+            $this->line(PHP_EOL.'<info>✔</info> Success! Guided image cache cleared.');
         } else {
-            $this->line(PHP_EOL . '<info>✔</info> It wasn\'t there! Guided image cache directory does not exist.');
+            $this->line(PHP_EOL.'<info>✔</info> It wasn\'t there! Guided image cache directory does not exist.');
         }
     }
 }
