@@ -215,11 +215,11 @@ trait Guided
                     $im['extension'] = $extension;
                     $im['location'] = self::getUploadDir();
                     $im['creator_id'] = auth()->user()->id;
-                    $im['full_path'] = urlencode($im['location'] . '/' . $filename . '.' . $im['extension']);
+                    $im['full_path'] = urlencode($im['location'].'/'.$filename.'.'.$im['extension']);
                     list($im['width'], $im['height']) = getimagesize($imageFile);
 
                     try {
-                        $file = $imageFile->move($im['location'], $im['name'] . '.' . $im['extension']);
+                        $file = $imageFile->move($im['location'], $im['name'].'.'.$im['extension']);
                         $newImage = new self();
 
                         // file moved, save

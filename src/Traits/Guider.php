@@ -67,8 +67,8 @@ trait Guider
     public function __construct(Config $config)
     {
         $this->skimDir = storage_path($config->get('guidedimage.storage.skim_dir'));
-        $this->skimThumbs = "{$this->skimDir}/" . $config->get('guidedimage.storage.skim_thumbs');
-        $this->skimResized = "{$this->skimDir}/" . $config->get('guidedimage.storage.skim_resized');
+        $this->skimThumbs = "{$this->skimDir}/".$config->get('guidedimage.storage.skim_thumbs');
+        $this->skimResized = "{$this->skimDir}/".$config->get('guidedimage.storage.skim_resized');
         $this->nulls = array_merge($this->nulls, $config->get('guidedimage.routes.nulls', []));
 
         // create or avail needed directories
@@ -130,7 +130,7 @@ trait Guider
         $height = (in_array($height, $this->nulls, true)) ? null : $height;
         $object = (in_array($object, $this->nulls, true)) ? null : true;
 
-        $skimFile = "{$this->skimThumbs}/${width}-${height}-_-_" . $guidedImage->getName();
+        $skimFile = "{$this->skimThumbs}/${width}-${height}-_-_".$guidedImage->getName();
 
         // accept methods crop and thumb
         $acceptMethods = ['crop', 'fit'];
@@ -185,7 +185,7 @@ trait Guider
         $upsize = (in_array($upsize, $this->nulls, true)) ? false : true;
         $object = (in_array($object, $this->nulls, true)) ? false : true;
 
-        $skimFile = "{$this->skimResized}/${width}-${height}-_-_" . $guidedImage->getName();
+        $skimFile = "{$this->skimResized}/${width}-${height}-_-_".$guidedImage->getName();
         $image = false;
 
         // Get intervention image
@@ -276,7 +276,7 @@ trait Guider
         // adjust headers and return
         return $this->headers = array_merge($this->headers, [
             'Content-Type' => $image->mime,
-            'Content-Disposition' => 'inline; filename=' . $image->filename,
+            'Content-Disposition' => 'inline; filename='.$image->filename,
             'Last-Modified' => date(DATE_RFC822, $lastModified),
             'Etag' => $etagFile,
         ]);
