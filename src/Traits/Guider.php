@@ -4,6 +4,7 @@ namespace ReliQArts\GuidedImage\Traits;
 
 use File;
 use Illuminate\Config\Repository as Config;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Intervention\Image\Exception\NotReadableException;
@@ -92,9 +93,9 @@ trait Guider
      *
      * @param Request $request
      *
-     * @return Response
+     * @return JsonResponse
      */
-    public function emptyCache(Request $request): Response
+    public function emptyCache(Request $request): JsonResponse
     {
         if (!$request->ajax()) {
             return 'Use JSON.';
