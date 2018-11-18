@@ -56,13 +56,13 @@ ReliQArts\GuidedImage\ServiceProvider::class,
 Finally, publish package resources and configuration:
 
 ```
-php artisan vendor:publish --provider="ReliQArts\GuidedImage\GuidedImageServiceProvider"
+php artisan vendor:publish --provider="ReliQArts\GuidedImage\ServiceProvider"
 ``` 
 
 You may opt to publish only configuration by using the `config` tag:
 
 ```
-php artisan vendor:publish --provider="ReliQArts\GuidedImage\GuidedImageServiceProvider" --tag="config"
+php artisan vendor:publish --provider="ReliQArts\GuidedImage\ServiceProvider" --tag="config"
 ``` 
 You may publish migrations in a similar manner using the tag `migrations`.
 
@@ -150,7 +150,7 @@ $linkToImage = $image->routeResized([
 
 Have a look at the [Guided contract](https://github.com/ReliQArts/laravel-guided-image/blob/master/src/ReliQArts/GuidedImage/Contracts/Guided.php) for more info on model functions.
 
-For more info on controller functions see the [ImageGuider contract](https://github.com/ReliQArts/laravel-guided-image/blob/master/src/ReliQArts/GuidedImage/Contracts/ImageGuider.php).
+For more info on controller functions see the [ImageGuider contract](https://github.com/ReliQArts/laravel-guided-image/blob/master/src/ReliQArts/GuidedImage/Contracts/Guider.php).
 
 ##### Routes
 
