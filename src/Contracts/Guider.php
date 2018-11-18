@@ -2,8 +2,8 @@
 
 namespace ReliQArts\GuidedImage\Contracts;
 
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 
 /**
  * A true guider defines.
@@ -15,9 +15,9 @@ interface Guider
      *
      * @param Request $request
      *
-     * @return Response
+     * @return JsonResponse
      */
-    public function emptyCache(Request $request): Response;
+    public function emptyCache(Request $request): JsonResponse;
 
     /**
      * Get a thumbnail.
