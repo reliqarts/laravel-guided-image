@@ -3,8 +3,8 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
-use ReliQArts\GuidedImage\Contracts\Guided as GuidedContract;
-use ReliQArts\GuidedImage\Traits\Guided as GuidedTrait;
+use ReliqArts\GuidedImage\Contracts\Guided as GuidedContract;
+use ReliqArts\GuidedImage\Traits\Guided as GuidedTrait;
 
 /**
  *  Image model.

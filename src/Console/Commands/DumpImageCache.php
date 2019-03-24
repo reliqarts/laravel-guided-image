@@ -1,6 +1,6 @@
 <?php
 
-namespace ReliQArts\GuidedImage\Console\Commands;
+namespace ReliqArts\GuidedImage\Console\Commands;
 
 use File;
 use Illuminate\Config\Repository as Config;

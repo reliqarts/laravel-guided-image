@@ -1,6 +1,6 @@
 <?php
 
-namespace ReliQArts\GuidedImage\Helpers;
+namespace ReliqArts\GuidedImage\Helpers;
 
 use Config as BaseConfig;
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace ReliQArts\GuidedImage\Exceptions;
+namespace ReliqArts\GuidedImage\Exceptions;
 
 use Exception;
 
