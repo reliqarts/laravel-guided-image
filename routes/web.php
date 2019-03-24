@@ -1,6 +1,6 @@
 <?php
 
-use ReliQArts\GuidedImage\Helpers\Config;
+use ReliqArts\GuidedImage\Helpers\Config;
 
 /*
 |--------------------------------------------------------------------------

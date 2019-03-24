@@ -1,6 +1,6 @@
 <?php
 
-namespace ReliQArts\GuidedImage\ViewModels;
+namespace ReliqArts\GuidedImage\ViewModels;
 
 /**
  *	Result view model.

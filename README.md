@@ -5,9 +5,9 @@ Guided Image is an image utility package for Laravel 5.x based on Intervention I
 [![Built For Laravel](https://img.shields.io/badge/built%20for-laravel-red.svg?style=flat-square)](http://laravel.com)
 [![StyleCI](https://styleci.io/repos/71434979/shield?branch=master)](https://styleci.io/repos/71434979)
 [![Scrutinizer](https://img.shields.io/scrutinizer/g/reliqarts/laravel-guided-image.svg?style=flat-square)](https://scrutinizer-ci.com/g/reliqarts/laravel-guided-image/)
-[![License](https://poser.pugx.org/reliqarts/guided-image/license?format=flat-square)](https://packagist.org/packages/reliqarts/guided-image)
-[![Latest Stable Version](https://poser.pugx.org/reliqarts/guided-image/version?format=flat-square)](https://packagist.org/packages/reliqarts/guided-image)
-[![Latest Unstable Version](https://poser.pugx.org/reliqarts/guided-image/v/unstable?format=flat-square)](//packagist.org/packages/reliqarts/guided-image)
+[![License](https://poser.pugx.org/reliqarts/laravel-guided-image/license?format=flat-square)](https://packagist.org/packages/reliqarts/laravel-guided-image)
+[![Latest Stable Version](https://poser.pugx.org/reliqarts/laravel-guided-image/version?format=flat-square)](https://packagist.org/packages/reliqarts/laravel-guided-image)
+[![Latest Unstable Version](https://poser.pugx.org/reliqarts/laravel-guided-image/v/unstable?format=flat-square)](//packagist.org/packages/reliqarts/laravel-guided-image)
 
 &nbsp;
 
@@ -15,7 +15,7 @@ Guided Image is an image utility package for Laravel 5.x based on Intervention I
 
 ## Key Features
 
-Guided Image can be integrated seemlessly with your existing image model.
+Guided Image can be integrated seamlessly with your existing image model.
 
 ### Guided Routes
 
@@ -35,13 +35,13 @@ For situations where different instances of models use the same image.
 
 Install via composer; in console: 
 ```
-composer require reliqarts/guided-image
+composer require reliqarts/laravel-guided-image
 ``` 
 or require in *composer.json*:
-```js
+```json
 {
     "require": {
-        "reliqarts/guided-image": "^1.0"
+        "reliqarts/laravel-guided-image": "^2.0"
     }
 }
 ```
@@ -50,21 +50,21 @@ then run `composer update` in your terminal to pull it in.
 Once this has finished, you may need to add the service provider to the providers array  in your `config/app.php` depending on your Laravel version:
 
 ```php
-ReliQArts\GuidedImage\ServiceProvider::class,
+ReliqArts\GuidedImage\ServiceProvider::class,
 ```
 
 Finally, publish package resources and configuration:
 
 ```
-php artisan vendor:publish --provider="ReliQArts\GuidedImage\ServiceProvider"
+php artisan vendor:publish --provider="ReliqArts\GuidedImage\ServiceProvider"
 ``` 
 
-You may opt to publish only configuration by using the `config` tag:
+You may opt to publish only configuration by using the `guided-image-config` tag:
 
 ```
-php artisan vendor:publish --provider="ReliQArts\GuidedImage\ServiceProvider" --tag="config"
+php artisan vendor:publish --provider="ReliqArts\GuidedImage\ServiceProvider" --tag="guided-image-config"
 ``` 
-You may publish migrations in a similar manner using the tag `migrations`.
+You may publish migrations in a similar manner using the tag `guided-image-migrations`.
 
 ### Setup
 
@@ -86,12 +86,12 @@ And... it's ready! :ok_hand:
 
 To *use* Guided Image you must do just that from your *Image* model. :smirk:
 
-Implement the `ReliQArts\GuidedImage\Contracts\Guided` contract and use the `ReliQArts\GuidedImage\Traits\Guided` trait, e.g:
+Implement the `ReliqArts\GuidedImage\Contracts\Guided` contract and use the `ReliqArts\GuidedImage\Traits\Guided` trait, e.g:
 
 ```php
 use Illuminate\Database\Eloquent\Model;
-use ReliQArts\GuidedImage\Traits\Guided as GuidedTrait;
-use ReliQArts\GuidedImage\Contracts\Guided as GuidedContract;
+use ReliqArts\GuidedImage\Traits\Guided as GuidedTrait;
+use ReliqArts\GuidedImage\Contracts\Guided as GuidedContract;
 
 class Image extends Model implements GuidedContract
 {
@@ -102,11 +102,11 @@ class Image extends Model implements GuidedContract
 ```
 See example [here](https://github.com/ReliQArts/laravel-guided-image/blob/master/docs/examples/Image.php).
 
-Implement the `ReliQArts\GuidedImage\Contracts\Guider` contract and use the `ReliQArts\GuidedImage\Traits\Guider` trait from your *ImageController*, e.g:
+Implement the `ReliqArts\GuidedImage\Contracts\Guider` contract and use the `ReliqArts\GuidedImage\Traits\Guider` trait from your *ImageController*, e.g:
 
 ```php
-use ReliQArts\GuidedImage\Contracts\Guider as ImageGuiderContract;
-use ReliQArts\GuidedImage\Traits\Guider as ImageGuiderTrait;
+use ReliqArts\GuidedImage\Contracts\Guider as ImageGuiderContract;
+use ReliqArts\GuidedImage\Traits\Guider as ImageGuiderTrait;
 
 class ImageController extends Controller implements ImageGuiderContract
 {

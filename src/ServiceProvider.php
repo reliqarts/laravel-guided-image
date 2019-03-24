@@ -1,11 +1,11 @@
 <?php
 
-namespace ReliQArts\GuidedImage;
+namespace ReliqArts\GuidedImage;
 
 use Illuminate\Routing\Router;
 use Illuminate\Support\ServiceProvider as BaseServiceProvider;
-use ReliQArts\GuidedImage\Console\Commands\DumpImageCache;
-use ReliQArts\GuidedImage\Helpers\Config;
+use ReliqArts\GuidedImage\Console\Commands\DumpImageCache;
+use ReliqArts\GuidedImage\Helpers\Config;
 
 /**
  *  Guided Image Service Provider.
@@ -55,8 +55,8 @@ class ServiceProvider extends BaseServiceProvider
     {
         // bind guided contract to resolve to model
         $this->app->bind(
-            'ReliQArts\GuidedImage\Contracts\Guided',
-            'ReliQArts\GuidedImage\GuidedImage'
+            'ReliqArts\GuidedImage\Contracts\Guided',
+            'ReliqArts\GuidedImage\GuidedImage'
         );
     }
 
@@ -67,11 +67,11 @@ class ServiceProvider extends BaseServiceProvider
     {
         $this->publishes([
             "{$this->assetsDir}/config/config.php" => config_path('guidedimage.php'),
-        ], 'config');
+        ], 'guided-image-config');
 
         $this->publishes([
             "{$this->assetsDir}/database/migrations/" => database_path('migrations'),
-        ], 'migrations');
+        ], 'guided-image-migrations');
     }
 
     /**

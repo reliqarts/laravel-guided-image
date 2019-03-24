@@ -2,7 +2,7 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
-use ReliQArts\GuidedImage\Helpers\Config;
+use ReliqArts\GuidedImage\Helpers\Config;
 
 class CreateGuidedImagesTable extends Migration
 {

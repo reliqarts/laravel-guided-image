@@ -1,12 +1,12 @@
 <?php
 
-namespace ReliQArts\GuidedImage\Traits;
+namespace ReliqArts\GuidedImage\Traits;
 
 use File;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use ReliQArts\GuidedImage\Exceptions\BadImplementation;
-use ReliQArts\GuidedImage\Helpers\Config;
-use ReliQArts\GuidedImage\ViewModels\Result;
+use ReliqArts\GuidedImage\Exceptions\BadImplementation;
+use ReliqArts\GuidedImage\Helpers\Config;
+use ReliqArts\GuidedImage\ViewModels\Result;
 use URL;
 use Validator;
 
@@ -17,7 +17,7 @@ use Validator;
  *
  * @since  2016
  *
- * @uses \ReliQArts\GuidedImage\ViewModels\Result;
+ * @uses \ReliqArts\GuidedImage\ViewModels\Result;
  */
 trait Guided
 {

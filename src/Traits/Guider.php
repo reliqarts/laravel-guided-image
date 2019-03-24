@@ -1,6 +1,6 @@
 <?php
 
-namespace ReliQArts\GuidedImage\Traits;
+namespace ReliqArts\GuidedImage\Traits;
 
 use File;
 use Illuminate\Config\Repository as Config;
@@ -10,8 +10,8 @@ use Illuminate\Http\Response;
 use Intervention\Image\Exception\NotReadableException;
 use Intervention\Image\Facades\Image;
 use Intervention\Image\Image as InterventionImage;
-use ReliQArts\GuidedImage\Contracts\Guided as GuidedContract;
-use ReliQArts\GuidedImage\ViewModels\Result;
+use ReliqArts\GuidedImage\Contracts\Guided as GuidedContract;
+use ReliqArts\GuidedImage\ViewModels\Result;
 
 /**
  * Guide by acquiring these traits.
@@ -21,7 +21,7 @@ use ReliQArts\GuidedImage\ViewModels\Result;
  * @since  2016
  *
  * @uses \Intervention\Image\Facades\Image to manipulate images.
- * @uses \ReliQArts\GuidedImage\ViewModels\Result
+ * @uses \ReliqArts\GuidedImage\ViewModels\Result
  */
 trait Guider
 {

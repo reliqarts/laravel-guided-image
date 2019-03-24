@@ -1,9 +1,9 @@
 <?php
 
-namespace ReliQArts\GuidedImage\Contracts;
+namespace ReliqArts\GuidedImage\Contracts;
 
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use ReliQArts\GuidedImage\ViewModels\Result;
+use ReliqArts\GuidedImage\ViewModels\Result;
 
 /**
  * A true guided image defines.

@@ -1,10 +1,10 @@
 <?php
 
-namespace ReliQArts\GuidedImage\Models;
+namespace ReliqArts\GuidedImage\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use ReliQArts\GuidedImage\Contracts\Guided as GuidedContract;
-use ReliQArts\GuidedImage\Traits\Guided as GuidedTrait;
+use ReliqArts\GuidedImage\Contracts\Guided as GuidedContract;
+use ReliqArts\GuidedImage\Traits\Guided as GuidedTrait;
 
 /**
  *  GuidedImage dummy model.
