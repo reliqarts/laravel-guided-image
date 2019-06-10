@@ -7,13 +7,11 @@ use Config as BaseConfig;
 class Config extends BaseConfig
 {
     /**
-     * Get list of controllers onto which guided image routes should be binded.
-     *
-     * @param array $controllers preset controllers for guided route binds
+     * Get list of controllers onto which guided image routes should be bound.
      *
      * @return array of controllers for route binding
      */
-    public static function getContollersForRoutes(array $controllers = []): array
+    public static function getControllersForRoutes(): array
     {
         return $controllers = array_merge(parent::get('guidedimage.routes.controllers', []), []);
     }

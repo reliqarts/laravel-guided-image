@@ -4,6 +4,7 @@ namespace ReliqArts\GuidedImage\Traits;
 
 use File;
 use Illuminate\Config\Repository as Config;
+use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -20,8 +21,8 @@ use ReliqArts\GuidedImage\ViewModels\Result;
  *
  * @since  2016
  *
- * @uses \Intervention\Image\Facades\Image to manipulate images.
- * @uses \ReliqArts\GuidedImage\ViewModels\Result
+ * @uses   \Intervention\Image\Facades\Image to manipulate images.
+ * @uses   \ReliqArts\GuidedImage\ViewModels\Result
  */
 trait Guider
 {
@@ -116,17 +117,24 @@ trait Guider
     /**
      * Get a thumbnail.
      *
-     * @param Request     $request
-     * @param Guided      $guidedImage
-     * @param string      $method      crop|fit
-     * @param int|string  $width
-     * @param int|string  $height
-     * @param bool|string $object      whether Intervention Image should be returned
+     * @param Request        $request
+     * @param GuidedContract $guidedImage
+     * @param string         $method crop|fit
+     * @param int|string     $width
+     * @param int|string     $height
+     * @param bool|string    $object whether Intervention Image should be returned
      *
-     * @return \Intervention\Image\Facades\Image|string intervention Image object or actual image url
+     * @return Image|string intervention Image object or actual image url
+     * @throws FileNotFoundException
      */
-    public function thumb(Request $request, GuidedContract $guidedImage, string $method, $width, $height, $object = false)
-    {
+    public function thumb(
+        Request $request,
+        GuidedContract $guidedImage,
+        string $method,
+        $width,
+        $height,
+        $object = false
+    ) {
         $width = (in_array($width, $this->nulls, true)) ? null : $width;
         $height = (in_array($height, $this->nulls, true)) ? null : $height;
         $object = (in_array($object, $this->nulls, true)) ? null : true;
@@ -141,7 +149,8 @@ trait Guider
         // Get intervention image
         try {
             if (!File::exists($skimFile)) {
-                $image = Image::make($guidedImage->getUrl())->{$method}($width, $height);
+                $image = Image::make($guidedImage->getUrl())
+                    ->{$method}($width, $height);
                 $image->save($skimFile);
             } else {
                 $image = Image::make($skimFile);
@@ -161,15 +170,16 @@ trait Guider
     /**
      * Get a resized Guided Image.
      *
-     * @param Request     $request
-     * @param Guided      $guidedImage
-     * @param int|string  $width
-     * @param int|string  $height
-     * @param bool|string $aspect      Keep aspect ratio?
-     * @param bool|string $upsize      Allow upsize?
-     * @param bool|string $object      whether Intervention Image should be returned
+     * @param Request        $request
+     * @param GuidedContract $guidedImage
+     * @param int|string     $width
+     * @param int|string     $height
+     * @param bool|string    $aspect Keep aspect ratio?
+     * @param bool|string    $upSize Allow up-size?
+     * @param bool|string    $object whether Intervention Image should be returned
      *
-     * @return \Intervention\Image\Facades\Image|string intervention Image object or actual image url
+     * @return Image|string intervention Image object or actual image url
+     * @throws FileNotFoundException
      */
     public function resized(
         Request $request,
@@ -177,27 +187,26 @@ trait Guider
         $width,
         $height,
         $aspect = true,
-        $upsize = false,
+        $upSize = false,
         $object = false
     ) {
         $width = (in_array($width, $this->nulls, true)) ? null : $width;
         $height = (in_array($height, $this->nulls, true)) ? null : $height;
         $aspect = (in_array($aspect, $this->nulls, true)) ? true : false;
-        $upsize = (in_array($upsize, $this->nulls, true)) ? false : true;
+        $upSize = (in_array($upSize, $this->nulls, true)) ? false : true;
         $object = (in_array($object, $this->nulls, true)) ? false : true;
 
         $skimFile = "{$this->skimResized}/${width}-${height}-_-_" . $guidedImage->getName();
-        $image = false;
 
         // Get intervention image
         try {
             if (!File::exists($skimFile)) {
                 $image = Image::make($guidedImage->getUrl());
-                $image->resize($width, $height, function ($constraint) use ($aspect, $upsize) {
+                $image->resize($width, $height, function ($constraint) use ($aspect, $upSize) {
                     if ($aspect) {
                         $constraint->aspectRatio();
                     }
-                    if ($upsize) {
+                    if ($upSize) {
                         $constraint->upsize();
                     }
                 });
@@ -233,7 +242,7 @@ trait Guider
      * @param bool|string  $fill
      * @param mixed|string $object
      *
-     * @return \Intervention\Image\Facades\Image|string intervention Image object or actual image url
+     * @return Image|string intervention Image object or actual image url
      */
     public function dummy($width, $height, $color = '#eefefe', $fill = false, $object = false)
     {
@@ -254,7 +263,8 @@ trait Guider
      * Get image headers. Improved caching
      * If the image has not been modified say 304 Not Modified.
      *
-     * @param \Intervention\Image\Facades\Image $image
+     * @param Request           $request
+     * @param InterventionImage $image
      *
      * @return array image headers
      */

@@ -2,12 +2,13 @@
 
 namespace ReliqArts\GuidedImage\Traits;
 
+use Exception;
 use File;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Http\UploadedFile;
 use ReliqArts\GuidedImage\Exceptions\BadImplementation;
 use ReliqArts\GuidedImage\Helpers\Config;
 use ReliqArts\GuidedImage\ViewModels\Result;
-use URL;
 use Validator;
 
 /**
@@ -17,7 +18,7 @@ use Validator;
  *
  * @since  2016
  *
- * @uses \ReliqArts\GuidedImage\ViewModels\Result;
+ * @uses   \ReliqArts\GuidedImage\ViewModels\Result;
  */
 trait Guided
 {
@@ -34,7 +35,7 @@ trait Guided
     private $className;
 
     /**
-     * Mandatory ancestor eloguent model.
+     * Mandatory ancestor eloquent model.
      *
      * @var string
      */
@@ -42,6 +43,10 @@ trait Guided
 
     /**
      * Ensure things are ready.
+     *
+     * @param array $attributes
+     *
+     * @throws BadImplementation
      */
     public function __construct(array $attributes = [])
     {
@@ -184,8 +189,10 @@ trait Guided
     /**
      *  Upload and save image.
      *
-     * @param \Illuminate\Http\UploadedFile|Symfony\Component\HttpFoundation\File\UploadedFile $imageFile File
-     *                                                                                                    from request.e.g. $request->file('image');
+     * @param UploadedFile|Symfony\Component\HttpFoundation\File\UploadedFile $imageFile                  File
+     *                                                                                                    from
+     *                                                                                                    request.e.g.
+     *                                                                                                    $request->file('image');
      *
      * @return Result
      */

@@ -14,7 +14,7 @@ use ReliqArts\GuidedImage\Helpers\Config;
 $guidedModel = Config::getRouteModel(true);
 
 // get controllers for routes and create the routes for each
-foreach (Config::getContollersForRoutes() as $guidedController) {
+foreach (Config::getControllersForRoutes() as $guidedController) {
     // if controller name's empty skip
     if (!$guidedController) {
         continue;
