@@ -251,6 +251,10 @@ paket-files/
 .idea/
 *.sln.iml
 
-
+/build/*
 vendor
 composer.lock
+!.gitkeep
+.vscode
+.DS_Store
+*cache

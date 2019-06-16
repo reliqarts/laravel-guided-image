@@ -47,12 +47,6 @@ or require in *composer.json*:
 ```
 then run `composer update` in your terminal to pull it in.
 
-Once this has finished, you may need to add the service provider to the providers array  in your `config/app.php` depending on your Laravel version:
-
-```php
-ReliqArts\GuidedImage\ServiceProvider::class,
-```
-
 Finally, publish package resources and configuration:
 
 ```
@@ -64,7 +58,6 @@ You may opt to publish only configuration by using the `guided-image-config` tag
 ```
 php artisan vendor:publish --provider="ReliqArts\GuidedImage\ServiceProvider" --tag="guided-image-config"
 ``` 
-You may publish migrations in a similar manner using the tag `guided-image-migrations`.
 
 ### Setup
 
@@ -90,7 +83,7 @@ Implement the `ReliqArts\GuidedImage\Contracts\Guided` contract and use the `Rel
 
 ```php
 use Illuminate\Database\Eloquent\Model;
-use ReliqArts\GuidedImage\Traits\Guided as GuidedTrait;
+use ReliqArts\GuidedImage\Concerns\Guided as GuidedTrait;
 use ReliqArts\GuidedImage\Contracts\Guided as GuidedContract;
 
 class Image extends Model implements GuidedContract
@@ -102,15 +95,15 @@ class Image extends Model implements GuidedContract
 ```
 See example [here](https://github.com/ReliQArts/laravel-guided-image/blob/master/docs/examples/Image.php).
 
-Implement the `ReliqArts\GuidedImage\Contracts\Guider` contract and use the `ReliqArts\GuidedImage\Traits\Guider` trait from your *ImageController*, e.g:
+Implement the `ReliqArts\GuidedImage\Contracts\Guide` contract and use the `ReliqArts\GuidedImage\Concerns\Guide` trait from your *ImageController*, e.g:
 
 ```php
-use ReliqArts\GuidedImage\Contracts\Guider as ImageGuiderContract;
-use ReliqArts\GuidedImage\Traits\Guider as ImageGuiderTrait;
+use ReliqArts\GuidedImage\Contracts\Guide as GuideContract;
+use ReliqArts\GuidedImage\Concerns\Guide as GuideTrait;
 
-class ImageController extends Controller implements ImageGuiderContract
+class ImageController extends Controller implements GuideContract
 {
-    use ImageGuiderTrait;
+    use GuideTrait;
 }
 ```
 See example [here](https://github.com/ReliQArts/laravel-guided-image/blob/master/docs/examples/ImageController.php).

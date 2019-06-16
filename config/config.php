@@ -52,6 +52,9 @@ return [
     // allowed extensions
     'allowed_extensions' => ['gif', 'jpg', 'jpeg', 'png'],
 
+    // image rules for validation
+    'rules' => 'required|mimes:png,gif,jpeg|max:2048',
+
     // storage
     'storage' => [
         // Temporary storage directory for images already generated.
@@ -70,7 +73,7 @@ return [
         // cache days
         'cache_days' => env('GUIDED_IMAGE_CACHE_DAYS', 2),
 
-        // any aditional headers for guided images
+        // any additional headers for guided images
         'additional' => [],
     ],
 ];

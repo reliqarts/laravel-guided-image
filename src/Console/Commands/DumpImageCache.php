@@ -1,10 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace ReliqArts\GuidedImage\Console\Commands;
 
-use File;
-use Illuminate\Config\Repository as Config;
 use Illuminate\Console\Command;
+use ReliqArts\GuidedImage\Contracts\ImageDispenser;
 
 class DumpImageCache extends Command
 {
@@ -23,31 +24,16 @@ class DumpImageCache extends Command
     protected $description = 'Empty guided image file cache';
 
     /**
-     * Guided image cache directory.
-     */
-    protected $skimDir;
-
-    /**
-     * Create a new command instance.
-     */
-    public function __construct()
-    {
-        parent::__construct();
-    }
-
-    /**
      * Execute the console command.
+     *
+     * @param ImageDispenser $imageDispenser
      */
-    public function handle(Config $config): void
+    public function handle(ImageDispenser $imageDispenser): void
     {
-        $this->skimDir = storage_path($config->get('guidedimage.storage.skim_dir'));
-
-        // remove skim dir
-        if (File::isDirectory($this->skimDir)) {
-            File::deleteDirectory($this->skimDir, true);
-            $this->line(PHP_EOL . '<info>✔</info> Success! Guided image cache cleared.');
+        if ($imageDispenser->emptyCache()) {
+            $this->line(PHP_EOL . '<info>✔</info> Success! Guided Image cache cleared.');
         } else {
-            $this->line(PHP_EOL . '<info>✔</info> It wasn\'t there! Guided image cache directory does not exist.');
+            $this->line(PHP_EOL . '<info>✘</info> Couldn\'t clear Guided Image cache.');
         }
     }
 }

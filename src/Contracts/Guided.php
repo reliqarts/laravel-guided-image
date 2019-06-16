@@ -1,22 +1,25 @@
 <?php
 
+declare(strict_types=1);
+
 namespace ReliqArts\GuidedImage\Contracts;
 
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use ReliqArts\GuidedImage\ViewModels\Result;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Query\Builder as QueryBuilder;
+use Illuminate\Http\UploadedFile;
+use JsonSerializable;
+use ReliqArts\GuidedImage\VO\Result;
 
 /**
  * A true guided image defines.
+ *
+ * @mixin Model
+ * @mixin Builder
+ * @mixin QueryBuilder
  */
 interface Guided
 {
-    /**
-     * Retrieve the creator (uploader) of the image.
-     *
-     * @return BelongsTo
-     */
-    public function creator(): BelongsTo;
-
     /**
      *  Get image name.
      *
@@ -59,7 +62,7 @@ interface Guided
     public function remove(bool $force = false): Result;
 
     /**
-     * Get routed link to photo.
+     * Get routed link to image.
      *
      * @param array  $params parameters to pass to route
      * @param string $type   Operation to be performed on instance. (resize, thumb)
@@ -69,19 +72,11 @@ interface Guided
     public function routeResized(array $params = null, string $type = 'resize'): string;
 
     /**
-     * Get upload directory.
-     *
-     * @return string upload directory
-     */
-    public static function getUploadDir(): string;
-
-    /**
      *  Upload and save image.
      *
-     * @param \Illuminate\Http\UploadedFile|\Symfony\Component\HttpFoundation\File\UploadedFile $imageFile File
-     *                                                                                                     from request. e.g. $request->file('image');
+     * @param UploadedFile $imageFile File from request. e.g. $request->file('image');
      *
-     * @return Result
+     * @return JsonSerializable
      */
-    public static function upload($imageFile): Result;
+    public static function upload(UploadedFile $imageFile): JsonSerializable;
 }

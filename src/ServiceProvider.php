@@ -1,28 +1,34 @@
 <?php
 
+declare(strict_types=1);
+
 namespace ReliqArts\GuidedImage;
 
-use Illuminate\Routing\Router;
-use Illuminate\Support\ServiceProvider as BaseServiceProvider;
+use Illuminate\Config\Repository as ConfigRepository;
+use Illuminate\Contracts\Container\BindingResolutionException;
+use Monolog\Handler\StreamHandler;
 use ReliqArts\GuidedImage\Console\Commands\DumpImageCache;
-use ReliqArts\GuidedImage\Helpers\Config;
+use ReliqArts\GuidedImage\Contracts\ConfigProvider as ConfigProviderContract;
+use ReliqArts\GuidedImage\Contracts\Guided;
+use ReliqArts\GuidedImage\Contracts\ImageDispenser as ImageDispenserContract;
+use ReliqArts\GuidedImage\Contracts\ImageUploader as ImageUploaderContract;
+use ReliqArts\GuidedImage\Contracts\Logger as LoggerContract;
+use ReliqArts\GuidedImage\Services\ConfigProvider;
+use ReliqArts\GuidedImage\Services\ImageDispenser;
+use ReliqArts\GuidedImage\Services\ImageUploader;
+use ReliqArts\GuidedImage\Services\Logger;
+use ReliqArts\ServiceProvider as ReliqArtsServiceProvider;
+use ReliqArts\Services\ConfigProvider as ReliqArtsConfigProvider;
 
 /**
  *  Guided Image Service Provider.
  */
-class ServiceProvider extends BaseServiceProvider
+final class ServiceProvider extends ReliqArtsServiceProvider
 {
-    /**
-     * Indicates if loading of the provider is deferred.
-     *
-     * @var bool
-     */
-    protected $defer = false;
-
-    /**
-     * Assets location.
-     */
-    protected $assetsDir = __DIR__ . '/..';
+    protected const CONFIG_KEY = 'guidedimage';
+    protected const ASSET_DIRECTORY = __DIR__ . '/..';
+    protected const LOGGER_NAME = self::CONFIG_KEY . '-logger';
+    protected const LOG_FILENAME = self::CONFIG_KEY;
 
     /**
      * List of commands.
@@ -34,82 +40,79 @@ class ServiceProvider extends BaseServiceProvider
     ];
 
     /**
-     * Perform post-registration booting of services.
+     * @var ConfigProviderContract
      */
-    public function boot(Router $router): void
-    {
-        // register routes
-        $this->handleRoutes($router);
-        // register config
-        $this->handleConfig();
-        // publish assets
-        $this->handleAssets();
-        // publish commands
-        $this->handleCommands();
-    }
+    private $configProvider;
 
     /**
-     * Register bindings in the container.
+     * Perform post-registration booting of services.
+     *
+     * @throws BindingResolutionException
      */
-    public function register(): void
+    public function boot(): void
     {
-        // bind guided contract to resolve to model
-        $this->app->bind(
-            'ReliqArts\GuidedImage\Contracts\Guided',
-            'ReliqArts\GuidedImage\GuidedImage'
+        parent::boot();
+
+        $this->handleRoutes();
+        $this->handleCommands();
+        $this->handleMigrations();
+    }
+
+    public function registerBindings(): void
+    {
+        $this->configProvider = new ConfigProvider(
+            new ReliqArtsConfigProvider(
+                resolve(ConfigRepository::class),
+                $this->getConfigKey()
+            )
+        );
+        $guidedModelFQCN = $this->configProvider->getGuidedModelNamespace()
+            . $this->configProvider->getGuidedModelName();
+
+        $this->app->singleton(
+            ConfigProviderContract::class,
+            function (): ConfigProviderContract {
+                return $this->configProvider;
+            }
+        );
+
+        $this->app->singleton(
+            LoggerContract::class,
+            function (): LoggerContract {
+                $logger = new Logger($this->getLoggerName());
+                $logFile = storage_path(sprintf('logs/%s.log', $this->getLogFilename()));
+                $logger->pushHandler(new StreamHandler($logFile, Logger::DEBUG));
+
+                return $logger;
+            }
+        );
+
+        $this->app->singleton(
+            ImageDispenserContract::class,
+            ImageDispenser::class
+        );
+
+        $this->app->singleton(
+            ImageUploaderContract::class,
+            ImageUploader::class
+        );
+
+        $this->app->bind(Guided::class, $guidedModelFQCN);
+    }
+
+    public function provides()
+    {
+        return array_merge(
+            $this->commands,
+            [
+                Guided::class,
+            ]
         );
     }
 
-    /**
-     * Publish assets.
-     */
-    protected function handleAssets(): void
-    {
-        $this->publishes([
-            "{$this->assetsDir}/config/config.php" => config_path('guidedimage.php'),
-        ], 'guided-image-config');
-
-        $this->publishes([
-            "{$this->assetsDir}/database/migrations/" => database_path('migrations'),
-        ], 'guided-image-migrations');
-    }
-
-    /**
-     * Register Configuraion.
-     */
     protected function handleConfig(): void
     {
-        // merge config
-        $this->mergeConfigFrom("{$this->assetsDir}/config/config.php", 'guidedimage');
-    }
-
-    /**
-     * Register routes.
-     */
-    protected function handleRoutes(Router $router): void
-    {
-        if (!$this->app->routesAreCached()) {
-            // explicitly bind guided image model
-            $this->bindRouteModel($router);
-            // get the routes
-            require_once "{$this->assetsDir}/routes/web.php";
-        }
-    }
-
-    /**
-     * Explicitly bind guided model instance to router, hence
-     * overriding binded GuidedImage model (since they both implement the Guided contract).
-     */
-    private function bindRouteModel(Router $router): void
-    {
-        $routeModel = Config::getRouteModel();
-        $routeModelNamespace = Config::getRouteModelNamespace();
-
-        // get absolute guided model class
-        $absGuidedModel = $routeModelNamespace . $routeModel;
-
-        // explicitly bind guidedimage instance to router
-        $router->model(strtolower($routeModel), $absGuidedModel);
+        $this->mergeConfigFrom(sprintf('%s/config/config.php', $this->getAssetDirectory()), 'guidedimage');
     }
 
     /**
@@ -117,9 +120,29 @@ class ServiceProvider extends BaseServiceProvider
      */
     private function handleCommands(): void
     {
-        // Register the commands...
         if ($this->app->runningInConsole()) {
             $this->commands($this->commands);
         }
+    }
+
+    /**
+     * @throws BindingResolutionException
+     */
+    private function handleRoutes(): void
+    {
+        $router = $this->app->make('router');
+        $modelName = $this->configProvider->getGuidedModelName();
+
+        if (!$this->app->routesAreCached()) {
+            $router->model(strtolower($modelName), $this->configProvider->getGuidedModelNamespace() . $modelName);
+
+            /** @noinspection PhpIncludeInspection */
+            require_once sprintf('%s/routes/web.php', $this->getAssetDirectory());
+        }
+    }
+
+    private function handleMigrations()
+    {
+        $this->loadMigrationsFrom(sprintf('%s/database/migrations', $this->getAssetDirectory()));
     }
 }

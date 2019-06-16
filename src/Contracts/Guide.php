@@ -1,14 +1,16 @@
 <?php
 
+/** @noinspection PhpTooManyParametersInspection */
+
+declare(strict_types=1);
+
 namespace ReliqArts\GuidedImage\Contracts;
 
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Intervention\Image\Image;
 
-/**
- * A true guider defines.
- */
-interface Guider
+interface Guide
 {
     /**
      * Empty skim cache by removing SkimDir.
@@ -41,7 +43,7 @@ interface Guider
      * @param int     $width
      * @param int     $height
      * @param bool    $aspect      Keep aspect ratio?
-     * @param bool    $upsize      Allow upsize?
+     * @param bool    $upSize      Allow up-size?
      * @param bool    $object      whether Intervention Image should be returned
      *
      * @return Image|string intervention Image object or actual image url
@@ -52,7 +54,7 @@ interface Guider
         $width,
         $height,
         $aspect = true,
-        $upsize = false,
+        $upSize = false,
         $object = false
     );
 
@@ -65,7 +67,7 @@ interface Guider
      * @param bool|string  $fill
      * @param mixed|string $object
      *
-     * @return \Intervention\Image\Facades\Image|string intervention Image object or actual image url
+     * @return Image|string intervention Image object or actual image url
      */
     public function dummy($width, $height, $color = '#eefefe', $fill = false, $object = false);
 }
