@@ -322,9 +322,6 @@ final class ImageUploaderTest extends AspectMockedTestCase
         string $extension = 'jpg',
         int $size = 80000
     ): UploadedFile {
-        /**
-         * @var MockInterface|UploadedFile
-         */
         return Mockery::mock(
             UploadedFile::class,
             [
