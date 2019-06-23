@@ -98,7 +98,7 @@ final class ImageUploader implements ImageUploaderContract
         try {
             $imageFile->move(
                 $imageRow[self::KEY_LOCATION],
-                $imageRow[self::KEY_NAME] . '.' . $imageRow[self::KEY_EXTENSION]
+                $imageRow[self::KEY_NAME].'.'.$imageRow[self::KEY_EXTENSION]
             );
             $this->guidedImage->unguard();
             $instance = $this->guidedImage->create($imageRow);
@@ -110,7 +110,7 @@ final class ImageUploader implements ImageUploaderContract
                 $exception->getMessage(),
                 [
                     'imageRow' => $imageRow,
-                    'trace' => $exception->getTraceAsString(),
+                    'trace'    => $exception->getTraceAsString(),
                 ]
             );
 
@@ -128,11 +128,11 @@ final class ImageUploader implements ImageUploaderContract
         $filePathInfo = pathinfo($imageFile->getClientOriginalName());
         $filename = Str::slug($filePathInfo[self::KEY_FILENAME]);
         $imageRow = [
-            self::KEY_SIZE => $imageFile->getSize(),
-            self::KEY_NAME => $filename,
+            self::KEY_SIZE      => $imageFile->getSize(),
+            self::KEY_NAME      => $filename,
             self::KEY_MIME_TYPE => $imageFile->getMimeType(),
             self::KEY_EXTENSION => $imageFile->getClientOriginalExtension(),
-            self::KEY_LOCATION => $this->configProvider->getUploadDirectory(),
+            self::KEY_LOCATION  => $this->configProvider->getUploadDirectory(),
         ];
         $imageRow[self::KEY_FULL_PATH] = urlencode(
             sprintf('%s/%s.%s', $imageRow[self::KEY_LOCATION], $filename, $imageRow[self::KEY_EXTENSION])

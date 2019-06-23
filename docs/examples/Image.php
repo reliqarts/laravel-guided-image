@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Examples;
 
 use Illuminate\Database\Eloquent\Model;
-use ReliqArts\GuidedImage\Contracts\Guided as GuidedContract;
 use ReliqArts\GuidedImage\Concerns\Guided as GuidedTrait;
+use ReliqArts\GuidedImage\Contracts\Guided as GuidedContract;
 
 /**
  *  Image model.

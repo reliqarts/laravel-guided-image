@@ -26,8 +26,8 @@ use ReliqArts\Services\ConfigProvider as ReliqArtsConfigProvider;
 final class ServiceProvider extends ReliqArtsServiceProvider
 {
     protected const CONFIG_KEY = 'guidedimage';
-    protected const ASSET_DIRECTORY = __DIR__ . '/..';
-    protected const LOGGER_NAME = self::CONFIG_KEY . '-logger';
+    protected const ASSET_DIRECTORY = __DIR__.'/..';
+    protected const LOGGER_NAME = self::CONFIG_KEY.'-logger';
     protected const LOG_FILENAME = self::CONFIG_KEY;
 
     /**
@@ -67,7 +67,7 @@ final class ServiceProvider extends ReliqArtsServiceProvider
             )
         );
         $guidedModelFQCN = $this->configProvider->getGuidedModelNamespace()
-            . $this->configProvider->getGuidedModelName();
+            .$this->configProvider->getGuidedModelName();
 
         $this->app->singleton(
             ConfigProviderContract::class,
@@ -134,7 +134,7 @@ final class ServiceProvider extends ReliqArtsServiceProvider
         $modelName = $this->configProvider->getGuidedModelName();
 
         if (!$this->app->routesAreCached()) {
-            $router->model(strtolower($modelName), $this->configProvider->getGuidedModelNamespace() . $modelName);
+            $router->model(strtolower($modelName), $this->configProvider->getGuidedModelNamespace().$modelName);
 
             /** @noinspection PhpIncludeInspection */
             require_once sprintf('%s/routes/web.php', $this->getAssetDirectory());

@@ -231,7 +231,7 @@ final class ImageDispenser implements ImageDispenserContract
      */
     public function emptyCache(): bool
     {
-        return (bool)($this->filesystem->deleteDirectory($this->skimResized)
+        return (bool) ($this->filesystem->deleteDirectory($this->skimResized)
             && $this->filesystem->deleteDirectory($this->skimThumbs));
     }
 
@@ -262,10 +262,10 @@ final class ImageDispenser implements ImageDispenserContract
 
         // adjust headers and return
         return array_merge($this->getDefaultHeaders(), [
-            'Content-Type' => $image->mime,
+            'Content-Type'        => $image->mime,
             'Content-Disposition' => sprintf('inline; filename=%s', $image->filename),
-            'Last-Modified' => date(DATE_RFC822, $lastModified),
-            'Etag' => $etagFile,
+            'Last-Modified'       => date(DATE_RFC822, $lastModified),
+            'Etag'                => $etagFile,
         ]);
     }
 

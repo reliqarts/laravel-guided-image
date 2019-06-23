@@ -37,7 +37,7 @@ foreach ($configProvider->getControllersForRoutes() as $controllerName) {
             Route::get(
                 sprintf('.tmb/{%s}//m.{method}/{width}-{height}/{returnObject?}', $modelName),
                 [
-                    'as' => sprintf('%s.thumb', $modelName),
+                    'as'   => sprintf('%s.thumb', $modelName),
                     'uses' => sprintf('%s@thumb', $controllerName),
                 ]
             );
@@ -46,7 +46,7 @@ foreach ($configProvider->getControllersForRoutes() as $controllerName) {
             Route::get(
                 sprintf('.res/{%s}//{width}-{height}/{aspect?}/{upSize?}/{returnObject?}', $modelName),
                 [
-                    'as' => sprintf('%s.resize', $modelName),
+                    'as'   => sprintf('%s.resize', $modelName),
                     'uses' => sprintf('%s@resized', $controllerName),
                 ]
             );
@@ -55,7 +55,7 @@ foreach ($configProvider->getControllersForRoutes() as $controllerName) {
             Route::get(
                 '.dum//{width}-{height}/{color?}/{fill?}/{returnObject?}',
                 [
-                    'as' => sprintf('%s.dummy', $modelName),
+                    'as'   => sprintf('%s.dummy', $modelName),
                     'uses' => sprintf('%s@dummy', $controllerName),
                 ]
             );
@@ -68,7 +68,7 @@ foreach ($configProvider->getControllersForRoutes() as $controllerName) {
                     Route::get(
                         'empty-cache',
                         [
-                            'as' => sprintf('%s.empty-cache', $modelName),
+                            'as'   => sprintf('%s.empty-cache', $modelName),
                             'uses' => sprintf('%s@emptyCache', $controllerName),
                         ]
                     );

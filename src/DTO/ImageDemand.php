@@ -42,7 +42,7 @@ abstract class ImageDemand
      */
     final public function getWidth(): ?int
     {
-        return $this->isValueConsideredNull($this->width) ? null : (int)$this->width;
+        return $this->isValueConsideredNull($this->width) ? null : (int) $this->width;
     }
 
     /**
@@ -50,7 +50,7 @@ abstract class ImageDemand
      */
     final public function getHeight(): ?int
     {
-        return $this->isValueConsideredNull($this->height) ? null : (int)$this->height;
+        return $this->isValueConsideredNull($this->height) ? null : (int) $this->height;
     }
 
     /**

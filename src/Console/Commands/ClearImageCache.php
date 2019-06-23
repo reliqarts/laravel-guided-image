@@ -31,9 +31,9 @@ final class ClearImageCache extends Command
     public function handle(ImageDispenser $imageDispenser): void
     {
         if ($imageDispenser->emptyCache()) {
-            $this->line(PHP_EOL . '<info>✔</info> Success! Guided Image cache cleared.');
+            $this->line(PHP_EOL.'<info>✔</info> Success! Guided Image cache cleared.');
         } else {
-            $this->line(PHP_EOL . '<info>✘</info> Couldn\'t clear Guided Image cache.');
+            $this->line(PHP_EOL.'<info>✘</info> Couldn\'t clear Guided Image cache.');
         }
     }
 }

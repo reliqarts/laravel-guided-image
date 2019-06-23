@@ -16,7 +16,7 @@ abstract class TestCase extends TestbenchTestCase
     protected function getEnvironmentSetUp($app)
     {
         // set base path
-        $app->setBasePath(__DIR__ . '/..');
+        $app->setBasePath(__DIR__.'/..');
 
         // set app config
         $app['config']->set('database.default', 'testing');
