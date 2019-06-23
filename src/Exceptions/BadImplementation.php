@@ -6,9 +6,6 @@ namespace ReliqArts\GuidedImage\Exceptions;
 
 use Exception;
 
-/**
- * {@inheritdoc}
- */
-class BadImplementation extends Exception
+final class BadImplementation extends Exception
 {
 }

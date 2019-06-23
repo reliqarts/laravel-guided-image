@@ -5,19 +5,21 @@ declare(strict_types=1);
 namespace ReliqArts\GuidedImage\Concerns;
 
 use Illuminate\Http\UploadedFile;
-use JsonSerializable;
 use ReliqArts\Contracts\Filesystem;
 use ReliqArts\GuidedImage\Contracts\ImageUploader;
 use ReliqArts\GuidedImage\VO\Result;
 
 /**
- * Trait GuidedRepository.
- *
  * @method mixed delete()
  */
 trait GuidedRepository
 {
-    public static function upload(UploadedFile $file): JsonSerializable
+    /**
+     * @param UploadedFile $file
+     *
+     * @return Result
+     */
+    public static function upload(UploadedFile $file): Result
     {
         /**
          * @var ImageUploader

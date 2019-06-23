@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace ReliqArts\GuidedImage\DTO;
 
 use Illuminate\Http\Request;
-use ReliqArts\GuidedImage\Contracts\Guided;
+use ReliqArts\GuidedImage\Contracts\GuidedImage;
 
 class ThumbnailDemand extends ExistingImageDemand
 {
@@ -21,16 +21,16 @@ class ThumbnailDemand extends ExistingImageDemand
     /**
      * ThumbnailDemand constructor.
      *
-     * @param Request $request
-     * @param Guided  $guidedImage
-     * @param string  $method
-     * @param mixed   $width
-     * @param mixed   $height
-     * @param bool    $returnObject
+     * @param Request     $request
+     * @param GuidedImage $guidedImage
+     * @param string      $method
+     * @param mixed       $width
+     * @param mixed       $height
+     * @param bool        $returnObject
      */
     public function __construct(
         Request $request,
-        Guided $guidedImage,
+        GuidedImage $guidedImage,
         string $method,
         $width,
         $height,

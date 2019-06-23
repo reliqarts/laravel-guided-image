@@ -10,7 +10,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Intervention\Image\Image;
 
-interface Guide
+interface ImageGuide
 {
     /**
      * Empty skim cache by removing SkimDir.
@@ -24,33 +24,33 @@ interface Guide
     /**
      * Get a thumbnail.
      *
-     * @param Request $request
-     * @param Guided  $guidedImage
-     * @param string  $method      crop|fit
-     * @param int     $width
-     * @param int     $height
-     * @param bool    $object      whether Intervention Image should be returned
+     * @param Request     $request
+     * @param GuidedImage $guidedImage
+     * @param string      $method      crop|fit
+     * @param int         $width
+     * @param int         $height
+     * @param bool        $object      whether Intervention Image should be returned
      *
      * @return Image|string intervention Image object or actual image url
      */
-    public function thumb(Request $request, Guided $guidedImage, string $method, $width, $height, $object = false);
+    public function thumb(Request $request, GuidedImage $guidedImage, string $method, $width, $height, $object = false);
 
     /**
      * Get a resized Guided Image.
      *
-     * @param Request $request
-     * @param Guided  $guidedImage
-     * @param int     $width
-     * @param int     $height
-     * @param bool    $aspect      Keep aspect ratio?
-     * @param bool    $upSize      Allow up-size?
-     * @param bool    $object      whether Intervention Image should be returned
+     * @param Request     $request
+     * @param GuidedImage $guidedImage
+     * @param int         $width
+     * @param int         $height
+     * @param bool        $aspect      Keep aspect ratio?
+     * @param bool        $upSize      Allow up-size?
+     * @param bool        $object      whether Intervention Image should be returned
      *
      * @return Image|string intervention Image object or actual image url
      */
     public function resized(
         Request $request,
-        Guided $guidedImage,
+        GuidedImage $guidedImage,
         $width,
         $height,
         $aspect = true,

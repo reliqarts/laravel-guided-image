@@ -7,9 +7,9 @@ namespace ReliqArts\GuidedImage;
 use Illuminate\Config\Repository as ConfigRepository;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Monolog\Handler\StreamHandler;
-use ReliqArts\GuidedImage\Console\Commands\DumpImageCache;
+use ReliqArts\GuidedImage\Console\Commands\ClearImageCache;
 use ReliqArts\GuidedImage\Contracts\ConfigProvider as ConfigProviderContract;
-use ReliqArts\GuidedImage\Contracts\Guided;
+use ReliqArts\GuidedImage\Contracts\GuidedImage;
 use ReliqArts\GuidedImage\Contracts\ImageDispenser as ImageDispenserContract;
 use ReliqArts\GuidedImage\Contracts\ImageUploader as ImageUploaderContract;
 use ReliqArts\GuidedImage\Contracts\Logger as LoggerContract;
@@ -36,7 +36,7 @@ final class ServiceProvider extends ReliqArtsServiceProvider
      * @var array
      */
     protected $commands = [
-        DumpImageCache::class,
+        ClearImageCache::class,
     ];
 
     /**
@@ -97,7 +97,7 @@ final class ServiceProvider extends ReliqArtsServiceProvider
             ImageUploader::class
         );
 
-        $this->app->bind(Guided::class, $guidedModelFQCN);
+        $this->app->bind(GuidedImage::class, $guidedModelFQCN);
     }
 
     public function provides()
@@ -105,7 +105,7 @@ final class ServiceProvider extends ReliqArtsServiceProvider
         return array_merge(
             $this->commands,
             [
-                Guided::class,
+                GuidedImage::class,
             ]
         );
     }

@@ -8,7 +8,6 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Query\Builder as QueryBuilder;
 use Illuminate\Http\UploadedFile;
-use JsonSerializable;
 use ReliqArts\GuidedImage\VO\Result;
 
 /**
@@ -18,7 +17,7 @@ use ReliqArts\GuidedImage\VO\Result;
  * @mixin Builder
  * @mixin QueryBuilder
  */
-interface Guided
+interface GuidedImage
 {
     /**
      *  Get image name.
@@ -76,7 +75,7 @@ interface Guided
      *
      * @param UploadedFile $imageFile File from request. e.g. $request->file('image');
      *
-     * @return JsonSerializable
+     * @return Result
      */
-    public static function upload(UploadedFile $imageFile): JsonSerializable;
+    public static function upload(UploadedFile $imageFile): Result;
 }

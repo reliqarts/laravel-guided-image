@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace ReliqArts\GuidedImage\DTO;
 
 use Illuminate\Http\Request;
-use ReliqArts\GuidedImage\Contracts\Guided;
+use ReliqArts\GuidedImage\Contracts\GuidedImage;
 
 abstract class ExistingImageDemand extends ImageDemand
 {
@@ -15,20 +15,20 @@ abstract class ExistingImageDemand extends ImageDemand
     private $request;
 
     /**
-     * @var Guided
+     * @var GuidedImage
      */
     private $guidedImage;
 
     /**
      * ExistingImageDemand constructor.
      *
-     * @param Request $request
-     * @param Guided  $guidedImage
-     * @param mixed   $width
-     * @param mixed   $height
-     * @param mixed   $returnObject
+     * @param Request     $request
+     * @param GuidedImage $guidedImage
+     * @param mixed       $width
+     * @param mixed       $height
+     * @param mixed       $returnObject
      */
-    public function __construct(Request $request, Guided $guidedImage, $width, $height, $returnObject = null)
+    public function __construct(Request $request, GuidedImage $guidedImage, $width, $height, $returnObject = null)
     {
         parent::__construct($width, $height, $returnObject);
 
@@ -45,9 +45,9 @@ abstract class ExistingImageDemand extends ImageDemand
     }
 
     /**
-     * @return Guided
+     * @return GuidedImage
      */
-    final public function getGuidedImage(): Guided
+    final public function getGuidedImage(): GuidedImage
     {
         return $this->guidedImage;
     }

@@ -8,7 +8,7 @@ namespace ReliqArts\GuidedImage\Concerns;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use ReliqArts\GuidedImage\Contracts\Guided as GuidedContract;
+use ReliqArts\GuidedImage\Contracts\GuidedImage as GuidedContract;
 use ReliqArts\GuidedImage\Contracts\ImageDispenser;
 use ReliqArts\GuidedImage\DTO\DummyDemand;
 use ReliqArts\GuidedImage\DTO\ResizedDemand;

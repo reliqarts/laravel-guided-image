@@ -5,12 +5,11 @@ declare(strict_types=1);
 namespace ReliqArts\GuidedImage\Services;
 
 use Exception;
+use Illuminate\Contracts\Validation\Factory as ValidationFactory;
 use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
-use JsonSerializable;
 use ReliqArts\GuidedImage\Contracts\ConfigProvider;
-use ReliqArts\GuidedImage\Contracts\Guided;
+use ReliqArts\GuidedImage\Contracts\GuidedImage;
 use ReliqArts\GuidedImage\Contracts\ImageUploader as ImageUploaderContract;
 use ReliqArts\GuidedImage\Contracts\Logger;
 use ReliqArts\GuidedImage\VO\Result;
@@ -36,12 +35,12 @@ final class ImageUploader implements ImageUploaderContract
     private $configProvider;
 
     /**
-     * @var Validator
+     * @var ValidationFactory
      */
-    private $validator;
+    private $validationFactory;
 
     /**
-     * @var Guided
+     * @var GuidedImage
      */
     private $guidedImage;
 
@@ -53,19 +52,19 @@ final class ImageUploader implements ImageUploaderContract
     /**
      * Uploader constructor.
      *
-     * @param ConfigProvider $configProvider
-     * @param Validator      $validator
-     * @param Guided         $guidedImage
-     * @param Logger         $logger
+     * @param ConfigProvider    $configProvider
+     * @param ValidationFactory $validationFactory
+     * @param GuidedImage       $guidedImage
+     * @param Logger            $logger
      */
     public function __construct(
         ConfigProvider $configProvider,
-        Validator $validator,
-        Guided $guidedImage,
+        ValidationFactory $validationFactory,
+        GuidedImage $guidedImage,
         Logger $logger
     ) {
         $this->configProvider = $configProvider;
-        $this->validator = $validator;
+        $this->validationFactory = $validationFactory;
         $this->guidedImage = $guidedImage;
         $this->logger = $logger;
     }
@@ -73,9 +72,9 @@ final class ImageUploader implements ImageUploaderContract
     /**
      * {@inheritdoc}
      *
-     * @return JsonSerializable
+     * @return Result
      */
-    public function upload(UploadedFile $imageFile): JsonSerializable
+    public function upload(UploadedFile $imageFile): Result
     {
         if (!$this->validate($imageFile)) {
             return new Result(false, self::ERROR_INVALID_IMAGE);
@@ -90,6 +89,7 @@ final class ImageUploader implements ImageUploaderContract
         if (!empty($existing)) {
             $result = new Result(true);
 
+            // @noinspection PhpIncompatibleReturnTypeInspection
             return $result
                 ->addMessage(self::MESSAGE_IMAGE_REUSED)
                 ->setData($existing);
@@ -102,7 +102,7 @@ final class ImageUploader implements ImageUploaderContract
             );
             $this->guidedImage->unguard();
             $instance = $this->guidedImage->create($imageRow);
-            $this->guidedImage->unguard();
+            $this->guidedImage->reguard();
 
             return new Result(true, '', [], $instance);
         } catch (Exception $exception) {
@@ -150,7 +150,7 @@ final class ImageUploader implements ImageUploaderContract
     private function validate(UploadedFile $imageFile): bool
     {
         $allowedExtensions = $this->configProvider->getAllowedExtensions();
-        $validator = Validator::make(
+        $validator = $this->validationFactory->make(
             [self::KEY_FILE => $imageFile],
             [self::KEY_FILE => $this->configProvider->getImageRules()]
         );

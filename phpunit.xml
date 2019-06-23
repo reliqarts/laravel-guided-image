@@ -2,7 +2,7 @@
 <phpunit backupGlobals="false"
          backupStaticAttributes="false"
          beStrictAboutTestsThatDoNotTestAnything="true"
-         bootstrap="vendor/autoload.php"
+         bootstrap="tests/bootstrap.php"
          cacheResult="false"
          colors="true"
          convertErrorsToExceptions="true"
@@ -13,8 +13,14 @@
          verbose="true">
 
     <testsuites>
-        <testsuite name="ReliqArts Guided Image Tests">
+        <testsuite name="Guided Image Tests">
             <directory suffix=".php">tests</directory>
+        </testsuite>
+        <testsuite name="Guided Image Feature Tests">
+            <directory suffix="Test.php">tests/Feature</directory>
+        </testsuite>
+        <testsuite name="Guided Image Unit Tests">
+            <directory suffix="Test.php">tests/Unit</directory>
         </testsuite>
     </testsuites>
     <filter>

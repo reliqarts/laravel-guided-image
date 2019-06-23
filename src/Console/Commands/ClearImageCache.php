@@ -7,7 +7,7 @@ namespace ReliqArts\GuidedImage\Console\Commands;
 use Illuminate\Console\Command;
 use ReliqArts\GuidedImage\Contracts\ImageDispenser;
 
-class DumpImageCache extends Command
+final class ClearImageCache extends Command
 {
     /**
      * The name and signature of the console command.

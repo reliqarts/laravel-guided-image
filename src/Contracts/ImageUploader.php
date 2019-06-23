@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace ReliqArts\GuidedImage\Contracts;
 
 use Illuminate\Http\UploadedFile;
-use JsonSerializable;
+use ReliqArts\GuidedImage\VO\Result;
 
 interface ImageUploader
 {
@@ -15,7 +15,7 @@ interface ImageUploader
      * @param UploadedFile $imageFile File from request
      *                                .e.g. request->file('image');
      *
-     * @return JsonSerializable
+     * @return Result
      */
-    public function upload(UploadedFile $imageFile): JsonSerializable;
+    public function upload(UploadedFile $imageFile): Result;
 }

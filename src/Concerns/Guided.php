@@ -8,7 +8,7 @@ namespace ReliqArts\GuidedImage\Concerns;
 
 use Illuminate\Support\Str;
 use ReliqArts\GuidedImage\Contracts\ConfigProvider;
-use ReliqArts\GuidedImage\Contracts\Guided as GuidedContract;
+use ReliqArts\GuidedImage\Contracts\GuidedImage as GuidedImageContract;
 use ReliqArts\GuidedImage\Exceptions\BadImplementation;
 
 /**
@@ -27,9 +27,9 @@ trait Guided
     {
         $implementedInterfaces = class_implements(static::class);
 
-        if (!in_array(GuidedContract::class, $implementedInterfaces, true)) {
+        if (!in_array(GuidedImageContract::class, $implementedInterfaces, true)) {
             throw new BadImplementation(
-                sprintf('Model (%s) must implement `%s` to be guided!', static::class, GuidedContract::class)
+                sprintf('Model (%s) must implement `%s` to be guided!', static::class, GuidedImageContract::class)
             );
         }
     }

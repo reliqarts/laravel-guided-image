@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace ReliqArts\GuidedImage\DTO;
 
 use Illuminate\Http\Request;
-use ReliqArts\GuidedImage\Contracts\Guided;
+use ReliqArts\GuidedImage\Contracts\GuidedImage;
 
 class ResizedDemand extends ExistingImageDemand
 {
@@ -22,17 +22,17 @@ class ResizedDemand extends ExistingImageDemand
     /**
      * ResizedDemand constructor.
      *
-     * @param Request $request
-     * @param Guided  $guidedImage
-     * @param mixed   $width
-     * @param mixed   $height
-     * @param mixed   $aspect
-     * @param mixed   $upSize
-     * @param mixed   $returnObject
+     * @param Request     $request
+     * @param GuidedImage $guidedImage
+     * @param mixed       $width
+     * @param mixed       $height
+     * @param mixed       $aspect
+     * @param mixed       $upSize
+     * @param mixed       $returnObject
      */
     public function __construct(
         Request $request,
-        Guided $guidedImage,
+        GuidedImage $guidedImage,
         $width,
         $height,
         $aspect = null,
