@@ -7,7 +7,7 @@ namespace ReliqArts\GuidedImage\DTO;
 use Illuminate\Http\Request;
 use ReliqArts\GuidedImage\Contracts\GuidedImage;
 
-class ResizedDemand extends ExistingImageDemand
+class ResizeDemand extends ExistingImageDemand
 {
     /**
      * @var mixed
@@ -35,7 +35,7 @@ class ResizedDemand extends ExistingImageDemand
         GuidedImage $guidedImage,
         $width,
         $height,
-        $aspect = null,
+        $aspect = true,
         $upSize = null,
         $returnObject = null
     ) {

@@ -11,7 +11,7 @@ use Illuminate\Http\Response;
 use ReliqArts\GuidedImage\Contracts\GuidedImage as GuidedContract;
 use ReliqArts\GuidedImage\Contracts\ImageDispenser;
 use ReliqArts\GuidedImage\DTO\DummyDemand;
-use ReliqArts\GuidedImage\DTO\ResizedDemand;
+use ReliqArts\GuidedImage\DTO\ResizeDemand;
 use ReliqArts\GuidedImage\DTO\ThumbnailDemand;
 
 trait Guide
@@ -36,9 +36,9 @@ trait Guide
         $aspect = true,
         $upSize = false
     ): Response {
-        $demand = new ResizedDemand($request, $guidedImage, $width, $height, $aspect, $upSize);
+        $demand = new ResizeDemand($request, $guidedImage, $width, $height, $aspect, $upSize);
 
-        return $imageDispenser->getImageResized($demand);
+        return $imageDispenser->getResizedImage($demand);
     }
 
     /**

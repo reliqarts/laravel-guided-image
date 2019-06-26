@@ -16,14 +16,14 @@ use ReliqArts\GuidedImage\Contracts\ConfigProvider;
 use ReliqArts\GuidedImage\Contracts\ImageDispenser as ImageDispenserContract;
 use ReliqArts\GuidedImage\Contracts\Logger;
 use ReliqArts\GuidedImage\DTO\DummyDemand;
-use ReliqArts\GuidedImage\DTO\ResizedDemand;
+use ReliqArts\GuidedImage\DTO\ResizeDemand;
 use ReliqArts\GuidedImage\DTO\ThumbnailDemand;
 
 final class ImageDispenser implements ImageDispenserContract
 {
     private const KEY_IMAGE_URL = 'image url';
     private const KEY_SKIM_FILE = 'skim file';
-    private const RESPONSE_CODE_OK = 200;
+    private const RESPONSE_HTTP_OK = Response::HTTP_OK;
     private const SKIM_DIRECTORY_MODE = 0777;
     private const ONE_DAY_IN_SECONDS = 60 * 60 * 24;
 
@@ -86,6 +86,85 @@ final class ImageDispenser implements ImageDispenserContract
      *
      * @return Image|Response
      */
+    public function getDummyImage(DummyDemand $demand)
+    {
+        $image = $this->imageManager->canvas(
+            $demand->getWidth(),
+            $demand->getHeight(),
+            $demand->getColor()
+        );
+        $image = $image->fill($demand->fill());
+
+        // Return object or actual image
+        return ($demand->returnObject())
+            ? $image
+            : $image->response();
+    }
+
+    /**
+     * {@inheritdoc}
+     *
+     * @return Image|Response
+     */
+    public function getResizedImage(ResizeDemand $demand)
+    {
+        $guidedImage = $demand->getGuidedImage();
+        $width = $demand->getWidth();
+        $height = $demand->getHeight();
+        $skimFile = sprintf(
+            '%s/%d-%d-_-%d_%d_%s',
+            $this->skimResized,
+            $width,
+            $height,
+            $demand->maintainAspectRatio() ? 1 : 0,
+            $demand->allowUpSizing() ? 1 : 0,
+            $guidedImage->getName()
+        );
+
+        try {
+            if ($this->filesystem->exists($skimFile)) {
+                $image = $this->imageManager->make($skimFile);
+            } else {
+                $image = $this->imageManager->make($guidedImage->getUrl());
+                $image->resize($width, $height, function (Constraint $constraint) use ($demand) {
+                    if ($demand->maintainAspectRatio()) {
+                        $constraint->aspectRatio();
+                    }
+                    if ($demand->allowUpSizing()) {
+                        $constraint->upsize();
+                    }
+                });
+                $image->save($skimFile);
+            }
+
+            return ($demand->returnObject())
+                ? $image
+                : new Response(
+                    $this->filesystem->get($skimFile),
+                    self::RESPONSE_HTTP_OK,
+                    $this->getImageHeaders($demand->getRequest(), $image) ?: []
+                );
+        } catch (NotReadableException | FileNotFoundException $exception) {
+            $this->logger->error(
+                sprintf(
+                    'Exception was encountered while building resized image; %s',
+                    $exception->getMessage()
+                ),
+                [
+                    self::KEY_IMAGE_URL => $guidedImage->getUrl(),
+                    self::KEY_SKIM_FILE => $skimFile,
+                ]
+            );
+
+            return abort(404);
+        }
+    }
+
+    /**
+     * {@inheritdoc}
+     *
+     * @return Image|Response
+     */
     public function getImageThumbnail(ThumbnailDemand $demand)
     {
         if (!$demand->isValid()) {
@@ -128,7 +207,7 @@ final class ImageDispenser implements ImageDispenserContract
                 ? $image
                 : new Response(
                     $this->filesystem->get($skimFile),
-                    self::RESPONSE_CODE_OK,
+                    self::RESPONSE_HTTP_OK,
                     $this->getImageHeaders($demand->getRequest(), $image) ?: []
                 );
         } catch (NotReadableException | FileNotFoundException $exception) {
@@ -145,85 +224,6 @@ final class ImageDispenser implements ImageDispenserContract
 
             return abort(404);
         }
-    }
-
-    /**
-     * {@inheritdoc}
-     *
-     * @return Image|Response
-     */
-    public function getImageResized(ResizedDemand $demand)
-    {
-        $guidedImage = $demand->getGuidedImage();
-        $width = $demand->getWidth();
-        $height = $demand->getHeight();
-        $skimFile = sprintf(
-            '%s/%d-%d-_-%d_%d_%s',
-            $this->skimResized,
-            $width,
-            $height,
-            $demand->maintainAspectRatio() ? 1 : 0,
-            $demand->allowUpSizing() ? 1 : 0,
-            $guidedImage->getName()
-        );
-
-        try {
-            if ($this->filesystem->exists($skimFile)) {
-                $image = $this->imageManager->make($skimFile);
-            } else {
-                $image = $this->imageManager->make($guidedImage->getUrl());
-                $image->resize($width, $height, function (Constraint $constraint) use ($demand) {
-                    if ($demand->maintainAspectRatio()) {
-                        $constraint->aspectRatio();
-                    }
-                    if ($demand->allowUpSizing()) {
-                        $constraint->upsize();
-                    }
-                });
-                $image->save($skimFile);
-            }
-
-            return ($demand->returnObject())
-                ? $image
-                : new Response(
-                    $this->filesystem->get($skimFile),
-                    self::RESPONSE_CODE_OK,
-                    $this->getImageHeaders($demand->getRequest(), $image) ?: []
-                );
-        } catch (NotReadableException | FileNotFoundException $exception) {
-            $this->logger->error(
-                sprintf(
-                    'Exception was encountered while building resized image; %s',
-                    $exception->getMessage()
-                ),
-                [
-                    self::KEY_IMAGE_URL => $guidedImage->getUrl(),
-                    self::KEY_SKIM_FILE => $skimFile,
-                ]
-            );
-
-            return abort(404);
-        }
-    }
-
-    /**
-     * {@inheritdoc}
-     *
-     * @return Image|Response
-     */
-    public function getDummyImage(DummyDemand $demand)
-    {
-        $image = $this->imageManager->canvas(
-            $demand->getWidth(),
-            $demand->getHeight(),
-            $demand->getColor()
-        );
-        $image = $image->fill($demand->fill());
-
-        // Return object or actual image
-        return ($demand->returnObject())
-            ? $image
-            : $image->response();
     }
 
     /**
