@@ -1,0 +1,23 @@
+language: php
+
+php:
+  - 7.2
+  - 7.3
+
+branches:
+  only:
+    - master
+    - develop
+
+matrix:
+  allow_failures:
+    - php: 7.3
+
+before_script:
+  - travis_retry composer self-update
+  - travis_retry composer install --no-interaction --prefer-dist
+
+script: ./vendor/bin/phpunit --verbose --coverage-clover=coverage.xml
+
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
