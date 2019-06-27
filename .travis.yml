@@ -18,8 +18,10 @@ cache:
   directories:
     - $HOME/.composer/cache
 
-before_script:
+before_install:
   - travis_retry composer self-update
+
+install:
   - travis_retry composer install --no-interaction --prefer-dist
 
 script: ./vendor/bin/phpunit --verbose --coverage-clover=coverage.xml
