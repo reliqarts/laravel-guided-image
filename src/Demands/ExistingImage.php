@@ -20,7 +20,7 @@ abstract class ExistingImage extends Image
     private $guidedImage;
 
     /**
-     * ExistingImageDemand constructor.
+     * ExistingImage constructor.
      *
      * @param Request     $request
      * @param GuidedImage $guidedImage

@@ -19,7 +19,7 @@ class Thumbnail extends ExistingImage
     private $method;
 
     /**
-     * ThumbnailDemand constructor.
+     * Thumbnail constructor.
      *
      * @param Request     $request
      * @param GuidedImage $guidedImage

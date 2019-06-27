@@ -20,7 +20,7 @@ class Resize extends ExistingImage
     private $allowUpSizing;
 
     /**
-     * ResizedDemand constructor.
+     * Resized constructor.
      *
      * @param Request     $request
      * @param GuidedImage $guidedImage

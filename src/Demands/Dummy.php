@@ -19,7 +19,7 @@ class Dummy extends Image
     private $filling;
 
     /**
-     * DummyDemand constructor.
+     * Dummy constructor.
      *
      * @param mixed $width
      * @param mixed $height

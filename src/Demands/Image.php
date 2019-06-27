@@ -24,7 +24,7 @@ abstract class Image
     private $returnObject;
 
     /**
-     * ImageDemand constructor.
+     * Image constructor.
      *
      * @param mixed $width
      * @param mixed $height
