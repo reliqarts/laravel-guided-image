@@ -6,36 +6,36 @@ namespace ReliqArts\GuidedImage\Contracts;
 
 use Illuminate\Http\Response;
 use Intervention\Image\Image;
-use ReliqArts\GuidedImage\DTO\DummyDemand;
-use ReliqArts\GuidedImage\DTO\ResizeDemand;
-use ReliqArts\GuidedImage\DTO\ThumbnailDemand;
+use ReliqArts\GuidedImage\Demands\Dummy;
+use ReliqArts\GuidedImage\Demands\Resize;
+use ReliqArts\GuidedImage\Demands\Thumbnail;
 
 interface ImageDispenser
 {
     /**
-     * @param ThumbnailDemand $demand
+     * @param Thumbnail $demand
      *
      * @return Image|Response
      */
-    public function getImageThumbnail(ThumbnailDemand $demand);
+    public function getImageThumbnail(Thumbnail $demand);
 
     /**
      * Get a resized Guided Image.
      *
-     * @param ResizeDemand $demand
+     * @param Resize $demand
      *
      * @return Image|Response
      */
-    public function getResizedImage(ResizeDemand $demand);
+    public function getResizedImage(Resize $demand);
 
     /**
      * Get dummy Guided Image.
      *
-     * @param DummyDemand $demand
+     * @param Dummy $demand
      *
      * @return Image|Response
      */
-    public function getDummyImage(DummyDemand $demand);
+    public function getDummyImage(Dummy $demand);
 
     /**
      * @return bool

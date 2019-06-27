@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace ReliqArts\GuidedImage\DTO;
+namespace ReliqArts\GuidedImage\Demands;
 
 use Illuminate\Http\Request;
 use ReliqArts\GuidedImage\Contracts\GuidedImage;
 
-class ThumbnailDemand extends ExistingImageDemand
+class Thumbnail extends ExistingImage
 {
     private const METHOD_CROP = 'crop';
     private const METHOD_FIT = 'fit';

@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace ReliqArts\GuidedImage\DTO;
+namespace ReliqArts\GuidedImage\Demands;
 
-class DummyDemand extends ImageDemand
+class Dummy extends Image
 {
     public const DEFAULT_COLOR = 'eefefe';
 

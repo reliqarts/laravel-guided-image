@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace ReliqArts\GuidedImage\DTO;
+namespace ReliqArts\GuidedImage\Demands;
 
 use Illuminate\Http\Request;
 use ReliqArts\GuidedImage\Contracts\GuidedImage;
 
-class ResizeDemand extends ExistingImageDemand
+class Resize extends ExistingImage
 {
     /**
      * @var mixed

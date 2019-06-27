@@ -21,9 +21,9 @@ use Prophecy\Prophecy\ObjectProphecy;
 use ReliqArts\GuidedImage\Contracts\ConfigProvider;
 use ReliqArts\GuidedImage\Contracts\ImageDispenser as ImageDispenserContract;
 use ReliqArts\GuidedImage\Contracts\Logger;
-use ReliqArts\GuidedImage\DTO\DummyDemand;
-use ReliqArts\GuidedImage\DTO\ResizeDemand;
-use ReliqArts\GuidedImage\DTO\ThumbnailDemand;
+use ReliqArts\GuidedImage\Demands\Dummy;
+use ReliqArts\GuidedImage\Demands\Resize;
+use ReliqArts\GuidedImage\Demands\Thumbnail;
 use ReliqArts\GuidedImage\Services\ImageDispenser;
 use ReliqArts\GuidedImage\Tests\Fixtures\Models\GuidedImage;
 use ReliqArts\GuidedImage\Tests\Unit\AspectMockedTestCase;
@@ -229,7 +229,7 @@ final class ImageDispenserTest extends AspectMockedTestCase
             ->willReturn($image);
 
         $result = $this->subject->getDummyImage(
-            new DummyDemand($width, $height, $color, $fill)
+            new Dummy($width, $height, $color, $fill)
         );
 
         $this->assertSame($imageResponse, $result);
@@ -256,7 +256,7 @@ final class ImageDispenserTest extends AspectMockedTestCase
             ->willReturn($image);
 
         $result = $this->subject->getDummyImage(
-            new DummyDemand($width, $height, $color, $fill, true)
+            new Dummy($width, $height, $color, $fill, true)
         );
 
         $this->assertSame($image, $result);
@@ -276,7 +276,7 @@ final class ImageDispenserTest extends AspectMockedTestCase
         $width = self::IMAGE_WIDTH;
         $height = self::IMAGE_HEIGHT;
         $image = $this->getImageMock();
-        $demand = new ResizeDemand(
+        $demand = new Resize(
             $this->request->reveal(),
             $this->guidedImage->reveal(),
             $width,
@@ -331,7 +331,7 @@ final class ImageDispenserTest extends AspectMockedTestCase
         $width = self::IMAGE_WIDTH;
         $height = self::IMAGE_HEIGHT;
         $image = $this->getImageMock();
-        $demand = new ResizeDemand(
+        $demand = new Resize(
             $this->request->reveal(),
             $this->guidedImage->reveal(),
             $width,
@@ -387,7 +387,7 @@ final class ImageDispenserTest extends AspectMockedTestCase
         $width = self::IMAGE_WIDTH;
         $height = self::IMAGE_HEIGHT;
         $image = $this->getImageMock();
-        $demand = new ResizeDemand(
+        $demand = new Resize(
             $this->request->reveal(),
             $this->guidedImage->reveal(),
             $width,
@@ -444,7 +444,7 @@ final class ImageDispenserTest extends AspectMockedTestCase
         $width = self::IMAGE_WIDTH;
         $height = self::IMAGE_HEIGHT;
         $image = $this->getImageMock();
-        $demand = new ResizeDemand(
+        $demand = new Resize(
             $this->request->reveal(),
             $this->guidedImage->reveal(),
             $width,
@@ -508,7 +508,7 @@ final class ImageDispenserTest extends AspectMockedTestCase
         $width = self::IMAGE_WIDTH;
         $height = self::IMAGE_HEIGHT;
         $image = $this->getImageMock();
-        $demand = new ThumbnailDemand(
+        $demand = new Thumbnail(
             $this->request->reveal(),
             $this->guidedImage->reveal(),
             self::THUMBNAIL_METHOD_CROP,
@@ -563,7 +563,7 @@ final class ImageDispenserTest extends AspectMockedTestCase
         $width = self::IMAGE_WIDTH;
         $height = self::IMAGE_HEIGHT;
         $image = $this->getImageMock();
-        $demand = new ThumbnailDemand(
+        $demand = new Thumbnail(
             $this->request->reveal(),
             $this->guidedImage->reveal(),
             self::THUMBNAIL_METHOD_CROP,
@@ -617,7 +617,7 @@ final class ImageDispenserTest extends AspectMockedTestCase
         $width = self::IMAGE_WIDTH;
         $height = self::IMAGE_HEIGHT;
         $image = $this->getImageMock();
-        $demand = new ThumbnailDemand(
+        $demand = new Thumbnail(
             $this->request->reveal(),
             $this->guidedImage->reveal(),
             self::THUMBNAIL_METHOD_CROP,
@@ -671,7 +671,7 @@ final class ImageDispenserTest extends AspectMockedTestCase
     {
         $width = self::IMAGE_WIDTH;
         $height = self::IMAGE_HEIGHT;
-        $demand = new ThumbnailDemand(
+        $demand = new Thumbnail(
             $this->request->reveal(),
             $this->guidedImage->reveal(),
             'invalid',
@@ -731,7 +731,7 @@ final class ImageDispenserTest extends AspectMockedTestCase
     {
         $width = self::IMAGE_WIDTH;
         $height = self::IMAGE_HEIGHT;
-        $demand = new ThumbnailDemand(
+        $demand = new Thumbnail(
             $this->request->reveal(),
             $this->guidedImage->reveal(),
             self::THUMBNAIL_METHOD_FIT,

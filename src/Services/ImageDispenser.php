@@ -15,9 +15,9 @@ use ReliqArts\Contracts\Filesystem;
 use ReliqArts\GuidedImage\Contracts\ConfigProvider;
 use ReliqArts\GuidedImage\Contracts\ImageDispenser as ImageDispenserContract;
 use ReliqArts\GuidedImage\Contracts\Logger;
-use ReliqArts\GuidedImage\DTO\DummyDemand;
-use ReliqArts\GuidedImage\DTO\ResizeDemand;
-use ReliqArts\GuidedImage\DTO\ThumbnailDemand;
+use ReliqArts\GuidedImage\Demands\Dummy;
+use ReliqArts\GuidedImage\Demands\Resize;
+use ReliqArts\GuidedImage\Demands\Thumbnail;
 
 final class ImageDispenser implements ImageDispenserContract
 {
@@ -85,7 +85,7 @@ final class ImageDispenser implements ImageDispenserContract
      *
      * @return Image|Response
      */
-    public function getDummyImage(DummyDemand $demand)
+    public function getDummyImage(Dummy $demand)
     {
         $image = $this->imageManager->canvas(
             $demand->getWidth(),
@@ -105,7 +105,7 @@ final class ImageDispenser implements ImageDispenserContract
      *
      * @return Image|Response|void
      */
-    public function getResizedImage(ResizeDemand $demand)
+    public function getResizedImage(Resize $demand)
     {
         $guidedImage = $demand->getGuidedImage();
         $width = $demand->getWidth();
@@ -166,7 +166,7 @@ final class ImageDispenser implements ImageDispenserContract
      *
      * @return Image|Response|void
      */
-    public function getImageThumbnail(ThumbnailDemand $demand)
+    public function getImageThumbnail(Thumbnail $demand)
     {
         if (!$demand->isValid()) {
             $this->logger->warning(

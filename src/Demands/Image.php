@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace ReliqArts\GuidedImage\DTO;
+namespace ReliqArts\GuidedImage\Demands;
 
-abstract class ImageDemand
+abstract class Image
 {
     protected const NULLS = [false, null, 'null', 'false', '_'];
 
