@@ -24,6 +24,7 @@ final class ImageDispenser implements ImageDispenserContract
     private const KEY_IMAGE_URL = 'image url';
     private const KEY_SKIM_FILE = 'skim file';
     private const RESPONSE_HTTP_OK = Response::HTTP_OK;
+    private const RESPONSE_HTTP_NOT_FOUND = Response::HTTP_NOT_FOUND;
     private const SKIM_DIRECTORY_MODE = 0777;
     private const ONE_DAY_IN_SECONDS = 60 * 60 * 24;
 
@@ -75,8 +76,6 @@ final class ImageDispenser implements ImageDispenserContract
         $this->filesystem = $filesystem;
         $this->imageManager = $imageManager;
         $this->logger = $logger;
-        $this->skimResized = storage_path($configProvider->getSkimResizedDirectory());
-        $this->skimThumbs = storage_path($configProvider->getSkimThumbsDirectory());
 
         $this->prepSkimDirectories();
     }
@@ -104,7 +103,7 @@ final class ImageDispenser implements ImageDispenserContract
     /**
      * {@inheritdoc}
      *
-     * @return Image|Response
+     * @return Image|Response|void
      */
     public function getResizedImage(ResizeDemand $demand)
     {
@@ -137,13 +136,15 @@ final class ImageDispenser implements ImageDispenserContract
                 $image->save($skimFile);
             }
 
-            return ($demand->returnObject())
-                ? $image
-                : new Response(
-                    $this->filesystem->get($skimFile),
-                    self::RESPONSE_HTTP_OK,
-                    $this->getImageHeaders($demand->getRequest(), $image) ?: []
-                );
+            if ($demand->returnObject()) {
+                return $image;
+            }
+
+            return new Response(
+                $this->filesystem->get($skimFile),
+                self::RESPONSE_HTTP_OK,
+                $this->getImageHeaders($demand->getRequest(), $image) ?: []
+            );
         } catch (NotReadableException | FileNotFoundException $exception) {
             $this->logger->error(
                 sprintf(
@@ -156,14 +157,14 @@ final class ImageDispenser implements ImageDispenserContract
                 ]
             );
 
-            return abort(404);
+            abort(self::RESPONSE_HTTP_NOT_FOUND);
         }
     }
 
     /**
      * {@inheritdoc}
      *
-     * @return Image|Response
+     * @return Image|Response|void
      */
     public function getImageThumbnail(ThumbnailDemand $demand)
     {
@@ -175,7 +176,7 @@ final class ImageDispenser implements ImageDispenserContract
                 ]
             );
 
-            return abort(404);
+            return abort(self::RESPONSE_HTTP_NOT_FOUND);
         }
 
         $guidedImage = $demand->getGuidedImage();
@@ -202,14 +203,15 @@ final class ImageDispenser implements ImageDispenserContract
                 $image->save($skimFile);
             }
 
-            // Setup response with appropriate headers
-            return ($demand->returnObject())
-                ? $image
-                : new Response(
-                    $this->filesystem->get($skimFile),
-                    self::RESPONSE_HTTP_OK,
-                    $this->getImageHeaders($demand->getRequest(), $image) ?: []
-                );
+            if ($demand->returnObject()) {
+                return $image;
+            }
+
+            return new Response(
+                $this->filesystem->get($skimFile),
+                self::RESPONSE_HTTP_OK,
+                $this->getImageHeaders($demand->getRequest(), $image) ?: []
+            );
         } catch (NotReadableException | FileNotFoundException $exception) {
             $this->logger->error(
                 sprintf(
@@ -222,7 +224,7 @@ final class ImageDispenser implements ImageDispenserContract
                 ]
             );
 
-            return abort(404);
+            abort(self::RESPONSE_HTTP_NOT_FOUND);
         }
     }
 
@@ -257,7 +259,7 @@ final class ImageDispenser implements ImageDispenserContract
             // Say not modified and kill script
             header('HTTP/1.1 304 Not Modified');
             header(sprintf('ETag: %s', $etagFile));
-            exit;
+            exit();
         }
 
         // adjust headers and return
@@ -271,6 +273,9 @@ final class ImageDispenser implements ImageDispenserContract
 
     private function prepSkimDirectories(): void
     {
+        $this->skimResized = storage_path($this->configProvider->getSkimResizedDirectory());
+        $this->skimThumbs = storage_path($this->configProvider->getSkimThumbsDirectory());
+
         if (!$this->filesystem->isDirectory($this->skimThumbs)) {
             $this->filesystem->makeDirectory($this->skimThumbs, self::SKIM_DIRECTORY_MODE, true);
         }

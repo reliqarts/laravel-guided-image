@@ -104,7 +104,7 @@ final class ImageUploader implements ImageUploaderContract
             $instance = $this->guidedImage->create($imageRow);
             $this->guidedImage->reguard();
 
-            return new Result(true, '', [], $instance);
+            $result = new Result(true, '', [], $instance);
         } catch (Exception $exception) {
             $this->logger->error(
                 $exception->getMessage(),
@@ -114,8 +114,10 @@ final class ImageUploader implements ImageUploaderContract
                 ]
             );
 
-            return new Result(false, $exception->getMessage());
+            $result = new Result(false, $exception->getMessage());
         }
+
+        return $result;
     }
 
     /**

@@ -30,8 +30,14 @@ abstract class AspectMockedTestCase extends TestCase
     {
         parent::setUp();
 
-        $this->namespace = 'ReliqArts\\GuidedImage';
-        $this->abortFunc = Test::func($this->namespace, 'abort', 'abort');
+        $this->namespace = 'ReliqArts\\GuidedImage\\Services';
+        $this->abortFunc = Test::func(
+            $this->namespace,
+            'abort',
+            function (int $code = null) {
+                return $code;
+            }
+        );
 
         $this->setGroups(array_merge($this->getGroups(), [self::GROUP]));
     }
