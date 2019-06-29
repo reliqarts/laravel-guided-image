@@ -93,7 +93,7 @@ trait Guide
      * @param mixed          $width
      * @param mixed          $height
      * @param mixed          $color
-     * @param bool           $fill
+     * @param mixed          $fill
      *
      * @return Response
      */

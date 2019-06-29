@@ -15,11 +15,11 @@ interface ImageGuide
     /**
      * Empty skim cache.
      *
-     * @param Request $request
+     * @param ImageDispenser $imageDispenser
      *
      * @return JsonResponse
      */
-    public function emptyCache(Request $request): JsonResponse;
+    public function emptyCache(ImageDispenser $imageDispenser): JsonResponse;
 
     /**
      * Get a resized Guided Image.
@@ -68,13 +68,19 @@ interface ImageGuide
     /**
      * Get dummy Guided Image.
      *
-     * @param int|string   $width
-     * @param int|string   $height
-     * @param string       $color
-     * @param bool|string  $fill
-     * @param mixed|string $object
+     * @param ImageDispenser $imageDispenser
+     * @param mixed          $width
+     * @param mixed          $height
+     * @param mixed          $color
+     * @param mixed          $fill
      *
      * @return Image|string intervention Image object or actual image url
      */
-    public function dummy($width, $height, $color = '#eefefe', $fill = false, $object = false);
+    public function dummy(
+        ImageDispenser $imageDispenser,
+        $width,
+        $height,
+        $color = '#eefefe',
+        $fill = false
+    );
 }
