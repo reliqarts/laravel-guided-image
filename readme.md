@@ -145,7 +145,7 @@ $linkToImage = $image->routeResized([
     '_',        // height, 'null' is OK 
 ], 'thumb');
 ```
-**NB:** In the above example `_` is treated as `null`. You may specify which strings should be treated as `null` by the routes in `config/guidedimage.php`. 
+**NB:** In the above example `_` is treated as `null`.
 
 Have a look at the [GuidedImage contract](https://github.com/ReliQArts/laravel-guided-image/blob/master/src/ReliQArts/GuidedImage/Contracts/GuidedImage.php) for more info on model functions.
 

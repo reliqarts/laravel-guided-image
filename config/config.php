@@ -44,9 +44,6 @@ return [
                 // 'middleware' => 'admin',
             ],
         ],
-
-        // Route values to be treated as null.
-        'nulls' => ['n', 'none', 'no', 'empty', 'false', 'auto', '_'],
     ],
 
     // allowed extensions

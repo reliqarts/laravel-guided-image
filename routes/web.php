@@ -42,20 +42,14 @@ foreach ($configProvider->getControllersForRoutes() as $controllerName) {
             // Resized $guidedModel
             Route::get(
                 sprintf('.res/{%s}//{width}-{height}/{aspect?}/{upSize?}/{returnObject?}', $modelName),
-                [
-                    'as' => sprintf('%s.resize', $modelName),
-                    'uses' => sprintf('%s@resized', $controllerName),
-                ]
-            );
+                sprintf('%s@resized', $controllerName)
+            )->name(sprintf('%s.resize', $modelName));
 
             // Dummy $guidedModel
             Route::get(
                 '.dum//{width}-{height}/{color?}/{fill?}/{returnObject?}',
-                [
-                    'as' => sprintf('%s.dummy', $modelName),
-                    'uses' => sprintf('%s@dummy', $controllerName),
-                ]
-            );
+                sprintf('%s@dummy', $controllerName)
+            )->name(sprintf('%s.dummy', $modelName));
 
             // admin route group
             Route::group(
@@ -64,11 +58,8 @@ foreach ($configProvider->getControllersForRoutes() as $controllerName) {
                     // Used to empty directory photo cache (skimDir)
                     Route::get(
                         'empty-cache',
-                        [
-                            'as' => sprintf('%s.empty-cache', $modelName),
-                            'uses' => sprintf('%s@emptyCache', $controllerName),
-                        ]
-                    );
+                        sprintf('%s@emptyCache', $controllerName)
+                    )->name(sprintf('%s.empty-cache', $modelName));
                 }
             );
         }
