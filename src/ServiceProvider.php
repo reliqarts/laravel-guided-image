@@ -7,7 +7,7 @@ namespace ReliqArts\GuidedImage;
 use Illuminate\Config\Repository as ConfigRepository;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Monolog\Handler\StreamHandler;
-use ReliqArts\GuidedImage\Console\Commands\ClearImageCache;
+use ReliqArts\GuidedImage\Console\Commands\ClearSkimDirectories;
 use ReliqArts\GuidedImage\Contracts\ConfigProvider as ConfigProviderContract;
 use ReliqArts\GuidedImage\Contracts\GuidedImage;
 use ReliqArts\GuidedImage\Contracts\ImageDispenser as ImageDispenserContract;
@@ -36,7 +36,7 @@ final class ServiceProvider extends ReliqArtsServiceProvider
      * @var array
      */
     protected $commands = [
-        ClearImageCache::class,
+        ClearSkimDirectories::class,
     ];
 
     /**

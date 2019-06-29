@@ -68,7 +68,7 @@ interface GuidedImage
      *
      * @return string
      */
-    public function routeResized(array $params = null, string $type = 'resize'): string;
+    public function routeResized(array $params = [], string $type = 'resize'): string;
 
     /**
      *  Upload and save image.

@@ -40,5 +40,5 @@ interface ImageDispenser
     /**
      * @return bool
      */
-    public function emptyCache(): bool;
+    public function emptySkimDirectories(): bool;
 }

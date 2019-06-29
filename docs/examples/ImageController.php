@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Examples\Http\Controllers;
+namespace ReliqArts\GuidedImage\Examples\Http\Controllers;
 
-use ReliqArts\GuidedImage\Contracts\Guide;
-use ReliqArts\GuidedImage\Concerns\Guide as GuideTrait;
+use ReliqArts\GuidedImage\Contracts\ImageGuide;
+use ReliqArts\GuidedImage\Concerns\Guide;
 
-class ImageController implements Guide
+class ImageController implements ImageGuide
 {
-    use GuideTrait;
+    use Guide;
 }

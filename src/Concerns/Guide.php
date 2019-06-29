@@ -6,31 +6,55 @@ declare(strict_types=1);
 
 namespace ReliqArts\GuidedImage\Concerns;
 
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use ReliqArts\GuidedImage\Contracts\GuidedImage as GuidedContract;
+use ReliqArts\GuidedImage\Contracts\GuidedImage;
 use ReliqArts\GuidedImage\Contracts\ImageDispenser;
 use ReliqArts\GuidedImage\Demands\Dummy;
 use ReliqArts\GuidedImage\Demands\Resize;
 use ReliqArts\GuidedImage\Demands\Thumbnail;
+use ReliqArts\GuidedImage\VO\Result;
 
 trait Guide
 {
     /**
+     * Empty skim cache.
+     *
+     * @param ImageDispenser $imageDispenser
+     *
+     * @return JsonResponse
+     */
+    public function emptyCache(ImageDispenser $imageDispenser): JsonResponse
+    {
+        $errorMessage = 'Could not clear skim directories.';
+
+        if ($imageDispenser->emptySkimDirectories()) {
+            return response()->json(
+                new Result(true, '', ['Skim directories successfully cleared.'])
+            );
+        }
+
+        return response()->json(
+            new Result(false, $errorMessage, [$errorMessage])
+        );
+    }
+
+    /**
      * @param ImageDispenser $imageDispenser
      * @param Request        $request
-     * @param GuidedContract $guidedImage
+     * @param GuidedImage    $guidedImage
      * @param mixed          $width
      * @param mixed          $height
-     * @param bool           $aspect
-     * @param bool           $upSize
+     * @param mixed          $aspect
+     * @param mixed          $upSize
      *
      * @return Response
      */
     public function resized(
         ImageDispenser $imageDispenser,
         Request $request,
-        GuidedContract $guidedImage,
+        GuidedImage $guidedImage,
         $width,
         $height,
         $aspect = true,
@@ -44,7 +68,7 @@ trait Guide
     /**
      * @param ImageDispenser $imageDispenser
      * @param Request        $request
-     * @param GuidedContract $guidedImage
+     * @param GuidedImage    $guidedImage
      * @param mixed          $method
      * @param mixed          $width
      * @param mixed          $height
@@ -54,7 +78,7 @@ trait Guide
     public function thumb(
         ImageDispenser $imageDispenser,
         Request $request,
-        GuidedContract $guidedImage,
+        GuidedImage $guidedImage,
         $method,
         $width,
         $height

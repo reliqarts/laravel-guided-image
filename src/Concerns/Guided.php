@@ -15,6 +15,8 @@ use ReliqArts\GuidedImage\Exceptions\BadImplementation;
  * Trait Guided.
  *
  * @property mixed $id
+ * @property string name
+ * @property string full_path
  */
 trait Guided
 {
@@ -56,7 +58,7 @@ trait Guided
      *
      * @return string
      */
-    public function routeResized(array $params = null, string $type = 'resize'): string
+    public function routeResized(array $params = [], string $type = 'resize'): string
     {
         /**
          * @var ConfigProvider
@@ -64,7 +66,7 @@ trait Guided
         $configProvider = resolve(ConfigProvider::class);
         $guidedModelName = $configProvider->getGuidedModelName(true);
 
-        if (!(in_array($type, ['resize', 'thumb'], true) && is_array($params))) {
+        if (!(in_array($type, ['resize', 'thumb'], true) && !empty($params))) {
             return $this->getUrl();
         }
         array_unshift($params, $this->id);

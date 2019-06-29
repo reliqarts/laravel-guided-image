@@ -147,18 +147,18 @@ $linkToImage = $image->routeResized([
 ```
 **NB:** In the above example "_" is treated as *null*. You may specify which strings should be treated as *null* by the routes in `config/guidedimage.php`. 
 
-Have a look at the [Guided contract](https://github.com/ReliQArts/laravel-guided-image/blob/master/src/ReliQArts/GuidedImage/Contracts/Guided.php) for more info on model functions.
+Have a look at the [GuidedImage contract](https://github.com/ReliQArts/laravel-guided-image/blob/master/src/ReliQArts/GuidedImage/Contracts/GuidedImage.php) for more info on model functions.
 
-For more info on controller functions see the [ImageGuider contract](https://github.com/ReliQArts/laravel-guided-image/blob/master/src/ReliQArts/GuidedImage/Contracts/Guider.php).
+For more info on controller functions see the [ImageGuide contract](https://github.com/ReliQArts/laravel-guided-image/blob/master/src/ReliQArts/GuidedImage/Contracts/ImageGuide.php).
 
 ##### Routes
 
 Your actually routes will depend heavily on your custom configuration. Here is an example of what the routes may look like:
 
 ```
-|        | GET|HEAD | image/.dummy\{width}-{height}/{color?}/{fill?}/{object?}            | image.dummy           | App\Http\Controllers\ImageController@dummy                             | web          |
-|        | GET|HEAD | image/.image\{image}\{width}-{height}\{aspect?}\{upsize?}\{object?} | image.resize          | App\Http\Controllers\ImageController@resized                           | web          |
-|        | GET|HEAD | image/.thumb\{image}\m.{method}\{width}-{height}\{object?}          | image.thumb           | App\Http\Controllers\ImageController@thumb                             | web          |
-|        | GET|HEAD | image/empty-cache                                                   | image.empty-cache     | App\Http\Controllers\ImageController@emptyCache                        | web          |
+|        | GET|HEAD | image/.dum//{width}-{height}/{color?}/{fill?}/{returnObject?}            | image.dummy           | App\Http\Controllers\ImageController@dummy                             | web          |
+|        | GET|HEAD | image/.res/{image}//{width}-{height}/{aspect?}/{upSize?}/{returnObject?} | image.resize          | App\Http\Controllers\ImageController@resized                           | web          |
+|        | GET|HEAD | image/.tmb/{image}//m.{method}/{width}-{height}/{returnObject?}          | image.thumb           | App\Http\Controllers\ImageController@thumb                             | web          |
+|        | GET|HEAD | image/empty-cache                                                        | image.empty-cache     | App\Http\Controllers\ImageController@emptyCache                        | web          |
 
 ```

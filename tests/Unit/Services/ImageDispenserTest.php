@@ -38,7 +38,6 @@ use ReliqArts\Services\Filesystem;
  */
 final class ImageDispenserTest extends AspectMockedTestCase
 {
-    const THUMBNAIL_METHOD_FIT = 'fit';
     private const SKIM_RESIZED_SUB_DIRECTORY = 'RESIZED';
     private const SKIM_THUMBS_SUB_DIRECTORY = 'THUMBS';
     private const RESPONSE_HTTP_OK = Response::HTTP_OK;
@@ -51,6 +50,7 @@ final class ImageDispenserTest extends AspectMockedTestCase
     private const IMAGE_WIDTH = 100;
     private const IMAGE_HEIGHT = 200;
     private const THUMBNAIL_METHOD_CROP = 'crop';
+    private const THUMBNAIL_METHOD_FIT = 'fit';
 
     /**
      * @var ConfigProvider|ObjectProphecy
@@ -191,7 +191,7 @@ final class ImageDispenserTest extends AspectMockedTestCase
 
     /**
      * @covers ::__construct
-     * @covers ::emptyCache
+     * @covers ::emptySkimDirectories
      */
     public function testEmptyCache(): void
     {
@@ -204,7 +204,7 @@ final class ImageDispenserTest extends AspectMockedTestCase
             ->shouldBeCalledTimes(1)
             ->willReturn(true);
 
-        $result = $this->subject->emptyCache();
+        $result = $this->subject->emptySkimDirectories();
 
         $this->assertTrue($result);
     }

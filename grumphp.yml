@@ -12,8 +12,3 @@ parameters:
             verbose: true
             diff: false
             triggered_by: ['php']
-        phpunit:
-            config_file: ~
-            testsuite: ~
-            group: []
-            always_execute: false

@@ -7,7 +7,7 @@ namespace ReliqArts\GuidedImage\Console\Commands;
 use Illuminate\Console\Command;
 use ReliqArts\GuidedImage\Contracts\ImageDispenser;
 
-final class ClearImageCache extends Command
+final class ClearSkimDirectories extends Command
 {
     /**
      * The name and signature of the console command.
@@ -21,19 +21,25 @@ final class ClearImageCache extends Command
      *
      * @var string
      */
-    protected $description = 'Empty guided image file cache';
+    protected $description = 'Clear guided image skim directories (file cache)';
 
     /**
      * Execute the console command.
      *
      * @param ImageDispenser $imageDispenser
+     *
+     * @return bool
      */
-    public function handle(ImageDispenser $imageDispenser): void
+    public function handle(ImageDispenser $imageDispenser): bool
     {
-        if ($imageDispenser->emptyCache()) {
+        if ($imageDispenser->emptySkimDirectories()) {
             $this->line(PHP_EOL . '<info>✔</info> Success! Guided Image cache cleared.');
-        } else {
-            $this->line(PHP_EOL . '<info>✘</info> Couldn\'t clear Guided Image cache.');
+
+            return true;
         }
+
+        $this->line(PHP_EOL . '<info>✘</info> Couldn\'t clear Guided Image cache.');
+
+        return false;
     }
 }

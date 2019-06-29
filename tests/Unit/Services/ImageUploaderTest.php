@@ -90,6 +90,8 @@ final class ImageUploaderTest extends AspectMockedTestCase
 
     protected function setUp(): void
     {
+        parent::setUp();
+
         $this->configProvider = $this->prophesize(ConfigProvider::class);
         $this->validationFactory = $this->prophesize(ValidationFactory::class);
         $this->validator = $this->prophesize(Validator::class);

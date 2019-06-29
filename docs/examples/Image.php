@@ -2,18 +2,21 @@
 
 declare(strict_types=1);
 
-namespace Examples;
+namespace ReliqArts\GuidedImage\Examples;
 
 use Illuminate\Database\Eloquent\Model;
-use ReliqArts\GuidedImage\Contracts\Guided as GuidedContract;
-use ReliqArts\GuidedImage\Concerns\Guided as GuidedTrait;
+use Illuminate\Support\Collection;
+use ReliqArts\GuidedImage\Contracts\GuidedImage;
+use ReliqArts\GuidedImage\Concerns\Guided;
 
 /**
  *  Image model.
+ *
+ * @property Collection $posts
  */
-class Image extends Model implements GuidedContract
+class Image extends Model implements GuidedImage
 {
-    use GuidedTrait;
+    use Guided;
 
     /**
      *  Images table.
@@ -36,8 +39,9 @@ class Image extends Model implements GuidedContract
     /**
      * {@inheritdoc}
      */
-    public function isSafeForDelete($safeAmount = 1)
+    public function isSafeForDelete(int $safeAmount = 1): bool
     {
+        /** @noinspection PhpUndefinedClassInspection */
         $posts = Post::withTrashed()->where('image_id', $this->id)->get();
         $posts = $this->posts->merge($posts);
         $usage = $posts->count();

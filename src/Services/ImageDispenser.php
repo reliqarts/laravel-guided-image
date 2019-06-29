@@ -231,7 +231,7 @@ final class ImageDispenser implements ImageDispenserContract
     /**
      * @return bool
      */
-    public function emptyCache(): bool
+    public function emptySkimDirectories(): bool
     {
         return (bool)($this->filesystem->deleteDirectory($this->skimResized)
             && $this->filesystem->deleteDirectory($this->skimThumbs));

@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace ReliqArts\GuidedImage\Demands;
 
-abstract class Image
-{
-    protected const NULLS = [false, null, 'null', 'false', '_'];
+use ReliqArts\GuidedImage\Contracts\ImageDemand;
 
+abstract class Image implements ImageDemand
+{
     /**
      * @var mixed
      */
@@ -66,7 +66,7 @@ abstract class Image
      *
      * @return bool
      */
-    final protected function isValueConsideredNull($value): bool
+    final public function isValueConsideredNull($value): bool
     {
         return in_array($value, static::NULLS, true);
     }

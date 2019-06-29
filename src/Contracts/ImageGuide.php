@@ -13,7 +13,7 @@ use Intervention\Image\Image;
 interface ImageGuide
 {
     /**
-     * Empty skim cache by removing SkimDir.
+     * Empty skim cache.
      *
      * @param Request $request
      *
@@ -22,40 +22,47 @@ interface ImageGuide
     public function emptyCache(Request $request): JsonResponse;
 
     /**
-     * Get a thumbnail.
-     *
-     * @param Request     $request
-     * @param GuidedImage $guidedImage
-     * @param string      $method      crop|fit
-     * @param int         $width
-     * @param int         $height
-     * @param bool        $object      whether Intervention Image should be returned
-     *
-     * @return Image|string intervention Image object or actual image url
-     */
-    public function thumb(Request $request, GuidedImage $guidedImage, string $method, $width, $height, $object = false);
-
-    /**
      * Get a resized Guided Image.
      *
-     * @param Request     $request
-     * @param GuidedImage $guidedImage
-     * @param int         $width
-     * @param int         $height
-     * @param bool        $aspect      Keep aspect ratio?
-     * @param bool        $upSize      Allow up-size?
-     * @param bool        $object      whether Intervention Image should be returned
+     * @param ImageDispenser $imageDispenser
+     * @param Request        $request
+     * @param GuidedImage    $guidedImage
+     * @param mixed          $width
+     * @param mixed          $height
+     * @param mixed          $aspect         Keep aspect ratio?
+     * @param mixed          $upSize         Allow up-size?
      *
      * @return Image|string intervention Image object or actual image url
      */
     public function resized(
+        ImageDispenser $imageDispenser,
         Request $request,
         GuidedImage $guidedImage,
         $width,
         $height,
         $aspect = true,
-        $upSize = false,
-        $object = false
+        $upSize = false
+    );
+
+    /**
+     * Get a thumbnail.
+     *
+     * @param ImageDispenser $imageDispenser
+     * @param Request        $request
+     * @param GuidedImage    $guidedImage
+     * @param string         $method         crop|fit
+     * @param int            $width
+     * @param int            $height
+     *
+     * @return Image|string intervention Image object or actual image url
+     */
+    public function thumb(
+        ImageDispenser $imageDispenser,
+        Request $request,
+        GuidedImage $guidedImage,
+        string $method,
+        $width,
+        $height
     );
 
     /**
