@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Query\Builder as QueryBuilder;
 use Illuminate\Http\UploadedFile;
+use ReliqArts\GuidedImage\Demands\Resize;
 use ReliqArts\GuidedImage\VO\Result;
 
 /**
@@ -61,14 +62,32 @@ interface GuidedImage
     public function remove(bool $force = false): Result;
 
     /**
-     * Get routed link to image.
+     * Get resized/thumbnail photo link.
      *
+     * @param string $type   request type (thumbnail or resize)
      * @param array  $params parameters to pass to route
-     * @param string $type   Operation to be performed on instance. (resize, thumb)
      *
      * @return string
      */
-    public function routeResized(array $params = [], string $type = 'resize'): string;
+    public function route(string $type, array $params = []): string;
+
+    /**
+     * Get link to resized photo.
+     *
+     * @param array $params parameters to pass to route
+     *
+     * @return string
+     */
+    public function routeResized(array $params = []): string;
+
+    /**
+     * Get link to photo thumbnail.
+     *
+     * @param array $params parameters to pass to route
+     *
+     * @return string
+     */
+    public function routeThumbnail(array $params = []): string;
 
     /**
      *  Upload and save image.

@@ -9,6 +9,8 @@ namespace ReliqArts\GuidedImage\Concerns;
 use Illuminate\Support\Str;
 use ReliqArts\GuidedImage\Contracts\ConfigProvider;
 use ReliqArts\GuidedImage\Contracts\GuidedImage as GuidedImageContract;
+use ReliqArts\GuidedImage\Demands\Resize;
+use ReliqArts\GuidedImage\Demands\Thumbnail;
 use ReliqArts\GuidedImage\Exceptions\BadImplementation;
 
 /**
@@ -47,31 +49,56 @@ trait Guided
      */
     public function isSafeForDelete(int $safeAmount = 1): bool
     {
-        return true;
+        return $safeAmount === 1;
     }
 
     /**
-     * Get routed link to photo.
+     * Get resized/thumbnail photo link.
      *
+     * @param string $type   request type (thumbnail or resize)
      * @param array  $params parameters to pass to route
-     * @param string $type   Operation to be performed on instance. (resize, thumb)
      *
      * @return string
      */
-    public function routeResized(array $params = [], string $type = 'resize'): string
+    public function route(string $type, array $params = []): string
     {
+        if (empty($params)) {
+            return $this->getUrl();
+        }
+
         /**
          * @var ConfigProvider
          */
         $configProvider = resolve(ConfigProvider::class);
         $guidedModelName = $configProvider->getGuidedModelName(true);
 
-        if (!(in_array($type, ['resize', 'thumb'], true) && !empty($params))) {
-            return $this->getUrl();
-        }
         array_unshift($params, $this->id);
 
         return route(sprintf('%s.%s', $guidedModelName, $type), $params);
+    }
+
+    /**
+     * Get link to resized photo.
+     *
+     * @param array $params parameters to pass to route
+     *
+     * @return string
+     */
+    public function routeResized(array $params = []): string
+    {
+        return $this->route(Resize::ROUTE_TYPE_NAME, $params);
+    }
+
+    /**
+     * Get link to photo thumbnail.
+     *
+     * @param array $params parameters to pass to route
+     *
+     * @return string
+     */
+    public function routeThumbnail(array $params = []): string
+    {
+        return $this->route(Thumbnail::ROUTE_TYPE_NAME, $params);
     }
 
     /**

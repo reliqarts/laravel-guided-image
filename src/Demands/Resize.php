@@ -7,8 +7,10 @@ namespace ReliqArts\GuidedImage\Demands;
 use Illuminate\Http\Request;
 use ReliqArts\GuidedImage\Contracts\GuidedImage;
 
-class Resize extends ExistingImage
+final class Resize extends ExistingImage
 {
+    public const ROUTE_TYPE_NAME = 'resize';
+
     /**
      * @var mixed
      */

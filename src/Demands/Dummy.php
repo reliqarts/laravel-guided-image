@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace ReliqArts\GuidedImage\Demands;
 
-class Dummy extends Image
+final class Dummy extends Image
 {
     public const DEFAULT_COLOR = 'eefefe';
 

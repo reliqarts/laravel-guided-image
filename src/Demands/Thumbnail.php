@@ -7,8 +7,10 @@ namespace ReliqArts\GuidedImage\Demands;
 use Illuminate\Http\Request;
 use ReliqArts\GuidedImage\Contracts\GuidedImage;
 
-class Thumbnail extends ExistingImage
+final class Thumbnail extends ExistingImage
 {
+    public const ROUTE_TYPE_NAME = 'thumb';
+
     private const METHOD_CROP = 'crop';
     private const METHOD_FIT = 'fit';
     private const METHODS = [self::METHOD_CROP, self::METHOD_FIT];

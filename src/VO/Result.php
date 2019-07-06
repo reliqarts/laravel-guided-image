@@ -6,6 +6,6 @@ namespace ReliqArts\GuidedImage\VO;
 
 use ReliqArts\VO\Result as ReliqArtsResult;
 
-class Result extends ReliqArtsResult
+final class Result extends ReliqArtsResult
 {
 }
