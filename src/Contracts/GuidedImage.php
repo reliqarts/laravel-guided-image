@@ -28,6 +28,16 @@ interface GuidedImage
     public function getName(): string;
 
     /**
+     * Get resized/thumbnail photo link.
+     *
+     * @param string $type   request type (thumbnail or resize)
+     * @param array  $params parameters to pass to route
+     *
+     * @return string
+     */
+    public function getRoutedUrl(string $type, array $params = []): string;
+
+    /**
      *  Get image title.
      *
      * @return string
@@ -60,16 +70,6 @@ interface GuidedImage
      * @return Result
      */
     public function remove(bool $force = false): Result;
-
-    /**
-     * Get resized/thumbnail photo link.
-     *
-     * @param string $type   request type (thumbnail or resize)
-     * @param array  $params parameters to pass to route
-     *
-     * @return string
-     */
-    public function route(string $type, array $params = []): string;
 
     /**
      * Get link to resized photo.

@@ -39,20 +39,6 @@ trait Guided
     }
 
     /**
-     * Whether image is safe for deleting.
-     * Since a single image may be re-used this method is used to determine
-     * when an image can be safely deleted from disk.
-     *
-     * @param int $safeAmount a photo is safe to delete if it is used by $safe_num amount of records
-     *
-     * @return bool whether image is safe for delete
-     */
-    public function isSafeForDelete(int $safeAmount = 1): bool
-    {
-        return $safeAmount === 1;
-    }
-
-    /**
      * Get resized/thumbnail photo link.
      *
      * @param string $type   request type (thumbnail or resize)
@@ -60,7 +46,7 @@ trait Guided
      *
      * @return string
      */
-    public function route(string $type, array $params = []): string
+    public function getRoutedUrl(string $type, array $params = []): string
     {
         if (empty($params)) {
             return $this->getUrl();
@@ -78,6 +64,20 @@ trait Guided
     }
 
     /**
+     * Whether image is safe for deleting.
+     * Since a single image may be re-used this method is used to determine
+     * when an image can be safely deleted from disk.
+     *
+     * @param int $safeAmount a photo is safe to delete if it is used by $safe_num amount of records
+     *
+     * @return bool whether image is safe for delete
+     */
+    public function isSafeForDelete(int $safeAmount = 1): bool
+    {
+        return $safeAmount === 1;
+    }
+
+    /**
      * Get link to resized photo.
      *
      * @param array $params parameters to pass to route
@@ -86,7 +86,7 @@ trait Guided
      */
     public function routeResized(array $params = []): string
     {
-        return $this->route(Resize::ROUTE_TYPE_NAME, $params);
+        return $this->getRoutedUrl(Resize::ROUTE_TYPE_NAME, $params);
     }
 
     /**
@@ -98,7 +98,7 @@ trait Guided
      */
     public function routeThumbnail(array $params = []): string
     {
-        return $this->route(Thumbnail::ROUTE_TYPE_NAME, $params);
+        return $this->getRoutedUrl(Thumbnail::ROUTE_TYPE_NAME, $params);
     }
 
     /**
