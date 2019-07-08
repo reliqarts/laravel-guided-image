@@ -3,8 +3,9 @@
 Guided Image is an image utility package for Laravel 5.x based on Intervention Image.
 
 [![Built For Laravel](https://img.shields.io/badge/built%20for-laravel-red.svg?style=flat-square)](http://laravel.com)
-[![StyleCI](https://styleci.io/repos/71434979/shield?branch=master)](https://styleci.io/repos/71434979)
+[![Build Status (all)](https://img.shields.io/travis/reliqarts/laravel-guided-image.svg?style=flat-square)](https://travis-ci.org/reliqarts/laravel-guided-image)
 [![Scrutinizer](https://img.shields.io/scrutinizer/g/reliqarts/laravel-guided-image.svg?style=flat-square)](https://scrutinizer-ci.com/g/reliqarts/laravel-guided-image/)
+[![Codecov](https://img.shields.io/codecov/c/github/reliqarts/laravel-guided-image.svg?style=flat-square)](https://codecov.io/gh/reliqarts/laravel-guided-image)
 [![License](https://poser.pugx.org/reliqarts/laravel-guided-image/license?format=flat-square)](https://packagist.org/packages/reliqarts/laravel-guided-image)
 [![Latest Stable Version](https://poser.pugx.org/reliqarts/laravel-guided-image/version?format=flat-square)](https://packagist.org/packages/reliqarts/laravel-guided-image)
 [![Latest Unstable Version](https://poser.pugx.org/reliqarts/laravel-guided-image/v/unstable?format=flat-square)](//packagist.org/packages/reliqarts/laravel-guided-image)
@@ -14,6 +15,11 @@ Guided Image is an image utility package for Laravel 5.x based on Intervention I
 [![Guided Image for Laravel](https://raw.githubusercontent.com/reliqarts/laravel-guided-image/master/docs/images/logo.png)](#)
 
 ## Key Features
+
+- On-the-fly image resizing
+- On-the-fly thumbnail generation
+- Image uploading
+- Smart image reuse; mitigating against double uploads and space resource waste.
 
 Guided Image can be integrated seamlessly with your existing image model.
 
@@ -47,12 +53,6 @@ or require in *composer.json*:
 ```
 then run `composer update` in your terminal to pull it in.
 
-Once this has finished, you may need to add the service provider to the providers array  in your `config/app.php` depending on your Laravel version:
-
-```php
-ReliqArts\GuidedImage\ServiceProvider::class,
-```
-
 Finally, publish package resources and configuration:
 
 ```
@@ -64,7 +64,6 @@ You may opt to publish only configuration by using the `guided-image-config` tag
 ```
 php artisan vendor:publish --provider="ReliqArts\GuidedImage\ServiceProvider" --tag="guided-image-config"
 ``` 
-You may publish migrations in a similar manner using the tag `guided-image-migrations`.
 
 ### Setup
 
@@ -78,7 +77,7 @@ GUIDED_IMAGE_ROUTE_PREFIX=image
 GUIDED_IMAGE_SKIM_DIR=images
 ```
 
-These variables, and more are explained within the [config](https://github.com/ReliQArts/laravel-guided-image/blob/master/src/config/config.php) file.
+These variables, and more are explained within the [config](https://github.com/ReliqArts/laravel-guided-image/blob/master/src/config/config.php) file.
 
 And... it's ready! :ok_hand:
 
@@ -86,31 +85,31 @@ And... it's ready! :ok_hand:
 
 To *use* Guided Image you must do just that from your *Image* model. :smirk:
 
-Implement the `ReliqArts\GuidedImage\Contracts\Guided` contract and use the `ReliqArts\GuidedImage\Traits\Guided` trait, e.g:
+Implement the `ReliqArts\GuidedImage\Contracts\GuidedImage` contract and use the `ReliqArts\GuidedImage\Concerns\Guided` trait, e.g:
 
 ```php
 use Illuminate\Database\Eloquent\Model;
-use ReliqArts\GuidedImage\Traits\Guided as GuidedTrait;
-use ReliqArts\GuidedImage\Contracts\Guided as GuidedContract;
+use ReliqArts\GuidedImage\Concerns\Guided;
+use ReliqArts\GuidedImage\Contracts\GuidedImage;
 
-class Image extends Model implements GuidedContract
+class Image extends Model implements GuidedImage
 {
-    use GuidedTrait;
+    use Guided;
 
     // ... properties and methods
 }
 ```
 See example [here](https://github.com/ReliQArts/laravel-guided-image/blob/master/docs/examples/Image.php).
 
-Implement the `ReliqArts\GuidedImage\Contracts\Guider` contract and use the `ReliqArts\GuidedImage\Traits\Guider` trait from your *ImageController*, e.g:
+Implement the `ReliqArts\GuidedImage\Contracts\ImageGuide` contract and use the `ReliqArts\GuidedImage\Concerns\Guide` trait from your *ImageController*, e.g:
 
 ```php
-use ReliqArts\GuidedImage\Contracts\Guider as ImageGuiderContract;
-use ReliqArts\GuidedImage\Traits\Guider as ImageGuiderTrait;
+use ReliqArts\GuidedImage\Contracts\ImageGuide;
+use ReliqArts\GuidedImage\Concerns\Guide;
 
-class ImageController extends Controller implements ImageGuiderContract
+class ImageController extends Controller implements ImageGuide
 {
-    use ImageGuiderTrait;
+    use Guide;
 }
 ```
 See example [here](https://github.com/ReliQArts/laravel-guided-image/blob/master/docs/examples/ImageController.php).
@@ -146,20 +145,20 @@ $linkToImage = $image->routeResized([
     '_',        // height, 'null' is OK 
 ], 'thumb');
 ```
-**NB:** In the above example "_" is treated as *null*. You may specify which strings should be treated as *null* by the routes in `config/guidedimage.php`. 
+**NB:** In the above example `_` is treated as `null`.
 
-Have a look at the [Guided contract](https://github.com/ReliQArts/laravel-guided-image/blob/master/src/ReliQArts/GuidedImage/Contracts/Guided.php) for more info on model functions.
+Have a look at the [GuidedImage contract](https://github.com/ReliQArts/laravel-guided-image/blob/master/src/ReliQArts/GuidedImage/Contracts/GuidedImage.php) for more info on model functions.
 
-For more info on controller functions see the [ImageGuider contract](https://github.com/ReliQArts/laravel-guided-image/blob/master/src/ReliQArts/GuidedImage/Contracts/Guider.php).
+For more info on controller functions see the [ImageGuide contract](https://github.com/ReliQArts/laravel-guided-image/blob/master/src/ReliQArts/GuidedImage/Contracts/ImageGuide.php).
 
 ##### Routes
 
 Your actually routes will depend heavily on your custom configuration. Here is an example of what the routes may look like:
 
 ```
-|        | GET|HEAD | image/.dummy\{width}-{height}/{color?}/{fill?}/{object?}            | image.dummy           | App\Http\Controllers\ImageController@dummy                             | web          |
-|        | GET|HEAD | image/.image\{image}\{width}-{height}\{aspect?}\{upsize?}\{object?} | image.resize          | App\Http\Controllers\ImageController@resized                           | web          |
-|        | GET|HEAD | image/.thumb\{image}\m.{method}\{width}-{height}\{object?}          | image.thumb           | App\Http\Controllers\ImageController@thumb                             | web          |
-|        | GET|HEAD | image/empty-cache                                                   | image.empty-cache     | App\Http\Controllers\ImageController@emptyCache                        | web          |
+|| GET|HEAD | image/.dum//{width}-{height}/{color?}/{fill?}/{returnObject?}            | image.dummy           | App\Http\Controllers\ImageController@dummy       | web |
+|| GET|HEAD | image/.res/{image}//{width}-{height}/{aspect?}/{upSize?}/{returnObject?} | image.resize          | App\Http\Controllers\ImageController@resized     | web |
+|| GET|HEAD | image/.tmb/{image}//m.{method}/{width}-{height}/{returnObject?}          | image.thumb           | App\Http\Controllers\ImageController@thumb       | web |
+|| GET|HEAD | image/empty-cache                                                        | image.empty-cache     | App\Http\Controllers\ImageController@emptyCache  | web |
 
 ```

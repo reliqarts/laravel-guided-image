@@ -1,13 +1,14 @@
 <?php
 
 $header = <<<'EOF'
-This file is part of the Guided Image Laravel package.
+This file is part of Guided Image
 
-(c) ReliQ <reliq@reliqarts.com>
+(c) Reliq <reliq@reliqarts.com>
 EOF;
 
 $finder = PhpCsFixer\Finder::create()
     ->exclude([
+        'build',
         'docs',
     ])
     ->in(__DIR__);
@@ -28,6 +29,7 @@ $config = PhpCsFixer\Config::create()
         'combine_consecutive_unsets' => true,
         'comment_to_phpdoc' => true,
         'compact_nullable_typehint' => true,
+        'cast_spaces' => ['space' => 'none'],
         'concat_space' => ['spacing' => 'one'],
         'escape_implicit_backslashes' => true,
         'explicit_indirect_variable' => true,

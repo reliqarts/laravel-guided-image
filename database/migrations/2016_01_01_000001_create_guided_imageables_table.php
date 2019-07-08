@@ -2,7 +2,7 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
-use ReliqArts\GuidedImage\Helpers\Config;
+use ReliqArts\GuidedImage\Services\ConfigProvider;
 
 class CreateGuidedImageablesTable extends Migration
 {
@@ -11,17 +11,19 @@ class CreateGuidedImageablesTable extends Migration
      */
     public function up()
     {
-        $table = Config::getImageablesTable();
-        if (Schema::hasTable($table)) {
+        $tableName = ConfigProvider::getImageablesTable();
+        $imagesTableName = ConfigProvider::getImageTable();
+
+        if (Schema::hasTable($tableName)) {
             return;
         }
 
-        Schema::create($table, function (Blueprint $table) {
+        Schema::create($tableName, function (Blueprint $table) use ($imagesTableName) {
             $table->increments('id');
             $table->integer('image_id')->unsigned();
             $table->foreign('image_id')
                 ->references('id')
-                ->on('images')
+                ->on($imagesTableName)
                 ->onDelete('CASCADE');
             $table->integer('imageable_id');
             $table->string('imageable_type');
@@ -33,7 +35,7 @@ class CreateGuidedImageablesTable extends Migration
      */
     public function down()
     {
-        $table = Config::getImageablesTable();
+        $table = ConfigProvider::getImageablesTable();
         Schema::dropIfExists($table);
     }
 }

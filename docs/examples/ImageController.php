@@ -1,11 +1,13 @@
 <?php
 
-namespace App\Http\Controllers;
+declare(strict_types=1);
 
-use ReliqArts\GuidedImage\Contracts\ImageGuider as ImageGuiderContract;
-use ReliqArts\GuidedImage\Traits\ImageGuider as ImageGuiderTrait;
+namespace ReliqArts\GuidedImage\Examples\Http\Controllers;
 
-class ImageController extends Controller implements ImageGuiderContract
+use ReliqArts\GuidedImage\Contracts\ImageGuide;
+use ReliqArts\GuidedImage\Concerns\Guide;
+
+class ImageController implements ImageGuide
 {
-    use ImageGuiderTrait;
+    use Guide;
 }

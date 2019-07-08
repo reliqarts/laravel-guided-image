@@ -1,6 +1,9 @@
 <?php
 
-use ReliqArts\GuidedImage\Helpers\Config;
+declare(strict_types=1);
+
+use Illuminate\Support\Facades\Route;
+use ReliqArts\GuidedImage\Contracts\ConfigProvider;
 
 /*
 |--------------------------------------------------------------------------
@@ -11,59 +14,54 @@ use ReliqArts\GuidedImage\Helpers\Config;
 |
 */
 
-$guidedModel = Config::getRouteModel(true);
+$configProvider = resolve(ConfigProvider::class);
+$modelName = $configProvider->getGuidedModelName(true);
 
 // get controllers for routes and create the routes for each
-foreach (Config::getContollersForRoutes() as $guidedController) {
+foreach ($configProvider->getControllersForRoutes() as $controllerName) {
     // if controller name's empty skip
-    if (!$guidedController) {
+    if (!$controllerName) {
         continue;
     }
 
     // if controller name doesn't contain namespace, add it
-    if (false === strpos($guidedController, '\\')) {
-        $guidedController = "App\\Http\\Controllers\\{$guidedController}";
+    if (false === strpos($controllerName, '\\')) {
+        $controllerName = sprintf('App\\Http\\Controllers\\%s', $controllerName);
     }
 
     // the public route group
-    Route::group(Config::getRouteGroupBindings(), function () use ($guidedController, $guidedModel) {
-        // $guidedModel thumbnail
-        Route::get(
-            ".tmb/{{$guidedModel}}//m.{method}/{width}-{height}/{object?}",
-            [
-                'as' => "${guidedModel}.thumb",
-                'uses' => "${guidedController}@thumb",
-            ]
-        );
-
-        // Resized $guidedModel
-        Route::get(
-            ".res/{{$guidedModel}}//{width}-{height}/{aspect?}/{upsize?}/{object?}",
-            [
-                'as' => "${guidedModel}.resize",
-                'uses' => "${guidedController}@resized",
-            ]
-        );
-
-        // Dummy $guidedModel
-        Route::get(
-            '.dum/{width}-{height}/{color?}/{fill?}/{object?}',
-            [
-                'as' => "${guidedModel}.dummy",
-                'uses' => "${guidedController}@dummy",
-            ]
-        );
-
-        // admin route group
-        Route::group(Config::getRouteGroupBindings([], 'admin'), function () use ($guidedController, $guidedModel) {
-            // Used to empty directory photo cache (skimDir)
+    Route::group(
+        $configProvider->getRouteGroupBindings(),
+        function () use ($configProvider, $controllerName, $modelName) {
+            // $guidedModel thumbnail
             Route::get(
-                'empty-cache',
-                [
-                    'as' => "${guidedModel}.empty-cache",
-                    'uses' => "${guidedController}@emptyCache",
-                ]
+                sprintf('.tmb/{%s}//m.{method}/{width}-{height}/{returnObject?}', $modelName),
+                sprintf('%s@thumb', $controllerName)
+            )->name(sprintf('%s.thumb', $modelName));
+
+            // Resized $guidedModel
+            Route::get(
+                sprintf('.res/{%s}//{width}-{height}/{aspect?}/{upSize?}/{returnObject?}', $modelName),
+                sprintf('%s@resized', $controllerName)
+            )->name(sprintf('%s.resize', $modelName));
+
+            // Dummy $guidedModel
+            Route::get(
+                '.dum//{width}-{height}/{color?}/{fill?}/{returnObject?}',
+                sprintf('%s@dummy', $controllerName)
+            )->name(sprintf('%s.dummy', $modelName));
+
+            // admin route group
+            Route::group(
+                $configProvider->getRouteGroupBindings([], 'admin'),
+                function () use ($controllerName, $modelName) {
+                    // Used to empty directory photo cache (skimDir)
+                    Route::get(
+                        'empty-cache',
+                        sprintf('%s@emptyCache', $controllerName)
+                    )->name(sprintf('%s.empty-cache', $modelName));
+                }
             );
-        });
-    });
+        }
+    );
 }

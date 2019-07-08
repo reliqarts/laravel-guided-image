@@ -1,28 +1,41 @@
 <?php
 
+declare(strict_types=1);
+
 namespace ReliqArts\GuidedImage\Contracts;
 
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use ReliqArts\GuidedImage\ViewModels\Result;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Query\Builder as QueryBuilder;
+use Illuminate\Http\UploadedFile;
+use ReliqArts\GuidedImage\Demands\Resize;
+use ReliqArts\GuidedImage\VO\Result;
 
 /**
  * A true guided image defines.
+ *
+ * @mixin Model
+ * @mixin Builder
+ * @mixin QueryBuilder
  */
-interface Guided
+interface GuidedImage
 {
-    /**
-     * Retrieve the creator (uploader) of the image.
-     *
-     * @return BelongsTo
-     */
-    public function creator(): BelongsTo;
-
     /**
      *  Get image name.
      *
      * @return string
      */
     public function getName(): string;
+
+    /**
+     * Get resized/thumbnail photo link.
+     *
+     * @param string $type   request type (thumbnail or resize)
+     * @param array  $params parameters to pass to route
+     *
+     * @return string
+     */
+    public function getRoutedUrl(string $type, array $params = []): string;
 
     /**
      *  Get image title.
@@ -59,29 +72,29 @@ interface Guided
     public function remove(bool $force = false): Result;
 
     /**
-     * Get routed link to photo.
+     * Get link to resized photo.
      *
-     * @param array  $params parameters to pass to route
-     * @param string $type   Operation to be performed on instance. (resize, thumb)
+     * @param array $params parameters to pass to route
      *
      * @return string
      */
-    public function routeResized(array $params = null, string $type = 'resize'): string;
+    public function routeResized(array $params = []): string;
 
     /**
-     * Get upload directory.
+     * Get link to photo thumbnail.
      *
-     * @return string upload directory
+     * @param array $params parameters to pass to route
+     *
+     * @return string
      */
-    public static function getUploadDir(): string;
+    public function routeThumbnail(array $params = []): string;
 
     /**
      *  Upload and save image.
      *
-     * @param \Illuminate\Http\UploadedFile|\Symfony\Component\HttpFoundation\File\UploadedFile $imageFile File
-     *                                                                                                     from request. e.g. $request->file('image');
+     * @param UploadedFile $imageFile File from request. e.g. $request->file('image');
      *
      * @return Result
      */
-    public static function upload($imageFile): Result;
+    public static function upload(UploadedFile $imageFile): Result;
 }

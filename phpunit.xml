@@ -1,24 +1,47 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <phpunit backupGlobals="false"
          backupStaticAttributes="false"
-         bootstrap="vendor/autoload.php"
+         beStrictAboutTestsThatDoNotTestAnything="true"
+         bootstrap="tests/bootstrap.php"
+         cacheResult="false"
          colors="true"
          convertErrorsToExceptions="true"
          convertNoticesToExceptions="true"
          convertWarningsToExceptions="true"
          processIsolation="false"
          stopOnFailure="false"
-         syntaxCheck="false">
+         verbose="true">
 
     <testsuites>
-        <testsuite name="Package Test Suite">
-            <directory suffix=".php">./tests/</directory>
+        <testsuite name="Guided Image Tests">
+            <directory suffix=".php">tests</directory>
+        </testsuite>
+        <testsuite name="Guided Image Feature Tests">
+            <directory suffix="Test.php">tests/Feature</directory>
+        </testsuite>
+        <testsuite name="Guided Image Unit Tests">
+            <directory suffix="Test.php">tests/Unit</directory>
         </testsuite>
     </testsuites>
-
+    <filter>
+        <whitelist processUncoveredFilesFromWhitelist="true">
+            <directory suffix=".php">src</directory>
+            <exclude>
+                <directory suffix=".php">src/Concerns</directory>
+            </exclude>
+        </whitelist>
+    </filter>
     <php>
+        <ini name="error_reporting" value="E_ALL" />
+        <ini name="display_errors" value="1" />
+        <ini name="display_startup_errors" value="1" />
+
+        <env name="APP_ENV" value="testing"/>
+        <env name="CACHE_DRIVER" value="array"/>
         <env name="GUIDED_IMAGE_MODEL" value="GuidedImage" />
     </php>
-
+    <logging>
+        <log type="coverage-text" target="build/coverage.txt"/>
+        <log type="coverage-clover" target="build/coverage.xml"/>
+    </logging>
 </phpunit>
