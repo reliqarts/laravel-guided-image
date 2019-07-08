@@ -3,16 +3,31 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
-use ReliqArts\GuidedImage\Services\ConfigProvider;
+use ReliqArts\GuidedImage\Contracts\ConfigProvider;
 
 class CreateGuidedImagesTable extends Migration
 {
+    /**
+     * @var ConfigProvider
+     */
+    private $configProvider;
+
+    /**
+     * CreateGuidedImagesTable constructor.
+     *
+     * @param ConfigProvider $configProvider
+     */
+    public function __construct(ConfigProvider $configProvider)
+    {
+        $this->configProvider = $configProvider;
+    }
+
     /**
      * Run the migrations.
      */
     public function up()
     {
-        $tableName = ConfigProvider::getImageTable();
+        $tableName = $this->configProvider->getImageablesTableName();
 
         if (!Schema::hasTable($tableName)) {
             Schema::create($tableName, function (Blueprint $table) {
@@ -35,7 +50,7 @@ class CreateGuidedImagesTable extends Migration
      */
     public function down()
     {
-        $tableName = ConfigProvider::getImageTable();
+        $tableName = $this->configProvider->getImagesTableName();
 
         Schema::dropIfExists($tableName);
     }
