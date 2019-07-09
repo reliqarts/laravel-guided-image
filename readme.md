@@ -139,11 +139,11 @@ $linkToImage = $image->routeResized([
 ]);
 
 // thumbnail:
-$linkToImage = $image->routeResized([
+$linkToImage = $image->routeThumbnail([
     'crop',     // method: crop|fit
     '550',      // width
     '_',        // height, 'null' is OK 
-], 'thumb');
+]);
 ```
 **NB:** In the above example `_` is treated as `null`.
 
