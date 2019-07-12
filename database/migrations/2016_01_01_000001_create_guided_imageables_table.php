@@ -49,7 +49,8 @@ class CreateGuidedImageablesTable extends Migration
      */
     public function down()
     {
-        $table = $this->configProvider->getImageablesTableName();
-        Schema::dropIfExists($table);
+        $tableName = $this->configProvider->getImageablesTableName();
+
+        Schema::dropIfExists($tableName);
     }
 }
