@@ -103,4 +103,14 @@ interface ConfigProvider
      * @return string
      */
     public function getSkimDirectory(): string;
+
+    /**
+     * @return string
+     */
+    public function getImageEncodingFormat(): string;
+
+    /**
+     * @return int
+     */
+    public function getImageEncodingQuality(): int;
 }

@@ -51,6 +51,8 @@ final class ImageDispenserTest extends AspectMockedTestCase
     private const IMAGE_HEIGHT = 200;
     private const THUMBNAIL_METHOD_CROP = 'crop';
     private const THUMBNAIL_METHOD_FIT = 'fit';
+    private const IMAGE_ENCODING_FORMAT = 'png';
+    private const IMAGE_ENCODING_QUALITY = 90;
 
     /**
      * @var ConfigProvider|ObjectProphecy
@@ -149,6 +151,12 @@ final class ImageDispenserTest extends AspectMockedTestCase
         $this->configProvider
             ->getAdditionalHeaders()
             ->willReturn([]);
+        $this->configProvider
+            ->getImageEncodingFormat()
+            ->willReturn(self::IMAGE_ENCODING_FORMAT);
+        $this->configProvider
+            ->getImageEncodingQuality()
+            ->willReturn(self::IMAGE_ENCODING_QUALITY);
 
         $this->filesystem
             ->isDirectory($this->skimResized)
@@ -269,6 +277,7 @@ final class ImageDispenserTest extends AspectMockedTestCase
      * @covers ::getDefaultHeaders
      * @covers ::getImageHeaders
      * @covers ::getResizedImage
+     * @covers ::makeImageWithEncoding
      * @covers ::prepSkimDirectories
      */
     public function testGetResizedImage(): void
@@ -324,6 +333,7 @@ final class ImageDispenserTest extends AspectMockedTestCase
     /**
      * @covers ::__construct
      * @covers ::getResizedImage
+     * @covers ::makeImageWithEncoding
      * @covers ::prepSkimDirectories
      */
     public function testGetResizedImageWhenImageInstanceIsExpected(): void
@@ -380,6 +390,7 @@ final class ImageDispenserTest extends AspectMockedTestCase
      * @covers ::getDefaultHeaders
      * @covers ::getImageHeaders
      * @covers ::getResizedImage
+     * @covers ::makeImageWithEncoding
      * @covers ::prepSkimDirectories
      */
     public function testGetResizedImageWhenSkimFileExists(): void
@@ -437,6 +448,7 @@ final class ImageDispenserTest extends AspectMockedTestCase
      * @covers ::getDefaultHeaders
      * @covers ::getImageHeaders
      * @covers ::getResizedImage
+     * @covers ::makeImageWithEncoding
      * @covers ::prepSkimDirectories
      */
     public function testGetResizedWhenImageRetrievalFails(): void
@@ -501,6 +513,7 @@ final class ImageDispenserTest extends AspectMockedTestCase
      * @covers ::getDefaultHeaders
      * @covers ::getImageHeaders
      * @covers ::getImageThumbnail
+     * @covers ::makeImageWithEncoding
      * @covers ::prepSkimDirectories
      */
     public function testGetImageThumbnail(): void
@@ -556,6 +569,7 @@ final class ImageDispenserTest extends AspectMockedTestCase
     /**
      * @covers ::__construct
      * @covers ::getImageThumbnail
+     * @covers ::makeImageWithEncoding
      * @covers ::prepSkimDirectories
      */
     public function testGetImageThumbnailWhenImageInstanceIsExpected(): void
@@ -610,6 +624,7 @@ final class ImageDispenserTest extends AspectMockedTestCase
      * @covers ::getDefaultHeaders
      * @covers ::getImageHeaders
      * @covers ::getImageThumbnail
+     * @covers ::makeImageWithEncoding
      * @covers ::prepSkimDirectories
      */
     public function testGetImageThumbnailWhenSkimFileExists(): void
@@ -665,6 +680,7 @@ final class ImageDispenserTest extends AspectMockedTestCase
     /**
      * @covers ::__construct
      * @covers ::getImageThumbnail
+     * @covers ::makeImageWithEncoding
      * @covers ::prepSkimDirectories
      */
     public function testGetImageThumbnailWhenDemandIsInvalid(): void
@@ -725,6 +741,7 @@ final class ImageDispenserTest extends AspectMockedTestCase
      * @covers ::getDefaultHeaders
      * @covers ::getImageHeaders
      * @covers ::getImageThumbnail
+     * @covers ::makeImageWithEncoding
      * @covers ::prepSkimDirectories
      */
     public function testGetImageThumbnailWhenImageRetrievalFails(): void
@@ -789,7 +806,14 @@ final class ImageDispenserTest extends AspectMockedTestCase
      */
     private function getImageMock(Response $imageResponse = null): MockInterface
     {
-        $imageMethodNames = ['fill', 'resize', 'save', self::THUMBNAIL_METHOD_CROP, self::THUMBNAIL_METHOD_FIT];
+        $imageMethodNames = [
+            'fill',
+            'resize',
+            'save',
+            'encode',
+            self::THUMBNAIL_METHOD_CROP,
+            self::THUMBNAIL_METHOD_FIT,
+        ];
         /** @var Image|MockInterface $image */
         $image = Mockery::mock(
             Image::class,

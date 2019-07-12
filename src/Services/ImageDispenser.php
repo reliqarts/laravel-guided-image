@@ -27,6 +27,8 @@ final class ImageDispenser implements ImageDispenserContract
     private const RESPONSE_HTTP_NOT_FOUND = Response::HTTP_NOT_FOUND;
     private const SKIM_DIRECTORY_MODE = 0777;
     private const ONE_DAY_IN_SECONDS = 60 * 60 * 24;
+    private const DEFAULT_IMAGE_ENCODING_FORMAT = 'png';
+    private const DEFAULT_IMAGE_ENCODING_QUALITY = 90;
 
     /**
      * @var ConfigProvider
@@ -37,6 +39,16 @@ final class ImageDispenser implements ImageDispenserContract
      * @var Filesystem
      */
     private $filesystem;
+
+    /**
+     * @var string
+     */
+    private $imageEncodingFormat;
+
+    /**
+     * @var int
+     */
+    private $imageEncodingQuality;
 
     /**
      * @var ImageManager
@@ -75,6 +87,8 @@ final class ImageDispenser implements ImageDispenserContract
         $this->configProvider = $configProvider;
         $this->filesystem = $filesystem;
         $this->imageManager = $imageManager;
+        $this->imageEncodingFormat = $configProvider->getImageEncodingFormat();
+        $this->imageEncodingQuality = $configProvider->getImageEncodingQuality();
         $this->logger = $logger;
 
         $this->prepSkimDirectories();
@@ -122,9 +136,9 @@ final class ImageDispenser implements ImageDispenserContract
 
         try {
             if ($this->filesystem->exists($skimFile)) {
-                $image = $this->imageManager->make($skimFile);
+                $image = $this->makeImageWithEncoding($skimFile);
             } else {
-                $image = $this->imageManager->make($guidedImage->getUrl());
+                $image = $this->makeImageWithEncoding($guidedImage->getUrl());
                 $image->resize($width, $height, function (Constraint $constraint) use ($demand) {
                     if ($demand->maintainAspectRatio()) {
                         $constraint->aspectRatio();
@@ -194,7 +208,7 @@ final class ImageDispenser implements ImageDispenserContract
 
         try {
             if ($this->filesystem->exists($skimFile)) {
-                $image = $this->imageManager->make($skimFile);
+                $image = $this->makeImageWithEncoding($skimFile);
             } else {
                 /** @var Image $image */
                 $image = $this->imageManager
@@ -295,5 +309,25 @@ final class ImageDispenser implements ImageDispenserContract
             ],
             $this->configProvider->getAdditionalHeaders()
         );
+    }
+
+    /**
+     * @param string $path
+     * @param mixed  ...$encoding
+     *
+     * @return Image
+     */
+    private function makeImageWithEncoding(string $path, ...$encoding): Image
+    {
+        if (empty($encoding)) {
+            $encoding = [
+                $this->imageEncodingFormat ?: self::DEFAULT_IMAGE_ENCODING_FORMAT,
+                $this->imageEncodingQuality ?: self::DEFAULT_IMAGE_ENCODING_QUALITY,
+            ];
+        }
+
+        return $this->imageManager
+            ->make($path)
+            ->encode(...$encoding);
     }
 }

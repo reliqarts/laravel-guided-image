@@ -22,6 +22,12 @@ return [
         'imageables_table' => env('GUIDED_IMAGEABLES_TABLE', 'imageables'),
     ],
 
+    // image encoding @see: http://image.intervention.io/api/encode
+    'encoding' => [
+        'format' => 'png',
+        'quality' => 90,
+    ],
+
     // Route related options.
     'routes' => [
         // Define controllers here which guided routes should be added onto:
