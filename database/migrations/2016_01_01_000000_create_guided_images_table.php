@@ -14,12 +14,10 @@ class CreateGuidedImagesTable extends Migration
 
     /**
      * CreateGuidedImagesTable constructor.
-     *
-     * @param ConfigProvider $configProvider
      */
-    public function __construct(ConfigProvider $configProvider)
+    public function __construct()
     {
-        $this->configProvider = $configProvider;
+        $this->configProvider = resolve(ConfigProvider::class);
     }
 
     /**
