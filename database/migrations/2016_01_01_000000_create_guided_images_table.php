@@ -25,7 +25,7 @@ class CreateGuidedImagesTable extends Migration
      */
     public function up()
     {
-        $tableName = $this->configProvider->getImageablesTableName();
+        $tableName = $this->configProvider->getImagesTableName();
 
         if (!Schema::hasTable($tableName)) {
             Schema::create($tableName, function (Blueprint $table) {

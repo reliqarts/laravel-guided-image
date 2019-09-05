@@ -24,6 +24,8 @@ final class ConfigProvider implements ConfigProviderContract
     private const CONFIG_KEY_STORAGE_SKIM_THUMBS = 'storage.skim_thumbs';
     private const CONFIG_KEY_HEADERS_CACHE_DAYS = 'headers.cache_days';
     private const CONFIG_KEY_HEADERS_ADDITIONAL = 'headers.additional';
+    private const CONFIG_KEY_IMAGE_ENCODING_FORMAT = 'encoding.format';
+    private const CONFIG_KEY_IMAGE_ENCODING_QUALITY = 'encoding.quality';
 
     private const DEFAULT_ALLOWED_EXTENSIONS = ['gif', 'jpg', 'jpeg', 'png'];
     private const DEFAULT_ROUTES_PREFIX = 'image';
@@ -38,6 +40,8 @@ final class ConfigProvider implements ConfigProviderContract
     private const DEFAULT_STORAGE_SKIM_RESIZED = '.resized';
     private const DEFAULT_HEADER_CACHE_DAYS = 2;
     private const DEFAULT_ADDITIONAL_HEADERS = [];
+    private const DEFAULT_IMAGE_ENCODING_FORMAT = 'png';
+    private const DEFAULT_IMAGE_ENCODING_QUALITY = 90;
 
     private const KEY_PREFIX = 'prefix';
 
@@ -216,6 +220,28 @@ final class ConfigProvider implements ConfigProviderContract
         return $this->configAccessor->get(
             self::CONFIG_KEY_STORAGE_SKIM_DIR,
             self::DEFAULT_STORAGE_SKIM_DIR
+        );
+    }
+
+    /**
+     * @return string
+     */
+    public function getImageEncodingFormat(): string
+    {
+        return $this->configAccessor->get(
+            self::CONFIG_KEY_IMAGE_ENCODING_FORMAT,
+            self::DEFAULT_IMAGE_ENCODING_FORMAT
+        );
+    }
+
+    /**
+     * @return int
+     */
+    public function getImageEncodingQuality(): int
+    {
+        return $this->configAccessor->get(
+            self::CONFIG_KEY_IMAGE_ENCODING_QUALITY,
+            self::DEFAULT_IMAGE_ENCODING_QUALITY
         );
     }
 }
