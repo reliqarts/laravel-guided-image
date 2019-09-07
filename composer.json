@@ -34,7 +34,7 @@
   },
   "require-dev": {
     "codeception/aspect-mock": "^3.0",
-    "orchestra/testbench": "^3.8",
+    "orchestra/testbench": "^3.8|^4.0",
     "phpro/grumphp": "^0.15.2",
     "phpunit/phpunit": "^8.1",
     "wearejust/grumphp-extra-tasks": "^2.2"
