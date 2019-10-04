@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace ReliqArts\GuidedImage\Contracts;
 
 use Illuminate\Http\UploadedFile;
-use ReliqArts\GuidedImage\VO\Result;
+use ReliqArts\GuidedImage\Result;
 
 interface ImageUploader
 {

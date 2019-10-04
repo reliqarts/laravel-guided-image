@@ -12,7 +12,7 @@ use ReliqArts\GuidedImage\Contracts\ConfigProvider;
 use ReliqArts\GuidedImage\Contracts\GuidedImage;
 use ReliqArts\GuidedImage\Contracts\ImageUploader as ImageUploaderContract;
 use ReliqArts\GuidedImage\Contracts\Logger;
-use ReliqArts\GuidedImage\VO\Result;
+use ReliqArts\GuidedImage\Result;
 
 final class ImageUploader implements ImageUploaderContract
 {

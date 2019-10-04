@@ -7,7 +7,7 @@ namespace ReliqArts\GuidedImage\Concerns;
 use Illuminate\Http\UploadedFile;
 use ReliqArts\Contracts\Filesystem;
 use ReliqArts\GuidedImage\Contracts\ImageUploader;
-use ReliqArts\GuidedImage\VO\Result;
+use ReliqArts\GuidedImage\Result;
 
 /**
  * @method mixed delete()

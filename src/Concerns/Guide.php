@@ -14,7 +14,7 @@ use ReliqArts\GuidedImage\Contracts\ImageDispenser;
 use ReliqArts\GuidedImage\Demands\Dummy;
 use ReliqArts\GuidedImage\Demands\Resize;
 use ReliqArts\GuidedImage\Demands\Thumbnail;
-use ReliqArts\GuidedImage\VO\Result;
+use ReliqArts\GuidedImage\Result;
 
 trait Guide
 {
