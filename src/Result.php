@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace ReliqArts\GuidedImage\VO;
+namespace ReliqArts\GuidedImage;
 
-use ReliqArts\VO\Result as ReliqArtsResult;
+use ReliqArts\Result as ReliqArtsResult;
 
 final class Result extends ReliqArtsResult
 {

@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Query\Builder as QueryBuilder;
 use Illuminate\Http\UploadedFile;
 use ReliqArts\GuidedImage\Demands\Resize;
-use ReliqArts\GuidedImage\VO\Result;
+use ReliqArts\GuidedImage\Result;
 
 /**
  * A true guided image defines.

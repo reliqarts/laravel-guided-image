@@ -20,10 +20,10 @@ use Prophecy\Prophecy\ObjectProphecy;
 use ReliqArts\GuidedImage\Contracts\ConfigProvider;
 use ReliqArts\GuidedImage\Contracts\ImageUploader as ImageUploaderContract;
 use ReliqArts\GuidedImage\Contracts\Logger;
+use ReliqArts\GuidedImage\Result;
 use ReliqArts\GuidedImage\Services\ImageUploader;
 use ReliqArts\GuidedImage\Tests\Fixtures\Models\GuidedImage;
 use ReliqArts\GuidedImage\Tests\Unit\AspectMockedTestCase;
-use ReliqArts\GuidedImage\VO\Result;
 
 /**
  * Class ImageUploaderTest.
