@@ -74,7 +74,7 @@ return [
     // headers
     'headers' => [
         // cache days
-        'cache_days' => env('GUIDED_IMAGE_CACHE_DAYS', 2),
+        'cache_days' => env('GUIDED_IMAGE_CACHE_DAYS', 366),
 
         // any additional headers for guided images
         'additional' => [],
