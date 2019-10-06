@@ -24,8 +24,8 @@ return [
 
     // image encoding @see: http://image.intervention.io/api/encode
     'encoding' => [
-        'format' => 'png',
-        'quality' => 90,
+        'format' => env('GUIDED_IMAGE_ENCODING_FORMAT', 'png'),
+        'quality' => env('GUIDED_IMAGE_ENCODING_QUALITY', 90),
     ],
 
     // Route related options.
