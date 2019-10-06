@@ -38,7 +38,7 @@ final class ConfigProvider implements ConfigProviderContract
     private const DEFAULT_STORAGE_SKIM_DIR = 'images';
     private const DEFAULT_STORAGE_SKIM_THUMBS = '.thumbs';
     private const DEFAULT_STORAGE_SKIM_RESIZED = '.resized';
-    private const DEFAULT_HEADER_CACHE_DAYS = 2;
+    private const DEFAULT_HEADER_CACHE_DAYS = 366;
     private const DEFAULT_ADDITIONAL_HEADERS = [];
     private const DEFAULT_IMAGE_ENCODING_FORMAT = 'png';
     private const DEFAULT_IMAGE_ENCODING_QUALITY = 90;
@@ -201,7 +201,7 @@ final class ConfigProvider implements ConfigProviderContract
      */
     public function getCacheDaysHeader(): int
     {
-        return $this->configAccessor->get(self::CONFIG_KEY_HEADERS_CACHE_DAYS, self::DEFAULT_HEADER_CACHE_DAYS);
+        return (int)$this->configAccessor->get(self::CONFIG_KEY_HEADERS_CACHE_DAYS, self::DEFAULT_HEADER_CACHE_DAYS);
     }
 
     /**
@@ -239,7 +239,7 @@ final class ConfigProvider implements ConfigProviderContract
      */
     public function getImageEncodingQuality(): int
     {
-        return $this->configAccessor->get(
+        return (int)$this->configAccessor->get(
             self::CONFIG_KEY_IMAGE_ENCODING_QUALITY,
             self::DEFAULT_IMAGE_ENCODING_QUALITY
         );
