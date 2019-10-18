@@ -85,12 +85,12 @@ And... it's ready! :ok_hand:
 
 To *use* Guided Image you must do just that from your *Image* model. :smirk:
 
-Implement the `ReliqArts\GuidedImage\Contracts\GuidedImage` contract and use the `ReliqArts\GuidedImage\Concerns\Guided` trait, e.g:
+Implement the `ReliqArts\GuidedImage\Contract\GuidedImage` contract and use the `ReliqArts\GuidedImage\Concern\Guided` trait, e.g:
 
 ```php
 use Illuminate\Database\Eloquent\Model;
-use ReliqArts\GuidedImage\Concerns\Guided;
-use ReliqArts\GuidedImage\Contracts\GuidedImage;
+use ReliqArts\GuidedImage\Concern\Guided;
+use ReliqArts\GuidedImage\Contract\GuidedImage;
 
 class Image extends Model implements GuidedImage
 {
@@ -101,11 +101,11 @@ class Image extends Model implements GuidedImage
 ```
 See example [here](https://github.com/ReliQArts/laravel-guided-image/blob/master/docs/examples/Image.php).
 
-Implement the `ReliqArts\GuidedImage\Contracts\ImageGuide` contract and use the `ReliqArts\GuidedImage\Concerns\Guide` trait from your *ImageController*, e.g:
+Implement the `ReliqArts\GuidedImage\Contract\ImageGuide` contract and use the `ReliqArts\GuidedImage\Concern\Guide` trait from your *ImageController*, e.g:
 
 ```php
-use ReliqArts\GuidedImage\Contracts\ImageGuide;
-use ReliqArts\GuidedImage\Concerns\Guide;
+use ReliqArts\GuidedImage\Contract\ImageGuide;
+use ReliqArts\GuidedImage\Concern\Guide;
 
 class ImageController extends Controller implements ImageGuide
 {
@@ -147,9 +147,9 @@ $linkToImage = $image->routeThumbnail([
 ```
 **NB:** In the above example `_` is treated as `null`.
 
-Have a look at the [GuidedImage contract](https://github.com/ReliQArts/laravel-guided-image/blob/master/src/ReliQArts/GuidedImage/Contracts/GuidedImage.php) for more info on model functions.
+Have a look at the [GuidedImage contract](https://github.com/ReliQArts/laravel-guided-image/blob/master/src/ReliQArts/GuidedImage/Contract/GuidedImage.php) for more info on model functions.
 
-For more info on controller functions see the [ImageGuide contract](https://github.com/ReliQArts/laravel-guided-image/blob/master/src/ReliQArts/GuidedImage/Contracts/ImageGuide.php).
+For more info on controller functions see the [ImageGuide contract](https://github.com/ReliQArts/laravel-guided-image/blob/master/src/ReliQArts/GuidedImage/Contract/ImageGuide.php).
 
 ##### Routes
 

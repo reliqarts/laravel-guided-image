@@ -1,6 +1,6 @@
 {
   "name": "reliqarts/laravel-guided-image",
-  "description": "Simplified and ready image manipulation for Laravel 5 via intervention image.",
+  "description": "Simplified and ready image manipulation for Laravel 6 via intervention image.",
   "keywords": [
     "image",
     "route",
@@ -21,12 +21,9 @@
       "email": "reliq@reliqarts.com"
     }
   ],
-  "replace": {
-    "reliqarts/guided-image": "1.*"
-  },
   "require": {
     "php": "^7.2",
-    "illuminate/support": "^5.8|^6.0",
+    "illuminate/support": "^6.0",
     "intervention/image": "^2.4",
     "intervention/imagecache": "^2.3",
     "reliqarts/laravel-common": "^3.0",
