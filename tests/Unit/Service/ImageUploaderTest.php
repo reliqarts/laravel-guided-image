@@ -98,7 +98,6 @@ final class ImageUploaderTest extends AspectMockedTestCase
         $this->guidedImage = $this->prophesize(GuidedImage::class);
         $this->logger = $this->prophesize(Logger::class);
         $this->builder = $this->prophesize(Builder::class);
-        $this->namespace = 'ReliqArts\\GuidedImage\\Services';
         $this->uploadedFile = $this->getUploadedFileMock();
         $this->pathInfoFunc = Test::func($this->namespace, 'pathinfo', function () {
             return ['filename' => $this->uploadedFile->getFilename()];

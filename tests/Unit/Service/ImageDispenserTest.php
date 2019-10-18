@@ -121,7 +121,6 @@ final class ImageDispenserTest extends AspectMockedTestCase
         $this->guidedImage = $this->prophesize(GuidedImage::class);
         $this->skimResized = self::SKIM_RESIZED_SUB_DIRECTORY;
         $this->skimThumbs = self::SKIM_THUMBS_SUB_DIRECTORY;
-        $this->namespace = 'ReliqArts\\GuidedImage\\Services';
         $this->storagePathFunc = Test::func(
             $this->namespace,
             'storage_path',
