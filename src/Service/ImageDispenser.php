@@ -4,14 +4,15 @@ declare(strict_types=1);
 
 namespace ReliqArts\GuidedImage\Service;
 
+use Illuminate\Contracts\Filesystem\Factory as FilesystemManager;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
+use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Intervention\Image\Constraint;
 use Intervention\Image\Exception\NotReadableException;
 use Intervention\Image\Image;
 use Intervention\Image\ImageManager;
-use ReliqArts\Contracts\Filesystem;
 use ReliqArts\GuidedImage\Contract\ConfigProvider;
 use ReliqArts\GuidedImage\Contract\ImageDispenser as ImageDispenserContract;
 use ReliqArts\GuidedImage\Contract\Logger;
@@ -22,10 +23,9 @@ use ReliqArts\GuidedImage\Demand\Thumbnail;
 final class ImageDispenser implements ImageDispenserContract
 {
     private const KEY_IMAGE_URL = 'image url';
-    private const KEY_SKIM_FILE = 'skim file';
+    private const KEY_CACHE_FILE = 'cache file';
     private const RESPONSE_HTTP_OK = Response::HTTP_OK;
     private const RESPONSE_HTTP_NOT_FOUND = Response::HTTP_NOT_FOUND;
-    private const SKIM_DIRECTORY_MODE = 0777;
     private const ONE_DAY_IN_SECONDS = 60 * 60 * 24;
     private const DEFAULT_IMAGE_ENCODING_FORMAT = 'png';
     private const DEFAULT_IMAGE_ENCODING_QUALITY = 90;
@@ -38,7 +38,7 @@ final class ImageDispenser implements ImageDispenserContract
     /**
      * @var Filesystem
      */
-    private $filesystem;
+    private $cacheDisk;
 
     /**
      * @var string
@@ -63,35 +63,35 @@ final class ImageDispenser implements ImageDispenserContract
     /**
      * @var string
      */
-    private $skimThumbs;
+    private $thumbsCachePath;
 
     /**
      * @var string
      */
-    private $skimResized;
+    private $resizedCachePath;
 
     /**
      * ImageDispenser constructor.
      *
-     * @param ConfigProvider $configProvider
-     * @param Filesystem     $filesystem
-     * @param ImageManager   $imageManager
-     * @param Logger         $logger
+     * @param ConfigProvider    $configProvider
+     * @param FilesystemManager $filesystemManager
+     * @param ImageManager      $imageManager
+     * @param Logger            $logger
      */
     public function __construct(
         ConfigProvider $configProvider,
-        Filesystem $filesystem,
+        FilesystemManager $filesystemManager,
         ImageManager $imageManager,
         Logger $logger
     ) {
         $this->configProvider = $configProvider;
-        $this->filesystem = $filesystem;
+        $this->cacheDisk = $filesystemManager->disk($configProvider->getCacheDiskName());
         $this->imageManager = $imageManager;
         $this->imageEncodingFormat = $configProvider->getImageEncodingFormat();
         $this->imageEncodingQuality = $configProvider->getImageEncodingQuality();
         $this->logger = $logger;
 
-        $this->prepSkimDirectories();
+        $this->prepCacheDirectories();
     }
 
     /**
@@ -124,9 +124,9 @@ final class ImageDispenser implements ImageDispenserContract
         $guidedImage = $demand->getGuidedImage();
         $width = $demand->getWidth();
         $height = $demand->getHeight();
-        $skimFile = sprintf(
+        $cacheFilePath = sprintf(
             '%s/%d-%d-_-%d_%d_%s',
-            $this->skimResized,
+            $this->resizedCachePath,
             $width,
             $height,
             $demand->maintainAspectRatio() ? 1 : 0,
@@ -135,8 +135,8 @@ final class ImageDispenser implements ImageDispenserContract
         );
 
         try {
-            if ($this->filesystem->exists($skimFile)) {
-                $image = $this->makeImageWithEncoding($skimFile);
+            if ($this->cacheDisk->exists($cacheFilePath)) {
+                $image = $this->makeImageWithEncoding($this->cacheDisk->path($cacheFilePath));
             } else {
                 $image = $this->makeImageWithEncoding($guidedImage->getUrl());
                 $image->resize($width, $height, function (Constraint $constraint) use ($demand) {
@@ -147,7 +147,7 @@ final class ImageDispenser implements ImageDispenserContract
                         $constraint->upsize();
                     }
                 });
-                $image->save($skimFile);
+                $image->save($this->cacheDisk->path($cacheFilePath));
             }
 
             if ($demand->returnObject()) {
@@ -155,9 +155,9 @@ final class ImageDispenser implements ImageDispenserContract
             }
 
             return new Response(
-                $this->filesystem->get($skimFile),
+                $this->cacheDisk->get($cacheFilePath),
                 self::RESPONSE_HTTP_OK,
-                $this->getImageHeaders($demand->getRequest(), $image) ?: []
+                $this->getImageHeaders($cacheFilePath, $demand->getRequest(), $image) ?: []
             );
         } catch (NotReadableException | FileNotFoundException $exception) {
             $this->logger->error(
@@ -167,7 +167,7 @@ final class ImageDispenser implements ImageDispenserContract
                 ),
                 [
                     self::KEY_IMAGE_URL => $guidedImage->getUrl(),
-                    self::KEY_SKIM_FILE => $skimFile,
+                    self::KEY_CACHE_FILE => $cacheFilePath,
                 ]
             );
 
@@ -197,9 +197,9 @@ final class ImageDispenser implements ImageDispenserContract
         $width = $demand->getWidth();
         $height = $demand->getHeight();
         $method = $demand->getMethod();
-        $skimFile = sprintf(
+        $cacheFilePath = sprintf(
             '%s/%d-%d-_-%s_%s',
-            $this->skimThumbs,
+            $this->thumbsCachePath,
             $width,
             $height,
             $method,
@@ -207,14 +207,15 @@ final class ImageDispenser implements ImageDispenserContract
         );
 
         try {
-            if ($this->filesystem->exists($skimFile)) {
-                $image = $this->makeImageWithEncoding($skimFile);
+            if ($this->cacheDisk->exists($cacheFilePath)) {
+                $image = $this->makeImageWithEncoding($this->cacheDisk->path($cacheFilePath));
             } else {
                 /** @var Image $image */
                 $image = $this->imageManager
                     ->make($guidedImage->getUrl())
                     ->{$method}($width, $height);
-                $image->save($skimFile);
+
+                $image->save($this->cacheDisk->path($cacheFilePath));
             }
 
             if ($demand->returnObject()) {
@@ -222,9 +223,9 @@ final class ImageDispenser implements ImageDispenserContract
             }
 
             return new Response(
-                $this->filesystem->get($skimFile),
+                $this->cacheDisk->get($cacheFilePath),
                 self::RESPONSE_HTTP_OK,
-                $this->getImageHeaders($demand->getRequest(), $image) ?: []
+                $this->getImageHeaders($cacheFilePath, $demand->getRequest(), $image) ?: []
             );
         } catch (NotReadableException | FileNotFoundException $exception) {
             $this->logger->error(
@@ -234,7 +235,7 @@ final class ImageDispenser implements ImageDispenserContract
                 ),
                 [
                     self::KEY_IMAGE_URL => $guidedImage->getUrl(),
-                    self::KEY_SKIM_FILE => $skimFile,
+                    self::KEY_CACHE_FILE => $cacheFilePath,
                 ]
             );
 
@@ -245,25 +246,26 @@ final class ImageDispenser implements ImageDispenserContract
     /**
      * @return bool
      */
-    public function emptySkimDirectories(): bool
+    public function emptyCache(): bool
     {
-        return (bool)($this->filesystem->deleteDirectory($this->skimResized)
-            && $this->filesystem->deleteDirectory($this->skimThumbs));
+        return $this->cacheDisk->deleteDirectory($this->resizedCachePath)
+            && $this->cacheDisk->deleteDirectory($this->thumbsCachePath);
     }
 
     /**
      * Get image headers. Improved caching
      * If the image has not been modified say 304 Not Modified.
      *
+     * @param string  $cacheFilePath
      * @param Request $request
      * @param Image   $image
      *
      * @return array image headers
      */
-    private function getImageHeaders(Request $request, Image $image): array
+    private function getImageHeaders(string $cacheFilePath, Request $request, Image $image): array
     {
         $filePath = sprintf('%s/%s', $image->dirname, $image->basename);
-        $lastModified = $this->filesystem->lastModified($filePath);
+        $lastModified = $this->cacheDisk->lastModified($cacheFilePath);
         $modifiedSince = $request->header('If-Modified-Since', '');
         $etagHeader = trim($request->header('If-None-Match', ''));
         $etagFile = md5_file($filePath);
@@ -285,17 +287,17 @@ final class ImageDispenser implements ImageDispenserContract
         ]);
     }
 
-    private function prepSkimDirectories(): void
+    private function prepCacheDirectories(): void
     {
-        $this->skimResized = storage_path($this->configProvider->getSkimResizedDirectory());
-        $this->skimThumbs = storage_path($this->configProvider->getSkimThumbsDirectory());
+        $this->resizedCachePath = $this->configProvider->getResizedCachePath();
+        $this->thumbsCachePath = $this->configProvider->getThumbsCachePath();
 
-        if (!$this->filesystem->isDirectory($this->skimThumbs)) {
-            $this->filesystem->makeDirectory($this->skimThumbs, self::SKIM_DIRECTORY_MODE, true);
+        if (!$this->cacheDisk->exists($this->thumbsCachePath)) {
+            $this->cacheDisk->makeDirectory($this->thumbsCachePath);
         }
 
-        if (!$this->filesystem->isDirectory($this->skimResized)) {
-            $this->filesystem->makeDirectory($this->skimResized, self::SKIM_DIRECTORY_MODE, true);
+        if (!$this->cacheDisk->exists($this->resizedCachePath)) {
+            $this->cacheDisk->makeDirectory($this->resizedCachePath);
         }
     }
 
@@ -312,12 +314,12 @@ final class ImageDispenser implements ImageDispenserContract
     }
 
     /**
-     * @param string $path
-     * @param mixed  ...$encoding
+     * @param mixed $data
+     * @param mixed ...$encoding
      *
      * @return Image
      */
-    private function makeImageWithEncoding(string $path, ...$encoding): Image
+    private function makeImageWithEncoding($data, ...$encoding): Image
     {
         if (empty($encoding)) {
             $encoding = [
@@ -327,7 +329,7 @@ final class ImageDispenser implements ImageDispenserContract
         }
 
         return $this->imageManager
-            ->make($path)
+            ->make($data)
             ->encode(...$encoding);
     }
 }

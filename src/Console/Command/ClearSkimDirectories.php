@@ -32,7 +32,7 @@ final class ClearSkimDirectories extends Command
      */
     public function handle(ImageDispenser $imageDispenser): bool
     {
-        if ($imageDispenser->emptySkimDirectories()) {
+        if ($imageDispenser->emptyCache()) {
             $this->line(PHP_EOL . '<info>✔</info> Success! Guided Image cache cleared.');
 
             return true;

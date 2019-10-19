@@ -82,12 +82,12 @@ interface ConfigProvider
     /**
      * @return string
      */
-    public function getSkimResizedDirectory(): string;
+    public function getResizedCachePath(): string;
 
     /**
      * @return string
      */
-    public function getSkimThumbsDirectory(): string;
+    public function getThumbsCachePath(): string;
 
     /**
      * @return int
@@ -102,7 +102,7 @@ interface ConfigProvider
     /**
      * @return string
      */
-    public function getSkimDirectory(): string;
+    public function getCacheDirectory(): string;
 
     /**
      * @return string
@@ -113,4 +113,14 @@ interface ConfigProvider
      * @return int
      */
     public function getImageEncodingQuality(): int;
+
+    /**
+     * @return string
+     */
+    public function getCacheDiskName(): string;
+
+    /**
+     * @return string
+     */
+    public function getUploadDiskName(): string;
 }

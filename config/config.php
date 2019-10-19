@@ -60,15 +60,21 @@ return [
 
     // storage
     'storage' => [
+        // disk for in-built caching mechanism
+        'cache_disk' => env('GUIDED_IMAGE_CACHE_DISK', 'local'),
+
+        // upload disk
+        'upload_disk' => env('GUIDED_IMAGE_UPLOAD_DISK', 'public'),
+
         // Temporary storage directory for images already generated.
         // This directory will live inside your application's storage directory.
-        'skim_dir' => env('GUIDED_IMAGE_SKIM_DIR', 'images'),
+        'cache_dir' => env('GUIDED_IMAGE_CACHE_DIR', 'images'),
 
         // Generated thumbnails will be temporarily kept inside this directory.
-        'skim_thumbs' => env('GUIDED_IMAGE_SKIM_THUMBS', '.thumb'),
+        'cache_sub_dir_thumbs' => env('GUIDED_IMAGE_CACHE_SUB_DIR_THUMBS', '.thumb'),
 
         // Generated resized images will be temporarily kept inside this directory.
-        'skim_resized' => env('GUIDED_IMAGE_SKIM_RESIZED', '.resized'),
+        'cache_sub_dir_resized' => env('GUIDED_IMAGE_CACHE_SUB_DIR_RESIZED', '.resized'),
     ],
 
     // headers
