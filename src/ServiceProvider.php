@@ -58,7 +58,7 @@ final class ServiceProvider extends ReliqArtsServiceProvider
         $this->handleMigrations();
     }
 
-    public function registerBindings(): void
+    public function register(): void
     {
         $this->configProvider = new ConfigProvider(
             new ReliqArtsConfigProvider(
@@ -100,7 +100,7 @@ final class ServiceProvider extends ReliqArtsServiceProvider
         $this->app->bind(GuidedImage::class, $guidedModelFQCN);
     }
 
-    public function provides()
+    public function provides(): array
     {
         return array_merge(
             $this->commands,
