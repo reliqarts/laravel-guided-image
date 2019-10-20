@@ -29,9 +29,9 @@ trait Guide
     {
         $errorMessage = 'Could not clear skim directories.';
 
-        if ($imageDispenser->emptySkimDirectories()) {
+        if ($imageDispenser->emptyCache()) {
             return response()->json(
-                new Result(true, '', ['Skim directories successfully cleared.'])
+                new Result(true, '', ['Cache successfully cleared.'])
             );
         }
 

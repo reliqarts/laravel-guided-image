@@ -18,10 +18,14 @@ final class ConfigProvider implements ConfigProviderContract
     private const CONFIG_KEY_IMAGE_RULES = 'rules';
     private const CONFIG_KEY_IMAGES_TABLE = 'database.image_table';
     private const CONFIG_KEY_IMAGEABLES_TABLE = 'database.imageables_table';
-    private const CONFIG_KEY_UPLOAD_DIRECTORY = 'upload_dir';
-    private const CONFIG_KEY_STORAGE_SKIM_DIR = 'storage.skim_dir';
-    private const CONFIG_KEY_STORAGE_SKIM_RESIZED = 'storage.skim_resized';
-    private const CONFIG_KEY_STORAGE_SKIM_THUMBS = 'storage.skim_thumbs';
+    private const CONFIG_KEY_STORAGE_UPLOAD_DIRECTORY = 'storage.upload_dir';
+    private const CONFIG_KEY_STORAGE_CACHE_DISK = 'storage.cache_disk';
+    private const CONFIG_KEY_STORAGE_UPLOAD_DISK = 'storage.upload_disk';
+    private const CONFIG_KEY_STORAGE_CACHE_DIR = 'storage.cache_dir';
+    private const CONFIG_KEY_STORAGE_CACHE_SUB_DIR_RESIZED = 'storage.cache_sub_dir_resized';
+    private const CONFIG_KEY_STORAGE_CACHE_SUB_DIR_THUMBS = 'storage.cache_sub_dir_thumbs';
+    private const CONFIG_KEY_STORAGE_GENERATE_UPLOAD_DATE_SUB_DIRECTORIES
+        = 'storage.generate_upload_date_sub_directories';
     private const CONFIG_KEY_HEADERS_CACHE_DAYS = 'headers.cache_days';
     private const CONFIG_KEY_HEADERS_ADDITIONAL = 'headers.additional';
     private const CONFIG_KEY_IMAGE_ENCODING_FORMAT = 'encoding.format';
@@ -35,9 +39,12 @@ final class ConfigProvider implements ConfigProviderContract
     private const DEFAULT_IMAGEABLES_TABLE = 'imageables';
     private const DEFAULT_IMAGE_RULES = 'required|mimes:png,gif,jpeg|max:2048';
     private const DEFAULT_UPLOAD_DIRECTORY = 'uploads/images';
-    private const DEFAULT_STORAGE_SKIM_DIR = 'images';
-    private const DEFAULT_STORAGE_SKIM_THUMBS = '.thumbs';
-    private const DEFAULT_STORAGE_SKIM_RESIZED = '.resized';
+    private const DEFAULT_STORAGE_CACHE_DIR = 'images';
+    private const DEFAULT_STORAGE_CACHE_DISK = 'local';
+    private const DEFAULT_STORAGE_UPLOAD_DISK = 'public';
+    private const DEFAULT_STORAGE_CACHE_SUB_DIR_THUMBS = '.thumbs';
+    private const DEFAULT_STORAGE_CACHE_SUB_DIR_RESIZED = '.resized';
+    private const DEFAULT_STORAGE_GENERATE_UPLOAD_DATE_SUB_DIRECTORIES = false;
     private const DEFAULT_HEADER_CACHE_DAYS = 366;
     private const DEFAULT_ADDITIONAL_HEADERS = [];
     private const DEFAULT_IMAGE_ENCODING_FORMAT = 'png';
@@ -165,35 +172,46 @@ final class ConfigProvider implements ConfigProviderContract
      */
     public function getUploadDirectory(): string
     {
-        return $this->configAccessor->get(self::CONFIG_KEY_UPLOAD_DIRECTORY, self::DEFAULT_UPLOAD_DIRECTORY);
+        return $this->configAccessor->get(self::CONFIG_KEY_STORAGE_UPLOAD_DIRECTORY, self::DEFAULT_UPLOAD_DIRECTORY);
+    }
+
+    /**
+     * @return bool
+     */
+    public function generateUploadDateSubDirectories(): bool
+    {
+        return (bool)$this->configAccessor->get(
+            self::CONFIG_KEY_STORAGE_GENERATE_UPLOAD_DATE_SUB_DIRECTORIES,
+            self::DEFAULT_STORAGE_GENERATE_UPLOAD_DATE_SUB_DIRECTORIES
+        );
     }
 
     /**
      * @return string
      */
-    public function getSkimResizedDirectory(): string
+    public function getResizedCachePath(): string
     {
-        $skimDir = $this->getSkimDirectory();
-        $skimResized = $this->configAccessor->get(
-            self::CONFIG_KEY_STORAGE_SKIM_RESIZED,
-            self::DEFAULT_STORAGE_SKIM_RESIZED
+        $cacheDir = $this->getCacheDirectory();
+        $cacheResizedSubDir = $this->configAccessor->get(
+            self::CONFIG_KEY_STORAGE_CACHE_SUB_DIR_RESIZED,
+            self::DEFAULT_STORAGE_CACHE_SUB_DIR_RESIZED
         );
 
-        return sprintf('%s/%s', $skimDir, $skimResized);
+        return sprintf('%s/%s', $cacheDir, $cacheResizedSubDir);
     }
 
     /**
      * @return string
      */
-    public function getSkimThumbsDirectory(): string
+    public function getThumbsCachePath(): string
     {
-        $skimDir = $this->getSkimDirectory();
-        $skimThumbs = $this->configAccessor->get(
-            self::CONFIG_KEY_STORAGE_SKIM_THUMBS,
-            self::DEFAULT_STORAGE_SKIM_THUMBS
+        $cacheDir = $this->getCacheDirectory();
+        $cacheThumbsSubDir = $this->configAccessor->get(
+            self::CONFIG_KEY_STORAGE_CACHE_SUB_DIR_THUMBS,
+            self::DEFAULT_STORAGE_CACHE_SUB_DIR_THUMBS
         );
 
-        return sprintf('%s/%s', $skimDir, $skimThumbs);
+        return sprintf('%s/%s', $cacheDir, $cacheThumbsSubDir);
     }
 
     /**
@@ -215,11 +233,11 @@ final class ConfigProvider implements ConfigProviderContract
     /**
      * @return string
      */
-    public function getSkimDirectory(): string
+    public function getCacheDirectory(): string
     {
         return $this->configAccessor->get(
-            self::CONFIG_KEY_STORAGE_SKIM_DIR,
-            self::DEFAULT_STORAGE_SKIM_DIR
+            self::CONFIG_KEY_STORAGE_CACHE_DIR,
+            self::DEFAULT_STORAGE_CACHE_DIR
         );
     }
 
@@ -243,5 +261,21 @@ final class ConfigProvider implements ConfigProviderContract
             self::CONFIG_KEY_IMAGE_ENCODING_QUALITY,
             self::DEFAULT_IMAGE_ENCODING_QUALITY
         );
+    }
+
+    /**
+     * @return string
+     */
+    public function getCacheDiskName(): string
+    {
+        return $this->configAccessor->get(self::CONFIG_KEY_STORAGE_CACHE_DISK, self::DEFAULT_STORAGE_CACHE_DISK);
+    }
+
+    /**
+     * @return string
+     */
+    public function getUploadDiskName(): string
+    {
+        return $this->configAccessor->get(self::CONFIG_KEY_STORAGE_UPLOAD_DISK, self::DEFAULT_STORAGE_UPLOAD_DISK);
     }
 }

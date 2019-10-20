@@ -6,7 +6,7 @@ namespace ReliqArts\GuidedImage\Contract;
 
 interface ImageDemand
 {
-    public const NULLS = [false, null, 'null', 'false', '_', 'n'];
+    public const NULLS = [false, null, 'null', 'false', '_', 'n', '0'];
 
     /**
      * @return null|int

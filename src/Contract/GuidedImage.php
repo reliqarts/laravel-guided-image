@@ -45,11 +45,16 @@ interface GuidedImage
     public function getTitle(): string;
 
     /**
-     *  Get ready URL to image.
+     *  Get URL/path to image.
+     *
+     * @param bool $diskRelative whether to return `full path` (relative to disk),
+     *                           hence skipping call to Storage facade
      *
      * @return string
+     *
+     * @uses \Illuminate\Support\Facades\Storage
      */
-    public function getUrl(): string;
+    public function getUrl(bool $diskRelative = false): string;
 
     /**
      * Whether image is safe for deleting.

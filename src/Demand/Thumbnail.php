@@ -28,7 +28,7 @@ final class Thumbnail extends ExistingImage
      * @param string      $method
      * @param mixed       $width
      * @param mixed       $height
-     * @param bool        $returnObject
+     * @param mixed       $returnObject
      */
     public function __construct(
         Request $request,
@@ -36,7 +36,7 @@ final class Thumbnail extends ExistingImage
         string $method,
         $width,
         $height,
-        bool $returnObject = null
+        $returnObject = null
     ) {
         parent::__construct($request, $guidedImage, $width, $height, $returnObject);
 

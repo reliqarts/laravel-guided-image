@@ -10,9 +10,6 @@ return [
     // Set the guided model namespace.
     'model_namespace' => env('GUIDED_IMAGE_MODEL_NAMESPACE', 'App\\'),
 
-    // Where uploaded images should be stored. This is relative to the application's public directory.
-    'upload_dir' => env('GUIDED_IMAGE_UPLOAD_DIR', 'uploads/images'),
-
     // Set the model to be guided.
     'database' => [
         // Guided image table.
@@ -60,15 +57,27 @@ return [
 
     // storage
     'storage' => [
+        // disk for in-built caching mechanism
+        'cache_disk' => env('GUIDED_IMAGE_CACHE_DISK', 'local'),
+
+        // upload disk
+        'upload_disk' => env('GUIDED_IMAGE_UPLOAD_DISK', 'public'),
+
+        // Where uploaded images should be stored. This is relative to the application's public directory.
+        'upload_dir' => env('GUIDED_IMAGE_UPLOAD_DIR', 'uploads/images'),
+
+        // generate upload sub directories (e.g. 2019/05)
+        'generate_upload_date_sub_directories' => env('GUIDED_IMAGE_GENERATE_UPLOAD_DATE_SUB_DIRECTORIES', false),
+
         // Temporary storage directory for images already generated.
         // This directory will live inside your application's storage directory.
-        'skim_dir' => env('GUIDED_IMAGE_SKIM_DIR', 'images'),
+        'cache_dir' => env('GUIDED_IMAGE_CACHE_DIR', 'images'),
 
         // Generated thumbnails will be temporarily kept inside this directory.
-        'skim_thumbs' => env('GUIDED_IMAGE_SKIM_THUMBS', '.thumb'),
+        'cache_sub_dir_thumbs' => env('GUIDED_IMAGE_CACHE_SUB_DIR_THUMBS', '.thumb'),
 
         // Generated resized images will be temporarily kept inside this directory.
-        'skim_resized' => env('GUIDED_IMAGE_SKIM_RESIZED', '.resized'),
+        'cache_sub_dir_resized' => env('GUIDED_IMAGE_CACHE_SUB_DIR_RESIZED', '.resized'),
     ],
 
     // headers

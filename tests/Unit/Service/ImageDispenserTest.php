@@ -8,7 +8,10 @@ namespace ReliqArts\GuidedImage\Tests\Unit\Service;
 
 use AspectMock\Proxy\FuncProxy;
 use AspectMock\Test;
+use Illuminate\Contracts\Filesystem\Factory as FilesystemManager;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
+use Illuminate\Contracts\Filesystem\Filesystem;
+use Illuminate\Filesystem\FilesystemAdapter;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Intervention\Image\Exception\NotReadableException;
@@ -27,7 +30,6 @@ use ReliqArts\GuidedImage\Demand\Thumbnail;
 use ReliqArts\GuidedImage\Service\ImageDispenser;
 use ReliqArts\GuidedImage\Tests\Fixtures\Model\GuidedImage;
 use ReliqArts\GuidedImage\Tests\Unit\AspectMockedTestCase;
-use ReliqArts\Services\Filesystem;
 
 /**
  * Class ImageDispenserTest.
@@ -38,21 +40,23 @@ use ReliqArts\Services\Filesystem;
  */
 final class ImageDispenserTest extends AspectMockedTestCase
 {
-    private const SKIM_RESIZED_SUB_DIRECTORY = 'RESIZED';
-    private const SKIM_THUMBS_SUB_DIRECTORY = 'THUMBS';
+    private const CACHE_DISK_NAME = 'local';
+    private const CACHE_RESIZED_SUB_DIRECTORY = 'RESIZED';
+    private const CACHE_THUMBS_SUB_DIRECTORY = 'THUMBS';
     private const RESPONSE_HTTP_OK = Response::HTTP_OK;
     private const RESPONSE_HTTP_NOT_FOUND = Response::HTTP_NOT_FOUND;
     private const LAST_MODIFIED = 21343;
     private const IMAGE_NAME = 'my-image';
     private const IMAGE_URL = '//image_url';
-    private const SKIM_FILE_NAME_FORMAT_RESIZED = '%s/%d-%d-_-%d_%d_%s';
-    private const SKIM_FILE_FORMAT_THUMBNAIL = '%s/%d-%d-_-%s_%s';
+    private const CACHE_FILE_NAME_FORMAT_RESIZED = '%s/%d-%d-_-%d_%d_%s';
+    private const CACHE_FILE_FORMAT_THUMBNAIL = '%s/%d-%d-_-%s_%s';
     private const IMAGE_WIDTH = 100;
     private const IMAGE_HEIGHT = 200;
     private const THUMBNAIL_METHOD_CROP = 'crop';
     private const THUMBNAIL_METHOD_FIT = 'fit';
     private const IMAGE_ENCODING_FORMAT = 'png';
     private const IMAGE_ENCODING_QUALITY = 90;
+    private const UPLOAD_DISK_NAME = 'public';
 
     /**
      * @var ConfigProvider|ObjectProphecy
@@ -60,9 +64,19 @@ final class ImageDispenserTest extends AspectMockedTestCase
     private $configProvider;
 
     /**
-     * @var Filesystem|ObjectProphecy
+     * @var FilesystemManager|ObjectProphecy
      */
-    private $filesystem;
+    private $filesystemManager;
+
+    /**
+     * @var Filesystem|FilesystemAdapter|ObjectProphecy
+     */
+    private $cacheDisk;
+
+    /**
+     * @var Filesystem|FilesystemAdapter|ObjectProphecy
+     */
+    private $uploadDisk;
 
     /**
      * @var ImageManager|ObjectProphecy
@@ -92,17 +106,12 @@ final class ImageDispenserTest extends AspectMockedTestCase
     /**
      * @var string
      */
-    private $skimThumbs;
+    private $cacheThumbs;
 
     /**
      * @var string
      */
-    private $skimResized;
-
-    /**
-     * @var FuncProxy
-     */
-    private $storagePathFunc;
+    private $cacheResized;
 
     /**
      * @var FuncProxy
@@ -114,20 +123,15 @@ final class ImageDispenserTest extends AspectMockedTestCase
         parent::setUp();
 
         $this->configProvider = $this->prophesize(ConfigProvider::class);
-        $this->filesystem = $this->prophesize(Filesystem::class);
+        $this->filesystemManager = $this->prophesize(FilesystemManager::class);
+        $this->cacheDisk = $this->prophesize(FilesystemAdapter::class);
+        $this->uploadDisk = $this->prophesize(FilesystemAdapter::class);
         $this->imageManager = $this->prophesize(ImageManager::class);
         $this->logger = $this->prophesize(Logger::class);
         $this->request = $this->prophesize(Request::class);
         $this->guidedImage = $this->prophesize(GuidedImage::class);
-        $this->skimResized = self::SKIM_RESIZED_SUB_DIRECTORY;
-        $this->skimThumbs = self::SKIM_THUMBS_SUB_DIRECTORY;
-        $this->storagePathFunc = Test::func(
-            $this->namespace,
-            'storage_path',
-            function ($path) {
-                return $path;
-            }
-        );
+        $this->cacheResized = self::CACHE_RESIZED_SUB_DIRECTORY;
+        $this->cacheThumbs = self::CACHE_THUMBS_SUB_DIRECTORY;
         $this->md5FileFunc = Test::func(
             $this->namespace,
             'md5_file',
@@ -137,13 +141,21 @@ final class ImageDispenserTest extends AspectMockedTestCase
         );
 
         $this->configProvider
-            ->getSkimResizedDirectory()
+            ->getCacheDiskName()
             ->shouldBeCalledTimes(1)
-            ->willReturn(self::SKIM_RESIZED_SUB_DIRECTORY);
+            ->willReturn(self::CACHE_DISK_NAME);
         $this->configProvider
-            ->getSkimThumbsDirectory()
+            ->getUploadDiskName()
             ->shouldBeCalledTimes(1)
-            ->willReturn(self::SKIM_THUMBS_SUB_DIRECTORY);
+            ->willReturn(self::UPLOAD_DISK_NAME);
+        $this->configProvider
+            ->getResizedCachePath()
+            ->shouldBeCalledTimes(1)
+            ->willReturn(self::CACHE_RESIZED_SUB_DIRECTORY);
+        $this->configProvider
+            ->getThumbsCachePath()
+            ->shouldBeCalledTimes(1)
+            ->willReturn(self::CACHE_THUMBS_SUB_DIRECTORY);
         $this->configProvider
             ->getCacheDaysHeader()
             ->willReturn(2);
@@ -157,25 +169,38 @@ final class ImageDispenserTest extends AspectMockedTestCase
             ->getImageEncodingQuality()
             ->willReturn(self::IMAGE_ENCODING_QUALITY);
 
-        $this->filesystem
-            ->isDirectory($this->skimResized)
+        $this->filesystemManager
+            ->disk(self::CACHE_DISK_NAME)
+            ->shouldBeCalledTimes(1)
+            ->willReturn($this->cacheDisk);
+        $this->filesystemManager
+            ->disk(self::UPLOAD_DISK_NAME)
+            ->shouldBeCalledTimes(1)
+            ->willReturn($this->uploadDisk);
+
+        $this->cacheDisk
+            ->exists($this->cacheResized)
             ->shouldBeCalledTimes(1)
             ->willReturn(false);
-        $this->filesystem
-            ->makeDirectory($this->skimResized, Argument::cetera())
+        $this->cacheDisk
+            ->makeDirectory($this->cacheResized, Argument::cetera())
             ->shouldBeCalledTimes(1)
             ->willReturn(true);
-        $this->filesystem
-            ->isDirectory($this->skimThumbs)
+        $this->cacheDisk
+            ->exists($this->cacheThumbs)
             ->shouldBeCalledTimes(1)
             ->willReturn(false);
-        $this->filesystem
-            ->makeDirectory($this->skimThumbs, Argument::cetera())
+        $this->cacheDisk
+            ->makeDirectory($this->cacheThumbs, Argument::cetera())
             ->shouldBeCalledTimes(1)
             ->willReturn(true);
-        $this->filesystem
+        $this->cacheDisk
             ->lastModified(Argument::type('string'))
             ->willReturn(self::LAST_MODIFIED);
+
+        $this->uploadDisk
+            ->path(self::IMAGE_URL)
+            ->willReturn(self::IMAGE_URL);
 
         $this->request
             ->header(Argument::cetera())
@@ -185,12 +210,12 @@ final class ImageDispenserTest extends AspectMockedTestCase
             ->getName()
             ->willReturn(self::IMAGE_NAME);
         $this->guidedImage
-            ->getUrl()
+            ->getUrl(true)
             ->willReturn(self::IMAGE_URL);
 
         $this->subject = new ImageDispenser(
             $this->configProvider->reveal(),
-            $this->filesystem->reveal(),
+            $this->filesystemManager->reveal(),
             $this->imageManager->reveal(),
             $this->logger->reveal()
         );
@@ -198,20 +223,20 @@ final class ImageDispenserTest extends AspectMockedTestCase
 
     /**
      * @covers ::__construct
-     * @covers ::emptySkimDirectories
+     * @covers ::emptyCache
      */
     public function testEmptyCache(): void
     {
-        $this->filesystem
-            ->deleteDirectory($this->skimResized)
+        $this->cacheDisk
+            ->deleteDirectory($this->cacheResized)
             ->shouldBeCalledTimes(1)
             ->willReturn(true);
-        $this->filesystem
-            ->deleteDirectory($this->skimThumbs)
+        $this->cacheDisk
+            ->deleteDirectory($this->cacheThumbs)
             ->shouldBeCalledTimes(1)
             ->willReturn(true);
 
-        $result = $this->subject->emptySkimDirectories();
+        $result = $this->subject->emptyCache();
 
         $this->assertTrue($result);
     }
@@ -219,7 +244,7 @@ final class ImageDispenserTest extends AspectMockedTestCase
     /**
      * @covers ::__construct
      * @covers ::getDummyImage
-     * @covers ::prepSkimDirectories
+     * @covers ::prepCacheDirectories
      */
     public function testGetDummyImage(): void
     {
@@ -240,14 +265,12 @@ final class ImageDispenserTest extends AspectMockedTestCase
         );
 
         $this->assertSame($imageResponse, $result);
-
-        $this->storagePathFunc->verifyInvokedMultipleTimes(2);
     }
 
     /**
      * @covers ::__construct
      * @covers ::getDummyImage
-     * @covers ::prepSkimDirectories
+     * @covers ::prepCacheDirectories
      */
     public function testGetDummyImageWhenImageInstanceIsExpected(): void
     {
@@ -267,8 +290,6 @@ final class ImageDispenserTest extends AspectMockedTestCase
         );
 
         $this->assertSame($image, $result);
-
-        $this->storagePathFunc->verifyInvokedMultipleTimes(2);
     }
 
     /**
@@ -277,7 +298,10 @@ final class ImageDispenserTest extends AspectMockedTestCase
      * @covers ::getImageHeaders
      * @covers ::getResizedImage
      * @covers ::makeImageWithEncoding
-     * @covers ::prepSkimDirectories
+     * @covers ::prepCacheDirectories
+     * @covers \ReliqArts\GuidedImage\Demand\ExistingImage::<public>
+     *
+     * @throws FileNotFoundException
      */
     public function testGetResizedImage(): void
     {
@@ -290,9 +314,9 @@ final class ImageDispenserTest extends AspectMockedTestCase
             $width,
             $height
         );
-        $skimFile = sprintf(
-            self::SKIM_FILE_NAME_FORMAT_RESIZED,
-            $this->skimResized,
+        $cacheFile = sprintf(
+            self::CACHE_FILE_NAME_FORMAT_RESIZED,
+            $this->cacheResized,
             $width,
             $height,
             1,
@@ -301,18 +325,21 @@ final class ImageDispenserTest extends AspectMockedTestCase
         );
         $imageContent = 'RAW';
 
-        $this->filesystem
-            ->exists($skimFile)
+        $this->cacheDisk
+            ->exists($cacheFile)
             ->shouldBeCalledTimes(1)
             ->willReturn(false);
-
-        $this->filesystem
-            ->get($skimFile)
+        $this->cacheDisk
+            ->path($cacheFile)
+            ->shouldBeCalledTimes(1)
+            ->willReturn($cacheFile);
+        $this->cacheDisk
+            ->get($cacheFile)
             ->shouldBeCalledTimes(1)
             ->willReturn($imageContent);
 
         $this->imageManager
-            ->make($skimFile)
+            ->make($cacheFile)
             ->shouldNotBeCalled();
         $this->imageManager
             ->make(self::IMAGE_URL)
@@ -325,7 +352,6 @@ final class ImageDispenserTest extends AspectMockedTestCase
         $this->assertSame(self::RESPONSE_HTTP_OK, $result->getStatusCode());
         $this->assertSame($imageContent, $result->getOriginalContent());
 
-        $this->storagePathFunc->verifyInvokedMultipleTimes(2);
         $this->md5FileFunc->verifyInvokedOnce();
     }
 
@@ -333,7 +359,8 @@ final class ImageDispenserTest extends AspectMockedTestCase
      * @covers ::__construct
      * @covers ::getResizedImage
      * @covers ::makeImageWithEncoding
-     * @covers ::prepSkimDirectories
+     * @covers ::prepCacheDirectories
+     * @covers \ReliqArts\GuidedImage\Demand\ExistingImage::<public>
      */
     public function testGetResizedImageWhenImageInstanceIsExpected(): void
     {
@@ -349,9 +376,9 @@ final class ImageDispenserTest extends AspectMockedTestCase
             false,
             true
         );
-        $skimFile = sprintf(
-            self::SKIM_FILE_NAME_FORMAT_RESIZED,
-            $this->skimResized,
+        $cacheFile = sprintf(
+            self::CACHE_FILE_NAME_FORMAT_RESIZED,
+            $this->cacheResized,
             $width,
             $height,
             1,
@@ -359,17 +386,20 @@ final class ImageDispenserTest extends AspectMockedTestCase
             self::IMAGE_NAME
         );
 
-        $this->filesystem
-            ->exists($skimFile)
+        $this->cacheDisk
+            ->exists($cacheFile)
             ->shouldBeCalledTimes(1)
             ->willReturn(false);
-
-        $this->filesystem
-            ->get($skimFile)
+        $this->cacheDisk
+            ->path($cacheFile)
+            ->shouldBeCalledTimes(1)
+            ->willReturn($cacheFile);
+        $this->cacheDisk
+            ->get($cacheFile)
             ->shouldNotBeCalled();
 
         $this->imageManager
-            ->make($skimFile)
+            ->make($cacheFile)
             ->shouldNotBeCalled();
         $this->imageManager
             ->make(self::IMAGE_URL)
@@ -380,7 +410,6 @@ final class ImageDispenserTest extends AspectMockedTestCase
 
         $this->assertSame($image, $result);
 
-        $this->storagePathFunc->verifyInvokedMultipleTimes(2);
         $this->md5FileFunc->verifyNeverInvoked();
     }
 
@@ -390,9 +419,10 @@ final class ImageDispenserTest extends AspectMockedTestCase
      * @covers ::getImageHeaders
      * @covers ::getResizedImage
      * @covers ::makeImageWithEncoding
-     * @covers ::prepSkimDirectories
+     * @covers ::prepCacheDirectories
+     * @covers \ReliqArts\GuidedImage\Demand\ExistingImage::<public>
      */
-    public function testGetResizedImageWhenSkimFileExists(): void
+    public function testGetResizedImageWhenCacheFileExists(): void
     {
         $width = self::IMAGE_WIDTH;
         $height = self::IMAGE_HEIGHT;
@@ -403,9 +433,9 @@ final class ImageDispenserTest extends AspectMockedTestCase
             $width,
             $height
         );
-        $skimFile = sprintf(
-            self::SKIM_FILE_NAME_FORMAT_RESIZED,
-            $this->skimResized,
+        $cacheFile = sprintf(
+            self::CACHE_FILE_NAME_FORMAT_RESIZED,
+            $this->cacheResized,
             $width,
             $height,
             1,
@@ -414,18 +444,21 @@ final class ImageDispenserTest extends AspectMockedTestCase
         );
         $imageContent = 'RAW';
 
-        $this->filesystem
-            ->exists($skimFile)
+        $this->cacheDisk
+            ->exists($cacheFile)
             ->shouldBeCalledTimes(1)
             ->willReturn(true);
-
-        $this->filesystem
-            ->get($skimFile)
+        $this->cacheDisk
+            ->path($cacheFile)
+            ->shouldBeCalledTimes(1)
+            ->willReturn($cacheFile);
+        $this->cacheDisk
+            ->get($cacheFile)
             ->shouldBeCalledTimes(1)
             ->willReturn($imageContent);
 
         $this->imageManager
-            ->make($skimFile)
+            ->make($cacheFile)
             ->shouldBeCalledTimes(1)
             ->willReturn($image);
         $this->imageManager
@@ -438,7 +471,6 @@ final class ImageDispenserTest extends AspectMockedTestCase
         $this->assertSame(self::RESPONSE_HTTP_OK, $result->getStatusCode());
         $this->assertSame($imageContent, $result->getOriginalContent());
 
-        $this->storagePathFunc->verifyInvokedMultipleTimes(2);
         $this->md5FileFunc->verifyInvokedOnce();
     }
 
@@ -448,7 +480,8 @@ final class ImageDispenserTest extends AspectMockedTestCase
      * @covers ::getImageHeaders
      * @covers ::getResizedImage
      * @covers ::makeImageWithEncoding
-     * @covers ::prepSkimDirectories
+     * @covers ::prepCacheDirectories
+     * @covers \ReliqArts\GuidedImage\Demand\ExistingImage::<public>
      */
     public function testGetResizedWhenImageRetrievalFails(): void
     {
@@ -461,9 +494,9 @@ final class ImageDispenserTest extends AspectMockedTestCase
             $width,
             $height
         );
-        $skimFile = sprintf(
-            self::SKIM_FILE_NAME_FORMAT_RESIZED,
-            $this->skimResized,
+        $cacheFile = sprintf(
+            self::CACHE_FILE_NAME_FORMAT_RESIZED,
+            $this->cacheResized,
             $width,
             $height,
             1,
@@ -471,29 +504,37 @@ final class ImageDispenserTest extends AspectMockedTestCase
             self::IMAGE_NAME
         );
 
-        $this->filesystem
-            ->exists($skimFile)
+        $this->cacheDisk
+            ->exists($cacheFile)
             ->shouldBeCalledTimes(1)
             ->willReturn(false);
-
-        $this->filesystem
-            ->get($skimFile)
+        $this->cacheDisk
+            ->path($cacheFile)
+            ->shouldBeCalledTimes(1)
+            ->willReturn($cacheFile);
+        $this->cacheDisk
+            ->get($cacheFile)
             ->shouldBeCalledTimes(1)
             ->willThrow(FileNotFoundException::class);
 
         $this->imageManager
-            ->make($skimFile)
+            ->make($cacheFile)
             ->shouldNotBeCalled();
         $this->imageManager
             ->make(self::IMAGE_URL)
             ->shouldBeCalledTimes(1)
             ->willReturn($image);
 
+        $this->guidedImage
+            ->getUrl()
+            ->shouldBeCalledTimes(1)
+            ->willReturn(self::IMAGE_URL);
+
         $this->logger
             ->error(
                 Argument::containingString('Exception'),
-                Argument::that(function (array $argument) use ($skimFile) {
-                    return in_array($skimFile, $argument, true) && in_array(self::IMAGE_URL, $argument, true);
+                Argument::that(function (array $argument) use ($cacheFile) {
+                    return in_array($cacheFile, $argument, true) && in_array(self::IMAGE_URL, $argument, true);
                 })
             )
             ->shouldBeCalledTimes(1);
@@ -502,7 +543,6 @@ final class ImageDispenserTest extends AspectMockedTestCase
 
         $this->assertEmpty($result);
 
-        $this->storagePathFunc->verifyInvokedMultipleTimes(2);
         $this->md5FileFunc->verifyNeverInvoked();
         $this->abortFunc->verifyInvokedOnce();
     }
@@ -513,7 +553,8 @@ final class ImageDispenserTest extends AspectMockedTestCase
      * @covers ::getImageHeaders
      * @covers ::getImageThumbnail
      * @covers ::makeImageWithEncoding
-     * @covers ::prepSkimDirectories
+     * @covers ::prepCacheDirectories
+     * @covers \ReliqArts\GuidedImage\Demand\ExistingImage::<public>
      */
     public function testGetImageThumbnail(): void
     {
@@ -527,9 +568,9 @@ final class ImageDispenserTest extends AspectMockedTestCase
             $width,
             $height
         );
-        $skimFile = sprintf(
-            self::SKIM_FILE_FORMAT_THUMBNAIL,
-            $this->skimThumbs,
+        $cacheFile = sprintf(
+            self::CACHE_FILE_FORMAT_THUMBNAIL,
+            $this->cacheThumbs,
             $width,
             $height,
             $demand->getMethod(),
@@ -537,18 +578,21 @@ final class ImageDispenserTest extends AspectMockedTestCase
         );
         $imageContent = 'RAW';
 
-        $this->filesystem
-            ->exists($skimFile)
+        $this->cacheDisk
+            ->exists($cacheFile)
             ->shouldBeCalledTimes(1)
             ->willReturn(false);
-
-        $this->filesystem
-            ->get($skimFile)
+        $this->cacheDisk
+            ->path($cacheFile)
+            ->shouldBeCalledTimes(1)
+            ->willReturn($cacheFile);
+        $this->cacheDisk
+            ->get($cacheFile)
             ->shouldBeCalledTimes(1)
             ->willReturn($imageContent);
 
         $this->imageManager
-            ->make($skimFile)
+            ->make($cacheFile)
             ->shouldNotBeCalled();
         $this->imageManager
             ->make(self::IMAGE_URL)
@@ -561,7 +605,6 @@ final class ImageDispenserTest extends AspectMockedTestCase
         $this->assertSame(self::RESPONSE_HTTP_OK, $result->getStatusCode());
         $this->assertSame($imageContent, $result->getOriginalContent());
 
-        $this->storagePathFunc->verifyInvokedMultipleTimes(2);
         $this->md5FileFunc->verifyInvokedOnce();
     }
 
@@ -569,7 +612,8 @@ final class ImageDispenserTest extends AspectMockedTestCase
      * @covers ::__construct
      * @covers ::getImageThumbnail
      * @covers ::makeImageWithEncoding
-     * @covers ::prepSkimDirectories
+     * @covers ::prepCacheDirectories
+     * @covers \ReliqArts\GuidedImage\Demand\ExistingImage::<public>
      */
     public function testGetImageThumbnailWhenImageInstanceIsExpected(): void
     {
@@ -584,26 +628,29 @@ final class ImageDispenserTest extends AspectMockedTestCase
             $height,
             true
         );
-        $skimFile = sprintf(
-            self::SKIM_FILE_FORMAT_THUMBNAIL,
-            $this->skimThumbs,
+        $cacheFile = sprintf(
+            self::CACHE_FILE_FORMAT_THUMBNAIL,
+            $this->cacheThumbs,
             $width,
             $height,
             $demand->getMethod(),
             self::IMAGE_NAME
         );
 
-        $this->filesystem
-            ->exists($skimFile)
+        $this->cacheDisk
+            ->exists($cacheFile)
             ->shouldBeCalledTimes(1)
             ->willReturn(false);
-
-        $this->filesystem
-            ->get($skimFile)
+        $this->cacheDisk
+            ->path($cacheFile)
+            ->shouldBeCalledTimes(1)
+            ->willReturn($cacheFile);
+        $this->cacheDisk
+            ->get($cacheFile)
             ->shouldNotBeCalled();
 
         $this->imageManager
-            ->make($skimFile)
+            ->make($cacheFile)
             ->shouldNotBeCalled();
         $this->imageManager
             ->make(self::IMAGE_URL)
@@ -614,7 +661,6 @@ final class ImageDispenserTest extends AspectMockedTestCase
 
         $this->assertSame($image, $result);
 
-        $this->storagePathFunc->verifyInvokedMultipleTimes(2);
         $this->md5FileFunc->verifyNeverInvoked();
     }
 
@@ -624,9 +670,10 @@ final class ImageDispenserTest extends AspectMockedTestCase
      * @covers ::getImageHeaders
      * @covers ::getImageThumbnail
      * @covers ::makeImageWithEncoding
-     * @covers ::prepSkimDirectories
+     * @covers ::prepCacheDirectories
+     * @covers \ReliqArts\GuidedImage\Demand\ExistingImage::<public>
      */
-    public function testGetImageThumbnailWhenSkimFileExists(): void
+    public function testGetImageThumbnailWhenCacheFileExists(): void
     {
         $width = self::IMAGE_WIDTH;
         $height = self::IMAGE_HEIGHT;
@@ -638,9 +685,9 @@ final class ImageDispenserTest extends AspectMockedTestCase
             $width,
             $height
         );
-        $skimFile = sprintf(
-            self::SKIM_FILE_FORMAT_THUMBNAIL,
-            $this->skimThumbs,
+        $cacheFile = sprintf(
+            self::CACHE_FILE_FORMAT_THUMBNAIL,
+            $this->cacheThumbs,
             $width,
             $height,
             $demand->getMethod(),
@@ -648,18 +695,21 @@ final class ImageDispenserTest extends AspectMockedTestCase
         );
         $imageContent = 'RAW';
 
-        $this->filesystem
-            ->exists($skimFile)
+        $this->cacheDisk
+            ->exists($cacheFile)
             ->shouldBeCalledTimes(1)
             ->willReturn(true);
-
-        $this->filesystem
-            ->get($skimFile)
+        $this->cacheDisk
+            ->path($cacheFile)
+            ->shouldBeCalledTimes(1)
+            ->willReturn($cacheFile);
+        $this->cacheDisk
+            ->get($cacheFile)
             ->shouldBeCalledTimes(1)
             ->willReturn($imageContent);
 
         $this->imageManager
-            ->make($skimFile)
+            ->make($cacheFile)
             ->shouldBeCalledTimes(1)
             ->willReturn($image);
         $this->imageManager
@@ -672,7 +722,6 @@ final class ImageDispenserTest extends AspectMockedTestCase
         $this->assertSame(self::RESPONSE_HTTP_OK, $result->getStatusCode());
         $this->assertSame($imageContent, $result->getOriginalContent());
 
-        $this->storagePathFunc->verifyInvokedMultipleTimes(2);
         $this->md5FileFunc->verifyInvokedOnce();
     }
 
@@ -680,7 +729,8 @@ final class ImageDispenserTest extends AspectMockedTestCase
      * @covers ::__construct
      * @covers ::getImageThumbnail
      * @covers ::makeImageWithEncoding
-     * @covers ::prepSkimDirectories
+     * @covers ::prepCacheDirectories
+     * @covers \ReliqArts\GuidedImage\Demand\ExistingImage::<public>
      */
     public function testGetImageThumbnailWhenDemandIsInvalid(): void
     {
@@ -693,25 +743,27 @@ final class ImageDispenserTest extends AspectMockedTestCase
             $width,
             $height
         );
-        $skimFile = sprintf(
-            self::SKIM_FILE_FORMAT_THUMBNAIL,
-            $this->skimThumbs,
+        $cacheFile = sprintf(
+            self::CACHE_FILE_FORMAT_THUMBNAIL,
+            $this->cacheThumbs,
             $width,
             $height,
             $demand->getMethod(),
             self::IMAGE_NAME
         );
 
-        $this->filesystem
-            ->exists($skimFile)
+        $this->cacheDisk
+            ->exists($cacheFile)
             ->shouldNotBeCalled();
-
-        $this->filesystem
-            ->get($skimFile)
+        $this->cacheDisk
+            ->path($cacheFile)
+            ->shouldNotBeCalled();
+        $this->cacheDisk
+            ->get($cacheFile)
             ->shouldNotBeCalled();
 
         $this->imageManager
-            ->make($skimFile)
+            ->make($cacheFile)
             ->shouldNotBeCalled();
         $this->imageManager
             ->make(self::IMAGE_URL)
@@ -730,7 +782,6 @@ final class ImageDispenserTest extends AspectMockedTestCase
 
         $this->assertSame(self::RESPONSE_HTTP_NOT_FOUND, $result);
 
-        $this->storagePathFunc->verifyInvokedMultipleTimes(2);
         $this->md5FileFunc->verifyNeverInvoked();
         $this->abortFunc->verifyInvokedOnce();
     }
@@ -741,7 +792,8 @@ final class ImageDispenserTest extends AspectMockedTestCase
      * @covers ::getImageHeaders
      * @covers ::getImageThumbnail
      * @covers ::makeImageWithEncoding
-     * @covers ::prepSkimDirectories
+     * @covers ::prepCacheDirectories
+     * @covers \ReliqArts\GuidedImage\Demand\ExistingImage::<public>
      */
     public function testGetImageThumbnailWhenImageRetrievalFails(): void
     {
@@ -754,37 +806,44 @@ final class ImageDispenserTest extends AspectMockedTestCase
             $width,
             $height
         );
-        $skimFile = sprintf(
-            self::SKIM_FILE_FORMAT_THUMBNAIL,
-            $this->skimThumbs,
+        $cacheFile = sprintf(
+            self::CACHE_FILE_FORMAT_THUMBNAIL,
+            $this->cacheThumbs,
             $width,
             $height,
             $demand->getMethod(),
             self::IMAGE_NAME
         );
 
-        $this->filesystem
-            ->exists($skimFile)
+        $this->cacheDisk
+            ->exists($cacheFile)
             ->shouldBeCalledTimes(1)
             ->willReturn(false);
-
-        $this->filesystem
-            ->get($skimFile)
+        $this->cacheDisk
+            ->path($cacheFile)
+            ->shouldNotBeCalled();
+        $this->cacheDisk
+            ->get($cacheFile)
             ->shouldNotBeCalled();
 
         $this->imageManager
-            ->make($skimFile)
+            ->make($cacheFile)
             ->shouldNotBeCalled();
         $this->imageManager
             ->make(self::IMAGE_URL)
             ->shouldBeCalledTimes(1)
             ->willThrow(NotReadableException::class);
 
+        $this->guidedImage
+            ->getUrl()
+            ->shouldBeCalledTimes(1)
+            ->willReturn(self::IMAGE_URL);
+
         $this->logger
             ->error(
                 Argument::containingString('Exception'),
-                Argument::that(function (array $argument) use ($skimFile) {
-                    return in_array($skimFile, $argument, true) && in_array(self::IMAGE_URL, $argument, true);
+                Argument::that(function (array $argument) use ($cacheFile) {
+                    return in_array($cacheFile, $argument, true) && in_array(self::IMAGE_URL, $argument, true);
                 })
             )
             ->shouldBeCalledTimes(1);
@@ -793,7 +852,6 @@ final class ImageDispenserTest extends AspectMockedTestCase
 
         $this->assertEmpty($result);
 
-        $this->storagePathFunc->verifyInvokedMultipleTimes(2);
         $this->md5FileFunc->verifyNeverInvoked();
         $this->abortFunc->verifyInvokedOnce();
     }

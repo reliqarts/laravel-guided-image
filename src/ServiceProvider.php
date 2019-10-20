@@ -112,7 +112,15 @@ final class ServiceProvider extends ReliqArtsServiceProvider
 
     protected function handleConfig(): void
     {
-        $this->mergeConfigFrom(sprintf('%s/config/config.php', $this->getAssetDirectory()), 'guidedimage');
+        $configFile = sprintf('%s/config/config.php', $this->getAssetDirectory());
+        $configKey = $this->getConfigKey();
+
+        $this->mergeConfigFrom($configFile, $configKey);
+
+        $this->publishes(
+            [$configFile => config_path(sprintf('%s.php', $configKey))],
+            sprintf('%s-config', $configKey)
+        );
     }
 
     /**
