@@ -3,7 +3,7 @@
 Guided Image is an image utility package for Laravel 5.x/6.x based on Intervention Image.
 
 [![Built For Laravel](https://img.shields.io/badge/built%20for-laravel-red.svg?style=flat-square)](http://laravel.com)
-[![Build Status (all)](https://img.shields.io/travis/reliqarts/laravel-guided-image.svg?style=flat-square)](https://travis-ci.org/reliqarts/laravel-guided-image)
+[![Build Status (all)](https://img.shields.io/travis/com/reliqarts/laravel-guided-image?style=flat-square)](https://travis-ci.com/reliqarts/laravel-guided-image)
 [![Scrutinizer](https://img.shields.io/scrutinizer/g/reliqarts/laravel-guided-image.svg?style=flat-square)](https://scrutinizer-ci.com/g/reliqarts/laravel-guided-image/)
 [![Codecov](https://img.shields.io/codecov/c/github/reliqarts/laravel-guided-image.svg?style=flat-square)](https://codecov.io/gh/reliqarts/laravel-guided-image)
 [![License](https://poser.pugx.org/reliqarts/laravel-guided-image/license?format=flat-square)](https://packagist.org/packages/reliqarts/laravel-guided-image)
