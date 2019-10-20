@@ -19,6 +19,11 @@ abstract class AspectMockedTestCase extends TestCase
     /**
      * @var string
      */
+    protected $modelNamespace;
+
+    /**
+     * @var string
+     */
     protected $parentNamespace;
 
     /**
@@ -30,7 +35,8 @@ abstract class AspectMockedTestCase extends TestCase
     {
         parent::setUp();
 
-        $this->namespace = 'ReliqArts\\GuidedImage\\Services';
+        $this->namespace = 'ReliqArts\\GuidedImage\\Service';
+        $this->modelNamespace = 'ReliqArts\\GuidedImage\\Model';
         $this->abortFunc = Test::func(
             $this->namespace,
             'abort',

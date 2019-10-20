@@ -7,16 +7,16 @@ namespace ReliqArts\GuidedImage;
 use Illuminate\Config\Repository as ConfigRepository;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Monolog\Handler\StreamHandler;
-use ReliqArts\GuidedImage\Console\Commands\ClearSkimDirectories;
-use ReliqArts\GuidedImage\Contracts\ConfigProvider as ConfigProviderContract;
-use ReliqArts\GuidedImage\Contracts\GuidedImage;
-use ReliqArts\GuidedImage\Contracts\ImageDispenser as ImageDispenserContract;
-use ReliqArts\GuidedImage\Contracts\ImageUploader as ImageUploaderContract;
-use ReliqArts\GuidedImage\Contracts\Logger as LoggerContract;
-use ReliqArts\GuidedImage\Services\ConfigProvider;
-use ReliqArts\GuidedImage\Services\ImageDispenser;
-use ReliqArts\GuidedImage\Services\ImageUploader;
-use ReliqArts\GuidedImage\Services\Logger;
+use ReliqArts\GuidedImage\Console\Command\ClearSkimDirectories;
+use ReliqArts\GuidedImage\Contract\ConfigProvider as ConfigProviderContract;
+use ReliqArts\GuidedImage\Contract\GuidedImage;
+use ReliqArts\GuidedImage\Contract\ImageDispenser as ImageDispenserContract;
+use ReliqArts\GuidedImage\Contract\ImageUploader as ImageUploaderContract;
+use ReliqArts\GuidedImage\Contract\Logger as LoggerContract;
+use ReliqArts\GuidedImage\Service\ConfigProvider;
+use ReliqArts\GuidedImage\Service\ImageDispenser;
+use ReliqArts\GuidedImage\Service\ImageUploader;
+use ReliqArts\GuidedImage\Service\Logger;
 use ReliqArts\ServiceProvider as ReliqArtsServiceProvider;
 use ReliqArts\Services\ConfigProvider as ReliqArtsConfigProvider;
 
@@ -112,7 +112,15 @@ final class ServiceProvider extends ReliqArtsServiceProvider
 
     protected function handleConfig(): void
     {
-        $this->mergeConfigFrom(sprintf('%s/config/config.php', $this->getAssetDirectory()), 'guidedimage');
+        $configFile = sprintf('%s/config/config.php', $this->getAssetDirectory());
+        $configKey = $this->getConfigKey();
+
+        $this->mergeConfigFrom($configFile, $configKey);
+
+        $this->publishes(
+            [$configFile => config_path(sprintf('%s.php', $configKey))],
+            sprintf('%s-config', $configKey)
+        );
     }
 
     /**
