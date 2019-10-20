@@ -41,6 +41,11 @@ final class ImageDispenser implements ImageDispenserContract
     private $cacheDisk;
 
     /**
+     * @var Filesystem
+     */
+    private $uploadDisk;
+
+    /**
      * @var string
      */
     private $imageEncodingFormat;
@@ -86,6 +91,7 @@ final class ImageDispenser implements ImageDispenserContract
     ) {
         $this->configProvider = $configProvider;
         $this->cacheDisk = $filesystemManager->disk($configProvider->getCacheDiskName());
+        $this->uploadDisk = $filesystemManager->disk($configProvider->getUploadDiskName());
         $this->imageManager = $imageManager;
         $this->imageEncodingFormat = $configProvider->getImageEncodingFormat();
         $this->imageEncodingQuality = $configProvider->getImageEncodingQuality();
@@ -138,7 +144,7 @@ final class ImageDispenser implements ImageDispenserContract
             if ($this->cacheDisk->exists($cacheFilePath)) {
                 $image = $this->makeImageWithEncoding($this->cacheDisk->path($cacheFilePath));
             } else {
-                $image = $this->makeImageWithEncoding($guidedImage->getUrl());
+                $image = $this->makeImageWithEncoding($this->uploadDisk->path($guidedImage->getUrl(true)));
                 $image->resize($width, $height, function (Constraint $constraint) use ($demand) {
                     if ($demand->maintainAspectRatio()) {
                         $constraint->aspectRatio();
@@ -212,7 +218,7 @@ final class ImageDispenser implements ImageDispenserContract
             } else {
                 /** @var Image $image */
                 $image = $this->imageManager
-                    ->make($guidedImage->getUrl())
+                    ->make($this->uploadDisk->path($guidedImage->getUrl(true)))
                     ->{$method}($width, $height);
 
                 $image->save($this->cacheDisk->path($cacheFilePath));

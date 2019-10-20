@@ -56,6 +56,7 @@ final class ImageDispenserTest extends AspectMockedTestCase
     private const THUMBNAIL_METHOD_FIT = 'fit';
     private const IMAGE_ENCODING_FORMAT = 'png';
     private const IMAGE_ENCODING_QUALITY = 90;
+    private const UPLOAD_DISK_NAME = 'public';
 
     /**
      * @var ConfigProvider|ObjectProphecy
@@ -71,6 +72,11 @@ final class ImageDispenserTest extends AspectMockedTestCase
      * @var Filesystem|FilesystemAdapter|ObjectProphecy
      */
     private $cacheDisk;
+
+    /**
+     * @var Filesystem|FilesystemAdapter|ObjectProphecy
+     */
+    private $uploadDisk;
 
     /**
      * @var ImageManager|ObjectProphecy
@@ -119,6 +125,7 @@ final class ImageDispenserTest extends AspectMockedTestCase
         $this->configProvider = $this->prophesize(ConfigProvider::class);
         $this->filesystemManager = $this->prophesize(FilesystemManager::class);
         $this->cacheDisk = $this->prophesize(FilesystemAdapter::class);
+        $this->uploadDisk = $this->prophesize(FilesystemAdapter::class);
         $this->imageManager = $this->prophesize(ImageManager::class);
         $this->logger = $this->prophesize(Logger::class);
         $this->request = $this->prophesize(Request::class);
@@ -133,15 +140,14 @@ final class ImageDispenserTest extends AspectMockedTestCase
             }
         );
 
-        $this->filesystemManager
-            ->disk(self::CACHE_DISK_NAME)
-            ->shouldBeCalledTimes(1)
-            ->willReturn($this->cacheDisk);
-
         $this->configProvider
             ->getCacheDiskName()
             ->shouldBeCalledTimes(1)
             ->willReturn(self::CACHE_DISK_NAME);
+        $this->configProvider
+            ->getUploadDiskName()
+            ->shouldBeCalledTimes(1)
+            ->willReturn(self::UPLOAD_DISK_NAME);
         $this->configProvider
             ->getResizedCachePath()
             ->shouldBeCalledTimes(1)
@@ -163,6 +169,15 @@ final class ImageDispenserTest extends AspectMockedTestCase
             ->getImageEncodingQuality()
             ->willReturn(self::IMAGE_ENCODING_QUALITY);
 
+        $this->filesystemManager
+            ->disk(self::CACHE_DISK_NAME)
+            ->shouldBeCalledTimes(1)
+            ->willReturn($this->cacheDisk);
+        $this->filesystemManager
+            ->disk(self::UPLOAD_DISK_NAME)
+            ->shouldBeCalledTimes(1)
+            ->willReturn($this->uploadDisk);
+
         $this->cacheDisk
             ->exists($this->cacheResized)
             ->shouldBeCalledTimes(1)
@@ -183,6 +198,10 @@ final class ImageDispenserTest extends AspectMockedTestCase
             ->lastModified(Argument::type('string'))
             ->willReturn(self::LAST_MODIFIED);
 
+        $this->uploadDisk
+            ->path(self::IMAGE_URL)
+            ->willReturn(self::IMAGE_URL);
+
         $this->request
             ->header(Argument::cetera())
             ->willReturn('');
@@ -191,7 +210,7 @@ final class ImageDispenserTest extends AspectMockedTestCase
             ->getName()
             ->willReturn(self::IMAGE_NAME);
         $this->guidedImage
-            ->getUrl()
+            ->getUrl(true)
             ->willReturn(self::IMAGE_URL);
 
         $this->subject = new ImageDispenser(
@@ -502,6 +521,11 @@ final class ImageDispenserTest extends AspectMockedTestCase
             ->shouldBeCalledTimes(1)
             ->willReturn($image);
 
+        $this->guidedImage
+            ->getUrl()
+            ->shouldBeCalledTimes(1)
+            ->willReturn(self::IMAGE_URL);
+
         $this->logger
             ->error(
                 Argument::containingString('Exception'),
@@ -642,7 +666,7 @@ final class ImageDispenserTest extends AspectMockedTestCase
      * @covers ::makeImageWithEncoding
      * @covers ::prepCacheDirectories
      */
-    public function testGetImageThumbnailWhenSkimFileExists(): void
+    public function testGetImageThumbnailWhenCacheFileExists(): void
     {
         $width = self::IMAGE_WIDTH;
         $height = self::IMAGE_HEIGHT;
@@ -800,6 +824,11 @@ final class ImageDispenserTest extends AspectMockedTestCase
             ->make(self::IMAGE_URL)
             ->shouldBeCalledTimes(1)
             ->willThrow(NotReadableException::class);
+
+        $this->guidedImage
+            ->getUrl()
+            ->shouldBeCalledTimes(1)
+            ->willReturn(self::IMAGE_URL);
 
         $this->logger
             ->error(

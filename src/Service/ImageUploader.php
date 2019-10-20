@@ -5,34 +5,32 @@ declare(strict_types=1);
 namespace ReliqArts\GuidedImage\Service;
 
 use Exception;
+use Illuminate\Contracts\Filesystem\Factory as FilesystemManager;
+use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Contracts\Validation\Factory as ValidationFactory;
 use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Str;
 use ReliqArts\GuidedImage\Contract\ConfigProvider;
 use ReliqArts\GuidedImage\Contract\GuidedImage;
 use ReliqArts\GuidedImage\Contract\ImageUploader as ImageUploaderContract;
 use ReliqArts\GuidedImage\Contract\Logger;
+use ReliqArts\GuidedImage\Model\UploadedImage;
 use ReliqArts\GuidedImage\Result;
 
 final class ImageUploader implements ImageUploaderContract
 {
     private const ERROR_INVALID_IMAGE = 'Invalid image size or type.';
     private const KEY_FILE = 'file';
-    private const KEY_SIZE = 'size';
-    private const KEY_NAME = 'name';
-    private const KEY_MIME_TYPE = 'mime_type';
-    private const KEY_EXTENSION = 'extension';
-    private const KEY_LOCATION = 'location';
-    private const KEY_FULL_PATH = 'full_path';
-    private const KEY_WIDTH = 'width';
-    private const KEY_HEIGHT = 'height';
-    private const KEY_FILENAME = 'filename';
     private const MESSAGE_IMAGE_REUSED = 'Image reused.';
 
     /**
      * @var ConfigProvider
      */
     private $configProvider;
+
+    /**
+     * @var Filesystem
+     */
+    private $uploadDisk;
 
     /**
      * @var ValidationFactory
@@ -53,17 +51,20 @@ final class ImageUploader implements ImageUploaderContract
      * Uploader constructor.
      *
      * @param ConfigProvider    $configProvider
+     * @param FilesystemManager $filesystemManager
      * @param ValidationFactory $validationFactory
      * @param GuidedImage       $guidedImage
      * @param Logger            $logger
      */
     public function __construct(
         ConfigProvider $configProvider,
+        FilesystemManager $filesystemManager,
         ValidationFactory $validationFactory,
         GuidedImage $guidedImage,
         Logger $logger
     ) {
         $this->configProvider = $configProvider;
+        $this->uploadDisk = $filesystemManager->disk($configProvider->getUploadDiskName());
         $this->validationFactory = $validationFactory;
         $this->guidedImage = $guidedImage;
         $this->logger = $logger;
@@ -80,10 +81,10 @@ final class ImageUploader implements ImageUploaderContract
             return new Result(false, self::ERROR_INVALID_IMAGE);
         }
 
-        $imageRow = $this->buildImageRow($imageFile);
+        $uploadedImage = new UploadedImage($imageFile, $this->configProvider->getUploadDirectory());
         $existing = $this->guidedImage
-            ->where(self::KEY_NAME, $imageRow[self::KEY_NAME])
-            ->where(self::KEY_SIZE, $imageRow[self::KEY_SIZE])
+            ->where(UploadedImage::KEY_NAME, $uploadedImage->getFilename())
+            ->where(UploadedImage::KEY_SIZE, $uploadedImage->getSize())
             ->first();
 
         if (!empty($existing)) {
@@ -96,12 +97,14 @@ final class ImageUploader implements ImageUploaderContract
         }
 
         try {
-            $imageFile->move(
-                $imageRow[self::KEY_LOCATION],
-                $imageRow[self::KEY_NAME] . '.' . $imageRow[self::KEY_EXTENSION]
+            $this->uploadDisk->putFileAs(
+                $uploadedImage->getDestination(),
+                $uploadedImage->getFile(),
+                $uploadedImage->getFilename()
             );
+
             $this->guidedImage->unguard();
-            $instance = $this->guidedImage->create($imageRow);
+            $instance = $this->guidedImage->create($uploadedImage->toArray());
             $this->guidedImage->reguard();
 
             $result = new Result(true, '', [], $instance);
@@ -109,7 +112,7 @@ final class ImageUploader implements ImageUploaderContract
             $this->logger->error(
                 $exception->getMessage(),
                 [
-                    'imageRow' => $imageRow,
+                    'uploaded image' => $uploadedImage->toArray(),
                     'trace' => $exception->getTraceAsString(),
                 ]
             );
@@ -118,30 +121,6 @@ final class ImageUploader implements ImageUploaderContract
         }
 
         return $result;
-    }
-
-    /**
-     * @param UploadedFile $imageFile
-     *
-     * @return array
-     */
-    private function buildImageRow(UploadedFile $imageFile): array
-    {
-        $filePathInfo = pathinfo($imageFile->getClientOriginalName());
-        $filename = Str::slug($filePathInfo[self::KEY_FILENAME]);
-        $imageRow = [
-            self::KEY_SIZE => $imageFile->getSize(),
-            self::KEY_NAME => $filename,
-            self::KEY_MIME_TYPE => $imageFile->getMimeType(),
-            self::KEY_EXTENSION => $imageFile->getClientOriginalExtension(),
-            self::KEY_LOCATION => $this->configProvider->getUploadDirectory(),
-        ];
-        $imageRow[self::KEY_FULL_PATH] = urlencode(
-            sprintf('%s/%s.%s', $imageRow[self::KEY_LOCATION], $filename, $imageRow[self::KEY_EXTENSION])
-        );
-        list($imageRow[self::KEY_WIDTH], $imageRow[self::KEY_HEIGHT]) = getimagesize($imageFile->getRealPath());
-
-        return $imageRow;
     }
 
     /**

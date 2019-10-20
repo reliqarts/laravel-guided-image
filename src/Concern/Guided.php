@@ -6,6 +6,7 @@ declare(strict_types=1);
 
 namespace ReliqArts\GuidedImage\Concern;
 
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use ReliqArts\GuidedImage\Contract\ConfigProvider;
 use ReliqArts\GuidedImage\Contract\GuidedImage as GuidedImageContract;
@@ -52,9 +53,7 @@ trait Guided
             return $this->getUrl();
         }
 
-        /**
-         * @var ConfigProvider
-         */
+        /** @var ConfigProvider $configProvider */
         $configProvider = resolve(ConfigProvider::class);
         $guidedModelName = $configProvider->getGuidedModelName(true);
 
@@ -112,13 +111,28 @@ trait Guided
     }
 
     /**
-     *  Get ready URL to image.
+     *  Get URL/path to image.
+     *
+     * @param bool $diskRelative whether to return `full path` (relative to disk),
+     *                           hence skipping call to Storage facade
      *
      * @return string
+     *
+     * @uses \Illuminate\Support\Facades\Storage
      */
-    public function getUrl(): string
+    public function getUrl(bool $diskRelative = false): string
     {
-        return urldecode($this->getFullPath());
+        $path = urldecode($this->getFullPath());
+
+        if ($diskRelative) {
+            return $path;
+        }
+
+        /** @var ConfigProvider $configProvider */
+        $configProvider = resolve(ConfigProvider::class);
+        $diskName = $configProvider->getUploadDiskName();
+
+        return Storage::disk($diskName)->url($path);
     }
 
     /**
