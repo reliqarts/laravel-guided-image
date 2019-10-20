@@ -21,7 +21,7 @@ final class ImageUploader implements ImageUploaderContract
     private const ERROR_INVALID_IMAGE = 'Invalid image size or type.';
     private const KEY_FILE = 'file';
     private const MESSAGE_IMAGE_REUSED = 'Image reused.';
-    private const UPLOAD_DATE_SUB_DIRECTORIES_PATTERN = 'Y/m/d/H/m';
+    private const UPLOAD_DATE_SUB_DIRECTORIES_PATTERN = 'Y/m/d/H/i';
 
     /**
      * @var ConfigProvider
