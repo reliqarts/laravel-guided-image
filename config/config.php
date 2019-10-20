@@ -10,9 +10,6 @@ return [
     // Set the guided model namespace.
     'model_namespace' => env('GUIDED_IMAGE_MODEL_NAMESPACE', 'App\\'),
 
-    // Where uploaded images should be stored. This is relative to the application's public directory.
-    'upload_dir' => env('GUIDED_IMAGE_UPLOAD_DIR', 'uploads/images'),
-
     // Set the model to be guided.
     'database' => [
         // Guided image table.
@@ -65,6 +62,12 @@ return [
 
         // upload disk
         'upload_disk' => env('GUIDED_IMAGE_UPLOAD_DISK', 'public'),
+
+        // Where uploaded images should be stored. This is relative to the application's public directory.
+        'upload_dir' => env('GUIDED_IMAGE_UPLOAD_DIR', 'uploads/images'),
+
+        // generate upload sub directories (e.g. 2019/05)
+        'generate_upload_date_sub_directories' => env('GUIDED_IMAGE_GENERATE_UPLOAD_DATE_SUB_DIRECTORIES', false),
 
         // Temporary storage directory for images already generated.
         // This directory will live inside your application's storage directory.

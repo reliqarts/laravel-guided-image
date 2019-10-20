@@ -18,12 +18,14 @@ final class ConfigProvider implements ConfigProviderContract
     private const CONFIG_KEY_IMAGE_RULES = 'rules';
     private const CONFIG_KEY_IMAGES_TABLE = 'database.image_table';
     private const CONFIG_KEY_IMAGEABLES_TABLE = 'database.imageables_table';
-    private const CONFIG_KEY_UPLOAD_DIRECTORY = 'upload_dir';
+    private const CONFIG_KEY_STORAGE_UPLOAD_DIRECTORY = 'storage.upload_dir';
     private const CONFIG_KEY_STORAGE_CACHE_DISK = 'storage.cache_disk';
     private const CONFIG_KEY_STORAGE_UPLOAD_DISK = 'storage.upload_disk';
     private const CONFIG_KEY_STORAGE_CACHE_DIR = 'storage.cache_dir';
     private const CONFIG_KEY_STORAGE_CACHE_SUB_DIR_RESIZED = 'storage.cache_sub_dir_resized';
     private const CONFIG_KEY_STORAGE_CACHE_SUB_DIR_THUMBS = 'storage.cache_sub_dir_thumbs';
+    private const CONFIG_KEY_STORAGE_GENERATE_UPLOAD_DATE_SUB_DIRECTORIES
+        = 'storage.generate_upload_date_sub_directories';
     private const CONFIG_KEY_HEADERS_CACHE_DAYS = 'headers.cache_days';
     private const CONFIG_KEY_HEADERS_ADDITIONAL = 'headers.additional';
     private const CONFIG_KEY_IMAGE_ENCODING_FORMAT = 'encoding.format';
@@ -42,6 +44,7 @@ final class ConfigProvider implements ConfigProviderContract
     private const DEFAULT_STORAGE_UPLOAD_DISK = 'public';
     private const DEFAULT_STORAGE_CACHE_SUB_DIR_THUMBS = '.thumbs';
     private const DEFAULT_STORAGE_CACHE_SUB_DIR_RESIZED = '.resized';
+    private const DEFAULT_STORAGE_GENERATE_UPLOAD_DATE_SUB_DIRECTORIES = false;
     private const DEFAULT_HEADER_CACHE_DAYS = 366;
     private const DEFAULT_ADDITIONAL_HEADERS = [];
     private const DEFAULT_IMAGE_ENCODING_FORMAT = 'png';
@@ -169,7 +172,18 @@ final class ConfigProvider implements ConfigProviderContract
      */
     public function getUploadDirectory(): string
     {
-        return $this->configAccessor->get(self::CONFIG_KEY_UPLOAD_DIRECTORY, self::DEFAULT_UPLOAD_DIRECTORY);
+        return $this->configAccessor->get(self::CONFIG_KEY_STORAGE_UPLOAD_DIRECTORY, self::DEFAULT_UPLOAD_DIRECTORY);
+    }
+
+    /**
+     * @return bool
+     */
+    public function generateUploadDateSubDirectories(): bool
+    {
+        return (bool)$this->configAccessor->get(
+            self::CONFIG_KEY_STORAGE_GENERATE_UPLOAD_DATE_SUB_DIRECTORIES,
+            self::DEFAULT_STORAGE_GENERATE_UPLOAD_DATE_SUB_DIRECTORIES
+        );
     }
 
     /**

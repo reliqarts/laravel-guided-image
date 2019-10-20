@@ -21,6 +21,7 @@ final class ImageUploader implements ImageUploaderContract
     private const ERROR_INVALID_IMAGE = 'Invalid image size or type.';
     private const KEY_FILE = 'file';
     private const MESSAGE_IMAGE_REUSED = 'Image reused.';
+    private const UPLOAD_DATE_SUB_DIRECTORIES_PATTERN = 'Y/m/d/H/m';
 
     /**
      * @var ConfigProvider
@@ -81,7 +82,7 @@ final class ImageUploader implements ImageUploaderContract
             return new Result(false, self::ERROR_INVALID_IMAGE);
         }
 
-        $uploadedImage = new UploadedImage($imageFile, $this->configProvider->getUploadDirectory());
+        $uploadedImage = new UploadedImage($imageFile, $this->getUploadDestination());
         $existing = $this->guidedImage
             ->where(UploadedImage::KEY_NAME, $uploadedImage->getFilename())
             ->where(UploadedImage::KEY_SIZE, $uploadedImage->getSize())
@@ -143,5 +144,22 @@ final class ImageUploader implements ImageUploaderContract
         }
 
         return true;
+    }
+
+    /**
+     * @return string
+     */
+    private function getUploadDestination(): string
+    {
+        $destination = $this->configProvider->getUploadDirectory();
+
+        if (!$this->configProvider->generateUploadDateSubDirectories()) {
+            return $destination;
+        }
+
+        $uploadSubDirectories = date(self::UPLOAD_DATE_SUB_DIRECTORIES_PATTERN);
+        $destination = sprintf('%s/%s', $destination, $uploadSubDirectories);
+
+        return str_replace('//', '/', $destination);
     }
 }

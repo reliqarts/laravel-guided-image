@@ -299,6 +299,7 @@ final class ImageDispenserTest extends AspectMockedTestCase
      * @covers ::getResizedImage
      * @covers ::makeImageWithEncoding
      * @covers ::prepCacheDirectories
+     * @covers \ReliqArts\GuidedImage\Demand\ExistingImage::<public>
      *
      * @throws FileNotFoundException
      */
@@ -359,6 +360,7 @@ final class ImageDispenserTest extends AspectMockedTestCase
      * @covers ::getResizedImage
      * @covers ::makeImageWithEncoding
      * @covers ::prepCacheDirectories
+     * @covers \ReliqArts\GuidedImage\Demand\ExistingImage::<public>
      */
     public function testGetResizedImageWhenImageInstanceIsExpected(): void
     {
@@ -418,6 +420,7 @@ final class ImageDispenserTest extends AspectMockedTestCase
      * @covers ::getResizedImage
      * @covers ::makeImageWithEncoding
      * @covers ::prepCacheDirectories
+     * @covers \ReliqArts\GuidedImage\Demand\ExistingImage::<public>
      */
     public function testGetResizedImageWhenCacheFileExists(): void
     {
@@ -478,6 +481,7 @@ final class ImageDispenserTest extends AspectMockedTestCase
      * @covers ::getResizedImage
      * @covers ::makeImageWithEncoding
      * @covers ::prepCacheDirectories
+     * @covers \ReliqArts\GuidedImage\Demand\ExistingImage::<public>
      */
     public function testGetResizedWhenImageRetrievalFails(): void
     {
@@ -550,6 +554,7 @@ final class ImageDispenserTest extends AspectMockedTestCase
      * @covers ::getImageThumbnail
      * @covers ::makeImageWithEncoding
      * @covers ::prepCacheDirectories
+     * @covers \ReliqArts\GuidedImage\Demand\ExistingImage::<public>
      */
     public function testGetImageThumbnail(): void
     {
@@ -608,6 +613,7 @@ final class ImageDispenserTest extends AspectMockedTestCase
      * @covers ::getImageThumbnail
      * @covers ::makeImageWithEncoding
      * @covers ::prepCacheDirectories
+     * @covers \ReliqArts\GuidedImage\Demand\ExistingImage::<public>
      */
     public function testGetImageThumbnailWhenImageInstanceIsExpected(): void
     {
@@ -665,6 +671,7 @@ final class ImageDispenserTest extends AspectMockedTestCase
      * @covers ::getImageThumbnail
      * @covers ::makeImageWithEncoding
      * @covers ::prepCacheDirectories
+     * @covers \ReliqArts\GuidedImage\Demand\ExistingImage::<public>
      */
     public function testGetImageThumbnailWhenCacheFileExists(): void
     {
@@ -723,6 +730,7 @@ final class ImageDispenserTest extends AspectMockedTestCase
      * @covers ::getImageThumbnail
      * @covers ::makeImageWithEncoding
      * @covers ::prepCacheDirectories
+     * @covers \ReliqArts\GuidedImage\Demand\ExistingImage::<public>
      */
     public function testGetImageThumbnailWhenDemandIsInvalid(): void
     {
@@ -785,6 +793,7 @@ final class ImageDispenserTest extends AspectMockedTestCase
      * @covers ::getImageThumbnail
      * @covers ::makeImageWithEncoding
      * @covers ::prepCacheDirectories
+     * @covers \ReliqArts\GuidedImage\Demand\ExistingImage::<public>
      */
     public function testGetImageThumbnailWhenImageRetrievalFails(): void
     {

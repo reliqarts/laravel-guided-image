@@ -135,6 +135,10 @@ final class ImageUploaderTest extends AspectMockedTestCase
             ->getUploadDiskName()
             ->shouldBeCalledTimes(1)
             ->willReturn(self::UPLOAD_DISK_NAME);
+        $this->configProvider
+            ->generateUploadDateSubDirectories()
+            ->shouldBeCalledTimes(1)
+            ->willReturn(1);
 
         $this->filesystemManager
             ->disk(self::UPLOAD_DISK_NAME)
@@ -185,8 +189,10 @@ final class ImageUploaderTest extends AspectMockedTestCase
 
     /**
      * @covers ::__construct
+     * @covers ::getUploadDestination
      * @covers ::upload
      * @covers ::validate
+     * @covers \ReliqArts\GuidedImage\Model\UploadedImage::<public>
      */
     public function testUpload(): void
     {
@@ -210,8 +216,10 @@ final class ImageUploaderTest extends AspectMockedTestCase
 
     /**
      * @covers ::__construct
+     * @covers ::getUploadDestination
      * @covers ::upload
      * @covers ::validate
+     * @covers \ReliqArts\GuidedImage\Model\UploadedImage::<public>
      */
     public function testUploadWhenFileShouldBeReused(): void
     {
@@ -258,6 +266,9 @@ final class ImageUploaderTest extends AspectMockedTestCase
     {
         $this->configProvider
             ->getUploadDirectory()
+            ->shouldNotBeCalled();
+        $this->configProvider
+            ->generateUploadDateSubDirectories()
             ->shouldNotBeCalled();
 
         $this->validator
@@ -306,6 +317,7 @@ final class ImageUploaderTest extends AspectMockedTestCase
      * @covers ::__construct
      * @covers ::upload
      * @covers ::validate
+     * @covers \ReliqArts\GuidedImage\Model\UploadedImage::<public>
      */
     public function testUploadWhenFileUploadFails(): void
     {

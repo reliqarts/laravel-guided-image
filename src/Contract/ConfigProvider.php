@@ -80,6 +80,11 @@ interface ConfigProvider
     public function getUploadDirectory(): string;
 
     /**
+     * @return bool
+     */
+    public function generateUploadDateSubDirectories(): bool;
+
+    /**
      * @return string
      */
     public function getResizedCachePath(): string;
