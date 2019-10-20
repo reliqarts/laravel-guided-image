@@ -5,7 +5,8 @@ declare(strict_types=1);
 namespace ReliqArts\GuidedImage\Concern;
 
 use Illuminate\Http\UploadedFile;
-use ReliqArts\Contracts\Filesystem;
+use Illuminate\Support\Facades\Storage;
+use ReliqArts\GuidedImage\Contract\ConfigProvider;
 use ReliqArts\GuidedImage\Contract\ImageUploader;
 use ReliqArts\GuidedImage\Result;
 
@@ -30,7 +31,7 @@ trait GuidedRepository
     }
 
     /**
-     * Removes image from database, and filesystem, if not in use.
+     * Removes image from database, and disk, if not in use.
      *
      * @param bool $force override safety constraints
      *
@@ -38,10 +39,10 @@ trait GuidedRepository
      */
     public function remove(bool $force = false): Result
     {
-        /**
-         * @var Filesystem
-         */
-        $filesystem = resolve(Filesystem::class);
+        /** @var ConfigProvider $configProvider */
+        $configProvider = resolve(ConfigProvider::class);
+        $diskName = $configProvider->getUploadDiskName();
+        $path = urldecode($this->getFullPath());
 
         if (!($force || $this->isSafeForDelete())) {
             return new Result(
@@ -50,7 +51,7 @@ trait GuidedRepository
             );
         }
 
-        if ($filesystem->delete(urldecode($this->getFullPath()))) {
+        if (Storage::disk($diskName)->delete($path)) {
             $this->delete();
         }
 
