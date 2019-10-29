@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace ReliqArts\GuidedImage\Tests\Unit\Demand;
 
+use PHPUnit\Framework\MockObject\MockObject;
 use ReliqArts\GuidedImage\Demand\Image;
 
 /**
@@ -24,7 +25,7 @@ final class ImageTest extends TestCase
      * @param mixed    $width
      * @param null|int $expectedResult
      */
-    public function testGetWidth($width, ?int $expectedResult)
+    public function testGetWidth($width, ?int $expectedResult): void
     {
         $demand = $this->getImageDemand($width, self::DIMENSION, null);
 
@@ -40,7 +41,7 @@ final class ImageTest extends TestCase
      * @param mixed    $height
      * @param null|int $expectedResult
      */
-    public function testGetHeight($height, ?int $expectedResult)
+    public function testGetHeight($height, ?int $expectedResult): void
     {
         $demand = $this->getImageDemand(self::DIMENSION, $height, null);
 
@@ -56,7 +57,7 @@ final class ImageTest extends TestCase
      * @param mixed $returnObject
      * @param bool  $expectedResult
      */
-    public function testReturnObject($returnObject, bool $expectedResult)
+    public function testReturnObject($returnObject, bool $expectedResult): void
     {
         $demand = $this->getImageDemand(self::DIMENSION, self::DIMENSION, $returnObject);
 
@@ -103,7 +104,7 @@ final class ImageTest extends TestCase
      *
      * @return \PHPUnit\Framework\MockObject\MockObject
      */
-    private function getImageDemand($width, $height, $returnObject = null)
+    private function getImageDemand($width, $height, $returnObject = null): MockObject
     {
         return $this->getMockBuilder(Image::class)
             ->setConstructorArgs([$width, $height, $returnObject])
