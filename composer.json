@@ -43,8 +43,7 @@
     }
   },
   "scripts": {
-    "test": "vendor/bin/phpunit",
-    "test-demands": "vendor/bin/phpunit --testdox tests/Unit/Demand"
+    "test": "vendor/bin/phpunit"
   },
   "config": {
     "sort-packages": true
