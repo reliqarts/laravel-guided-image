@@ -44,6 +44,8 @@ final class Thumbnail extends ExistingImage
     }
 
     /**
+     * @codeCoverageIgnore
+     *
      * @return string
      */
     public function getMethod(): string
