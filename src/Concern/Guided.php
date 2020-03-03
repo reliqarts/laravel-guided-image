@@ -1,6 +1,9 @@
 <?php
 
-/** @noinspection PhpUnusedParameterInspection */
+/**
+ * @noinspection PhpUnusedParameterInspection
+ * @noinspection PhpUnused
+ */
 
 declare(strict_types=1);
 
@@ -28,14 +31,12 @@ trait Guided
     /**
      * @throws BadImplementation
      */
-    public static function bootGuided()
+    public static function bootGuided(): void
     {
         $implementedInterfaces = class_implements(static::class);
 
         if (!in_array(GuidedImageContract::class, $implementedInterfaces, true)) {
-            throw new BadImplementation(
-                sprintf('Model (%s) must implement `%s` to be guided!', static::class, GuidedImageContract::class)
-            );
+            throw new BadImplementation(sprintf('Model (%s) must implement `%s` to be guided!', static::class, GuidedImageContract::class));
         }
     }
 
@@ -44,8 +45,6 @@ trait Guided
      *
      * @param string $type   request type (thumbnail or resize)
      * @param array  $params parameters to pass to route
-     *
-     * @return string
      */
     public function getRoutedUrl(string $type, array $params = []): string
     {
@@ -80,8 +79,6 @@ trait Guided
      * Get link to resized photo.
      *
      * @param array $params parameters to pass to route
-     *
-     * @return string
      */
     public function routeResized(array $params = []): string
     {
@@ -92,8 +89,6 @@ trait Guided
      * Get link to photo thumbnail.
      *
      * @param array $params parameters to pass to route
-     *
-     * @return string
      */
     public function routeThumbnail(array $params = []): string
     {
@@ -102,8 +97,6 @@ trait Guided
 
     /**
      * Get class.
-     *
-     * @return string
      */
     public function getClassName(): string
     {
@@ -115,8 +108,6 @@ trait Guided
      *
      * @param bool $diskRelative whether to return `full path` (relative to disk),
      *                           hence skipping call to Storage facade
-     *
-     * @return string
      *
      * @uses \Illuminate\Support\Facades\Storage
      */
@@ -137,8 +128,6 @@ trait Guided
 
     /**
      *  Get ready image title.
-     *
-     * @return string
      */
     public function getTitle(): string
     {
@@ -147,8 +136,6 @@ trait Guided
 
     /**
      * Get full path.
-     *
-     * @return string
      */
     public function getFullPath(): string
     {
@@ -157,8 +144,6 @@ trait Guided
 
     /**
      * Get name.
-     *
-     * @return string
      */
     public function getName(): string
     {

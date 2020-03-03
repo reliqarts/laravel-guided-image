@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace ReliqArts\GuidedImage\Concern;
 
+use Exception;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use ReliqArts\GuidedImage\Contract\ConfigProvider;
@@ -15,11 +16,6 @@ use ReliqArts\GuidedImage\Result;
  */
 trait GuidedRepository
 {
-    /**
-     * @param UploadedFile $file
-     *
-     * @return Result
-     */
     public static function upload(UploadedFile $file): Result
     {
         /**
@@ -35,7 +31,7 @@ trait GuidedRepository
      *
      * @param bool $force override safety constraints
      *
-     * @return Result
+     * @throws Exception
      */
     public function remove(bool $force = false): Result
     {

@@ -13,13 +13,13 @@
          verbose="true">
 
     <testsuites>
-        <testsuite name="Guided Image Tests">
+        <testsuite name="Tests">
             <directory suffix=".php">tests</directory>
         </testsuite>
-        <testsuite name="Guided Image Feature Tests">
+        <testsuite name="Integration">
             <directory suffix="Test.php">tests/Feature</directory>
         </testsuite>
-        <testsuite name="Guided Image Unit Tests">
+        <testsuite name="Unit">
             <directory suffix="Test.php">tests/Unit</directory>
         </testsuite>
     </testsuites>

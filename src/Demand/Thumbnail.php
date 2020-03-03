@@ -18,17 +18,14 @@ final class Thumbnail extends ExistingImage
     /**
      * @var string
      */
-    private $method;
+    private string $method;
 
     /**
      * Thumbnail constructor.
      *
-     * @param Request     $request
-     * @param GuidedImage $guidedImage
-     * @param string      $method
-     * @param mixed       $width
-     * @param mixed       $height
-     * @param mixed       $returnObject
+     * @param mixed $width
+     * @param mixed $height
+     * @param mixed $returnObject
      */
     public function __construct(
         Request $request,
@@ -45,17 +42,12 @@ final class Thumbnail extends ExistingImage
 
     /**
      * @codeCoverageIgnore
-     *
-     * @return string
      */
     public function getMethod(): string
     {
         return $this->method;
     }
 
-    /**
-     * @return bool
-     */
     public function isValid(): bool
     {
         return in_array($this->method, self::METHODS, true);

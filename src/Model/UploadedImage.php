@@ -21,18 +21,15 @@ final class UploadedImage implements Arrayable
     /**
      * @var UploadedFile
      */
-    private $file;
+    private UploadedFile $file;
 
     /**
      * @var string
      */
-    private $destination;
+    private string $destination;
 
     /**
      * UploadedImage constructor.
-     *
-     * @param UploadedFile $file
-     * @param string       $destination
      */
     public function __construct(UploadedFile $file, string $destination)
     {
@@ -40,33 +37,21 @@ final class UploadedImage implements Arrayable
         $this->destination = $destination;
     }
 
-    /**
-     * @return UploadedFile
-     */
     public function getFile(): UploadedFile
     {
         return $this->file;
     }
 
-    /**
-     * @return string
-     */
     public function getDestination(): string
     {
         return $this->destination;
     }
 
-    /**
-     * @return string
-     */
     public function getFilename(): string
     {
         return $this->file->getClientOriginalName();
     }
 
-    /**
-     * @return int
-     */
     public function getSize(): int
     {
         return $this->file->getSize();
@@ -74,8 +59,6 @@ final class UploadedImage implements Arrayable
 
     /**
      * Get the instance as an array.
-     *
-     * @return array
      */
     public function toArray(): array
     {

@@ -8,7 +8,6 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Query\Builder as QueryBuilder;
 use Illuminate\Http\UploadedFile;
-use ReliqArts\GuidedImage\Demand\Resize;
 use ReliqArts\GuidedImage\Result;
 
 /**
@@ -22,8 +21,6 @@ interface GuidedImage
 {
     /**
      *  Get image name.
-     *
-     * @return string
      */
     public function getName(): string;
 
@@ -32,15 +29,11 @@ interface GuidedImage
      *
      * @param string $type   request type (thumbnail or resize)
      * @param array  $params parameters to pass to route
-     *
-     * @return string
      */
     public function getRoutedUrl(string $type, array $params = []): string;
 
     /**
      *  Get image title.
-     *
-     * @return string
      */
     public function getTitle(): string;
 
@@ -49,8 +42,6 @@ interface GuidedImage
      *
      * @param bool $diskRelative whether to return `full path` (relative to disk),
      *                           hence skipping call to Storage facade
-     *
-     * @return string
      *
      * @uses \Illuminate\Support\Facades\Storage
      */
@@ -71,8 +62,6 @@ interface GuidedImage
      * Removes image from database, and filesystem, if not in use.
      *
      * @param bool $force override safety constraints
-     *
-     * @return Result
      */
     public function remove(bool $force = false): Result;
 
@@ -80,8 +69,6 @@ interface GuidedImage
      * Get link to resized photo.
      *
      * @param array $params parameters to pass to route
-     *
-     * @return string
      */
     public function routeResized(array $params = []): string;
 
@@ -89,8 +76,6 @@ interface GuidedImage
      * Get link to photo thumbnail.
      *
      * @param array $params parameters to pass to route
-     *
-     * @return string
      */
     public function routeThumbnail(array $params = []): string;
 
@@ -98,8 +83,6 @@ interface GuidedImage
      *  Upload and save image.
      *
      * @param UploadedFile $imageFile File from request. e.g. $request->file('image');
-     *
-     * @return Result
      */
     public static function upload(UploadedFile $imageFile): Result;
 }

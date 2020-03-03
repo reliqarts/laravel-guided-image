@@ -24,8 +24,7 @@ final class ResizeTest extends TestCase
      * @covers ::isValueConsideredNull
      * @covers       \ReliqArts\GuidedImage\Demand\Image::__construct
      *
-     * @param mixed    $width
-     * @param null|int $expectedResult
+     * @param mixed $width
      */
     public function testGetWidth($width, ?int $expectedResult): void
     {
@@ -46,8 +45,7 @@ final class ResizeTest extends TestCase
      * @covers ::isValueConsideredNull
      * @covers       \ReliqArts\GuidedImage\Demand\Image::__construct
      *
-     * @param mixed    $height
-     * @param null|int $expectedResult
+     * @param mixed $height
      */
     public function testGetHeight($height, ?int $expectedResult): void
     {
@@ -69,7 +67,6 @@ final class ResizeTest extends TestCase
      * @covers       \ReliqArts\GuidedImage\Demand\Image::__construct
      *
      * @param mixed $maintainAspectRatio
-     * @param bool  $expectedResult
      */
     public function testMaintainAspectRatio($maintainAspectRatio, bool $expectedResult): void
     {
@@ -91,7 +88,6 @@ final class ResizeTest extends TestCase
      * @covers       \ReliqArts\GuidedImage\Demand\Image::__construct
      *
      * @param mixed $upSize
-     * @param bool  $expectedResult
      */
     public function testAllowUpSizing($upSize, bool $expectedResult): void
     {
@@ -114,7 +110,6 @@ final class ResizeTest extends TestCase
      * @covers       \ReliqArts\GuidedImage\Demand\Image::__construct
      *
      * @param mixed $returnObject
-     * @param bool  $expectedResult
      */
     public function testReturnObject($returnObject, bool $expectedResult): void
     {
@@ -131,9 +126,6 @@ final class ResizeTest extends TestCase
         $this->assertSame($expectedResult, $demand->returnObject());
     }
 
-    /**
-     * @return array
-     */
     public function resizeDimensionDataProvider(): array
     {
         return [
@@ -147,9 +139,6 @@ final class ResizeTest extends TestCase
         ];
     }
 
-    /**
-     * @return array
-     */
     public function resizeFlagDataProvider(): array
     {
         return [

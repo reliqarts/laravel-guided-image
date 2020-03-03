@@ -17,8 +17,8 @@ use ReliqArts\GuidedImage\Service\ConfigProvider;
 use ReliqArts\GuidedImage\Service\ImageDispenser;
 use ReliqArts\GuidedImage\Service\ImageUploader;
 use ReliqArts\GuidedImage\Service\Logger;
+use ReliqArts\Service\ConfigProvider as ReliqArtsConfigProvider;
 use ReliqArts\ServiceProvider as ReliqArtsServiceProvider;
-use ReliqArts\Services\ConfigProvider as ReliqArtsConfigProvider;
 
 /**
  *  Guided Image Service Provider.
@@ -35,14 +35,14 @@ final class ServiceProvider extends ReliqArtsServiceProvider
      *
      * @var array
      */
-    protected $commands = [
+    protected array $commands = [
         ClearSkimDirectories::class,
     ];
 
     /**
      * @var ConfigProviderContract
      */
-    private $configProvider;
+    private ConfigProviderContract $configProvider;
 
     /**
      * Perform post-registration booting of services.
@@ -149,7 +149,7 @@ final class ServiceProvider extends ReliqArtsServiceProvider
         }
     }
 
-    private function handleMigrations()
+    private function handleMigrations(): void
     {
         $this->loadMigrationsFrom(sprintf('%s/database/migrations', $this->getAssetDirectory()));
     }

@@ -37,25 +37,16 @@ abstract class Image implements ImageDemand
         $this->returnObject = $returnObject;
     }
 
-    /**
-     * @return null|int
-     */
     final public function getWidth(): ?int
     {
         return $this->isValueConsideredNull($this->width) ? null : (int)$this->width;
     }
 
-    /**
-     * @return null|int
-     */
     final public function getHeight(): ?int
     {
         return $this->isValueConsideredNull($this->height) ? null : (int)$this->height;
     }
 
-    /**
-     * @return bool
-     */
     final public function returnObject(): bool
     {
         return !$this->isValueConsideredNull($this->returnObject);
@@ -63,8 +54,6 @@ abstract class Image implements ImageDemand
 
     /**
      * @param mixed $value
-     *
-     * @return bool
      */
     final public function isValueConsideredNull($value): bool
     {

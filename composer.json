@@ -1,6 +1,6 @@
 {
   "name": "reliqarts/laravel-guided-image",
-  "description": "Simplified and ready image manipulation for Laravel 6 via intervention image.",
+  "description": "Simplified and ready image manipulation for Laravel via intervention image.",
   "keywords": [
     "image",
     "route",
@@ -22,19 +22,18 @@
     }
   ],
   "require": {
-    "php": "^7.2",
-    "illuminate/support": "^5.8|^6.0",
+    "php": "^7.4",
+    "illuminate/support": "6 - 7",
     "intervention/image": "^2.4",
     "intervention/imagecache": "^2.3",
-    "reliqarts/laravel-common": "^4.0",
+    "reliqarts/laravel-common": "4 - 5",
     "ext-json": "*"
   },
   "require-dev": {
-    "codeception/aspect-mock": "^3.0",
-    "orchestra/testbench": "^3.8|^4.0",
-    "phpro/grumphp": "^0.15.2",
-    "phpunit/phpunit": "^8.1",
-    "wearejust/grumphp-extra-tasks": "^2.2"
+    "codeception/aspect-mock": "^3.1",
+    "orchestra/testbench": "4 - 5",
+    "phpro/grumphp": "^0.18.0",
+    "phpunit/phpunit": "^8.5"
   },
   "autoload": {
     "psr-4": {
@@ -43,7 +42,9 @@
     }
   },
   "scripts": {
-    "test": "vendor/bin/phpunit"
+    "test": "phpunit",
+    "test:ci": "phpunit --verbose --colors=auto --coverage-clover=coverage.xml",
+    "test:unit": "phpunit --testsuite=Unit --verbose --coverage-clover=coverage.xml"
   },
   "config": {
     "sort-packages": true

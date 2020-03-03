@@ -40,9 +40,6 @@ final class Dummy extends Image
         $this->filling = $filling;
     }
 
-    /**
-     * @return string
-     */
     public function getColor(): string
     {
         return $this->isValueConsideredNull($this->color) ? self::DEFAULT_COLOR : $this->color;

@@ -14,8 +14,6 @@ abstract class GuidedImage implements GuidedImageContract
 {
     /**
      * {@inheritdoc}
-     *
-     * @return Builder
      */
     abstract public function where($column, $operator = null, $value = null, $boolean = 'and'): Builder;
 
@@ -30,8 +28,6 @@ abstract class GuidedImage implements GuidedImageContract
     abstract public function reguard();
 
     /**
-     * @param array $attributes
-     *
      * @return GuidedImageContract|Model|void
      */
     abstract public function create(array $attributes = []);

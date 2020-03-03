@@ -43,7 +43,7 @@ final class ExistingImageTest extends TestCase
      * @param $height
      * @param null $returnObject
      *
-     * @return \PHPUnit\Framework\MockObject\MockObject
+     * @return ExistingImage|MockObject
      */
     private function getExistingImageDemand(
         $width,

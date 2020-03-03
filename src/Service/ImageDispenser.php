@@ -33,55 +33,50 @@ final class ImageDispenser implements ImageDispenserContract
     /**
      * @var ConfigProvider
      */
-    private $configProvider;
+    private ConfigProvider $configProvider;
 
     /**
      * @var Filesystem
      */
-    private $cacheDisk;
+    private Filesystem $cacheDisk;
 
     /**
      * @var Filesystem
      */
-    private $uploadDisk;
+    private Filesystem $uploadDisk;
 
     /**
      * @var string
      */
-    private $imageEncodingFormat;
+    private string $imageEncodingFormat;
 
     /**
      * @var int
      */
-    private $imageEncodingQuality;
+    private int $imageEncodingQuality;
 
     /**
      * @var ImageManager
      */
-    private $imageManager;
+    private ImageManager $imageManager;
 
     /**
      * @var Logger
      */
-    private $logger;
+    private Logger $logger;
 
     /**
      * @var string
      */
-    private $thumbsCachePath;
+    private string $thumbsCachePath;
 
     /**
      * @var string
      */
-    private $resizedCachePath;
+    private string $resizedCachePath;
 
     /**
      * ImageDispenser constructor.
-     *
-     * @param ConfigProvider    $configProvider
-     * @param FilesystemManager $filesystemManager
-     * @param ImageManager      $imageManager
-     * @param Logger            $logger
      */
     public function __construct(
         ConfigProvider $configProvider,
@@ -145,7 +140,7 @@ final class ImageDispenser implements ImageDispenserContract
                 $image = $this->makeImageWithEncoding($this->cacheDisk->path($cacheFilePath));
             } else {
                 $image = $this->makeImageWithEncoding($this->uploadDisk->path($guidedImage->getUrl(true)));
-                $image->resize($width, $height, function (Constraint $constraint) use ($demand) {
+                $image->resize($width, $height, static function (Constraint $constraint) use ($demand) {
                     if ($demand->maintainAspectRatio()) {
                         $constraint->aspectRatio();
                     }
@@ -249,9 +244,6 @@ final class ImageDispenser implements ImageDispenserContract
         }
     }
 
-    /**
-     * @return bool
-     */
     public function emptyCache(): bool
     {
         return $this->cacheDisk->deleteDirectory($this->resizedCachePath)
@@ -261,10 +253,6 @@ final class ImageDispenser implements ImageDispenserContract
     /**
      * Get image headers. Improved caching
      * If the image has not been modified say 304 Not Modified.
-     *
-     * @param string  $cacheFilePath
-     * @param Request $request
-     * @param Image   $image
      *
      * @return array image headers
      */
@@ -277,7 +265,7 @@ final class ImageDispenser implements ImageDispenserContract
         $etagFile = md5_file($filePath);
 
         // check if image hasn't changed
-        if (strtotime($modifiedSince) === $lastModified || $etagFile === $etagHeader) {
+        if ($etagFile === $etagHeader || strtotime($modifiedSince) === $lastModified) {
             // Say not modified and kill script
             header('HTTP/1.1 304 Not Modified');
             header(sprintf('ETag: %s', $etagFile));
@@ -322,8 +310,6 @@ final class ImageDispenser implements ImageDispenserContract
     /**
      * @param mixed $data
      * @param mixed ...$encoding
-     *
-     * @return Image
      */
     private function makeImageWithEncoding($data, ...$encoding): Image
     {

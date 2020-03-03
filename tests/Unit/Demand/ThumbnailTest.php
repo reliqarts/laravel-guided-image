@@ -19,9 +19,6 @@ final class ThumbnailTest extends TestCase
      * @dataProvider isValidDataProvider
      * @covers ::__construct
      * @covers ::isValid
-     *
-     * @param string $method
-     * @param bool   $expectedResult
      */
     public function testIsValid(string $method, bool $expectedResult): void
     {
@@ -36,9 +33,6 @@ final class ThumbnailTest extends TestCase
         $this->assertSame($expectedResult, $demand->isValid());
     }
 
-    /**
-     * @return array
-     */
     public function isValidDataProvider(): array
     {
         return [

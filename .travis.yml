@@ -1,18 +1,17 @@
 language: php
 
 php:
-  - 7.2
-  - 7.3
+  - 7.4
 
 env:
-  - LARAVEL='^5.8' TESTBENCH='^3.8' COMPOSER_FLAGS='--prefer-stable'
   - LARAVEL='^6.0' TESTBENCH='^4.0' COMPOSER_FLAGS='--prefer-stable'
-  - LARAVEL='6.x-dev' TESTBENCH='^4.0'
+  - LARAVEL='^7.0' TESTBENCH='^5.0' COMPOSER_FLAGS='--prefer-stable'
+  - LARAVEL='dev-master' TESTBENCH='^5.0'
 
 matrix:
   fast_finish: true
   allow_failures:
-    - env: LARAVEL='6.x-dev' TESTBENCH='^4.0'
+    - env: LARAVEL='dev-master' TESTBENCH='^5.0'
 
 cache:
   directories:

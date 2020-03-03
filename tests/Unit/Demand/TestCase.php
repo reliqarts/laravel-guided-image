@@ -31,9 +31,6 @@ abstract class TestCase extends UnitTestCase
         $this->guidedImage = $this->prophesize(GuidedImage::class);
     }
 
-    /**
-     * @return array
-     */
     public function nullValueProvider(): array
     {
         return [

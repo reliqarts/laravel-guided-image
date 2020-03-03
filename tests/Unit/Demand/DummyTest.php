@@ -21,8 +21,7 @@ final class DummyTest extends TestCase
      * @covers ::getColor
      * @covers ::isValueConsideredNull
      *
-     * @param mixed  $color
-     * @param string $expectedResult
+     * @param mixed $color
      */
     public function testGetColor($color, string $expectedResult): void
     {
@@ -41,8 +40,7 @@ final class DummyTest extends TestCase
      * @covers ::fill
      * @covers ::isValueConsideredNull
      *
-     * @param mixed       $fill
-     * @param null|string $expectedResult
+     * @param mixed $fill
      */
     public function testFill($fill, ?string $expectedResult): void
     {
@@ -56,9 +54,6 @@ final class DummyTest extends TestCase
         $this->assertSame($expectedResult, $demand->fill());
     }
 
-    /**
-     * @return array
-     */
     public function colorDataProvider(): array
     {
         return [
@@ -72,9 +67,6 @@ final class DummyTest extends TestCase
         ];
     }
 
-    /**
-     * @return array
-     */
     public function fillDataProvider(): array
     {
         return [

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace ReliqArts\GuidedImage\Service;
 
-use ReliqArts\Contracts\ConfigProvider as ConfigAccessor;
+use ReliqArts\Contract\ConfigProvider as ConfigAccessor;
 use ReliqArts\GuidedImage\Contract\ConfigProvider as ConfigProviderContract;
 
 final class ConfigProvider implements ConfigProviderContract
@@ -55,21 +55,16 @@ final class ConfigProvider implements ConfigProviderContract
     /**
      * @var ConfigAccessor
      */
-    private $configAccessor;
+    private ConfigAccessor $configAccessor;
 
     /**
      * ConfigProvider constructor.
-     *
-     * @param ConfigAccessor $configAccessor
      */
     public function __construct(ConfigAccessor $configAccessor)
     {
         $this->configAccessor = $configAccessor;
     }
 
-    /**
-     * @return array
-     */
     public function getAllowedExtensions(): array
     {
         return $this->configAccessor->get(self::CONFIG_KEY_ALLOWED_EXTENSIONS, self::DEFAULT_ALLOWED_EXTENSIONS);
@@ -124,12 +119,10 @@ final class ConfigProvider implements ConfigProviderContract
 
     /**
      * {@inheritdoc}
-     *
-     * @return array
      */
     public function getRouteGroupBindings(array $bindings = [], string $groupKey = self::ROUTE_GROUP_KEY_PUBLIC): array
     {
-        $defaults = (self::ROUTE_GROUP_KEY_PUBLIC === $groupKey) ? [self::KEY_PREFIX => self::getRoutePrefix()] : [];
+        $defaults = (self::ROUTE_GROUP_KEY_PUBLIC === $groupKey) ? [self::KEY_PREFIX => $this->getRoutePrefix()] : [];
 
         $bindings = array_merge(
             $this->configAccessor->get(sprintf(self::CONFIG_KEY_ROUTES_BINDINGS_WITH_GROUP, $groupKey), []),
@@ -139,9 +132,6 @@ final class ConfigProvider implements ConfigProviderContract
         return array_merge($defaults, $bindings);
     }
 
-    /**
-     * @return string
-     */
     public function getImageRules(): string
     {
         return $this->configAccessor->get(self::CONFIG_KEY_IMAGE_RULES, self::DEFAULT_IMAGE_RULES);
@@ -149,8 +139,6 @@ final class ConfigProvider implements ConfigProviderContract
 
     /**
      * {@inheritdoc}
-     *
-     * @return string
      */
     public function getImagesTableName(): string
     {
@@ -159,25 +147,17 @@ final class ConfigProvider implements ConfigProviderContract
 
     /**
      * {@inheritdoc}
-     *
-     * @return string
      */
     public function getImageablesTableName(): string
     {
         return $this->configAccessor->get(self::CONFIG_KEY_IMAGEABLES_TABLE, self::DEFAULT_IMAGEABLES_TABLE);
     }
 
-    /**
-     * @return string
-     */
     public function getUploadDirectory(): string
     {
         return $this->configAccessor->get(self::CONFIG_KEY_STORAGE_UPLOAD_DIRECTORY, self::DEFAULT_UPLOAD_DIRECTORY);
     }
 
-    /**
-     * @return bool
-     */
     public function generateUploadDateSubDirectories(): bool
     {
         return (bool)$this->configAccessor->get(
@@ -186,9 +166,6 @@ final class ConfigProvider implements ConfigProviderContract
         );
     }
 
-    /**
-     * @return string
-     */
     public function getResizedCachePath(): string
     {
         $cacheDir = $this->getCacheDirectory();
@@ -200,9 +177,6 @@ final class ConfigProvider implements ConfigProviderContract
         return sprintf('%s/%s', $cacheDir, $cacheResizedSubDir);
     }
 
-    /**
-     * @return string
-     */
     public function getThumbsCachePath(): string
     {
         $cacheDir = $this->getCacheDirectory();
@@ -214,25 +188,16 @@ final class ConfigProvider implements ConfigProviderContract
         return sprintf('%s/%s', $cacheDir, $cacheThumbsSubDir);
     }
 
-    /**
-     * @return int
-     */
     public function getCacheDaysHeader(): int
     {
         return (int)$this->configAccessor->get(self::CONFIG_KEY_HEADERS_CACHE_DAYS, self::DEFAULT_HEADER_CACHE_DAYS);
     }
 
-    /**
-     * @return array
-     */
     public function getAdditionalHeaders(): array
     {
         return $this->configAccessor->get(self::CONFIG_KEY_HEADERS_ADDITIONAL, self::DEFAULT_ADDITIONAL_HEADERS);
     }
 
-    /**
-     * @return string
-     */
     public function getCacheDirectory(): string
     {
         return $this->configAccessor->get(
@@ -241,9 +206,6 @@ final class ConfigProvider implements ConfigProviderContract
         );
     }
 
-    /**
-     * @return string
-     */
     public function getImageEncodingFormat(): string
     {
         return $this->configAccessor->get(
@@ -252,9 +214,6 @@ final class ConfigProvider implements ConfigProviderContract
         );
     }
 
-    /**
-     * @return int
-     */
     public function getImageEncodingQuality(): int
     {
         return (int)$this->configAccessor->get(
@@ -263,17 +222,11 @@ final class ConfigProvider implements ConfigProviderContract
         );
     }
 
-    /**
-     * @return string
-     */
     public function getCacheDiskName(): string
     {
         return $this->configAccessor->get(self::CONFIG_KEY_STORAGE_CACHE_DISK, self::DEFAULT_STORAGE_CACHE_DISK);
     }
 
-    /**
-     * @return string
-     */
     public function getUploadDiskName(): string
     {
         return $this->configAccessor->get(self::CONFIG_KEY_STORAGE_UPLOAD_DISK, self::DEFAULT_STORAGE_UPLOAD_DISK);

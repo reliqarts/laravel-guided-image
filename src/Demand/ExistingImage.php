@@ -12,21 +12,19 @@ abstract class ExistingImage extends Image
     /**
      * @var Request
      */
-    private $request;
+    private Request $request;
 
     /**
      * @var GuidedImage
      */
-    private $guidedImage;
+    private GuidedImage $guidedImage;
 
     /**
      * ExistingImage constructor.
      *
-     * @param Request     $request
-     * @param GuidedImage $guidedImage
-     * @param mixed       $width
-     * @param mixed       $height
-     * @param mixed       $returnObject
+     * @param mixed $width
+     * @param mixed $height
+     * @param mixed $returnObject
      */
     public function __construct(Request $request, GuidedImage $guidedImage, $width, $height, $returnObject = null)
     {
@@ -36,17 +34,11 @@ abstract class ExistingImage extends Image
         $this->guidedImage = $guidedImage;
     }
 
-    /**
-     * @return Request
-     */
     final public function getRequest(): Request
     {
         return $this->request;
     }
 
-    /**
-     * @return GuidedImage
-     */
     final public function getGuidedImage(): GuidedImage
     {
         return $this->guidedImage;

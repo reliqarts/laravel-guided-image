@@ -252,7 +252,7 @@ final class ImageUploaderTest extends AspectMockedTestCase
         $result = $this->subject->upload($this->uploadedFile);
 
         $this->assertInstanceOf(Result::class, $result);
-        $this->assertSame($existingGuidedImage, $result->getData());
+        $this->assertSame($existingGuidedImage, $result->getExtra());
         $this->assertStringContainsStringIgnoringCase('reused', $result->getMessage());
         $this->assertTrue($result->isSuccess());
     }
@@ -349,11 +349,6 @@ final class ImageUploaderTest extends AspectMockedTestCase
     }
 
     /**
-     * @param string $filename
-     * @param string $mimeType
-     * @param string $extension
-     * @param int    $size
-     *
      * @return MockInterface|UploadedFile
      */
     private function getUploadedFileMock(

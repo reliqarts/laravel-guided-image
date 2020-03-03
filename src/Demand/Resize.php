@@ -24,13 +24,11 @@ final class Resize extends ExistingImage
     /**
      * Resized constructor.
      *
-     * @param Request     $request
-     * @param GuidedImage $guidedImage
-     * @param mixed       $width
-     * @param mixed       $height
-     * @param mixed       $aspect
-     * @param mixed       $upSize
-     * @param mixed       $returnObject
+     * @param mixed $width
+     * @param mixed $height
+     * @param mixed $aspect
+     * @param mixed $upSize
+     * @param mixed $returnObject
      */
     public function __construct(
         Request $request,
@@ -47,17 +45,11 @@ final class Resize extends ExistingImage
         $this->allowUpSizing = $upSize;
     }
 
-    /**
-     * @return bool
-     */
     public function maintainAspectRatio(): bool
     {
         return !$this->isValueConsideredNull($this->maintainAspectRatio);
     }
 
-    /**
-     * @return bool
-     */
     public function allowUpSizing(): bool
     {
         return !$this->isValueConsideredNull($this->allowUpSizing);

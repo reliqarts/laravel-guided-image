@@ -20,10 +20,6 @@ trait Guide
 {
     /**
      * Empty skim cache.
-     *
-     * @param ImageDispenser $imageDispenser
-     *
-     * @return JsonResponse
      */
     public function emptyCache(ImageDispenser $imageDispenser): JsonResponse
     {
@@ -41,15 +37,10 @@ trait Guide
     }
 
     /**
-     * @param ImageDispenser $imageDispenser
-     * @param Request        $request
-     * @param GuidedImage    $guidedImage
-     * @param mixed          $width
-     * @param mixed          $height
-     * @param mixed          $aspect
-     * @param mixed          $upSize
-     *
-     * @return Response
+     * @param mixed $width
+     * @param mixed $height
+     * @param mixed $aspect
+     * @param mixed $upSize
      */
     public function resized(
         ImageDispenser $imageDispenser,
@@ -66,14 +57,9 @@ trait Guide
     }
 
     /**
-     * @param ImageDispenser $imageDispenser
-     * @param Request        $request
-     * @param GuidedImage    $guidedImage
-     * @param mixed          $method
-     * @param mixed          $width
-     * @param mixed          $height
-     *
-     * @return Response
+     * @param mixed $method
+     * @param mixed $width
+     * @param mixed $height
      */
     public function thumb(
         ImageDispenser $imageDispenser,
@@ -89,13 +75,10 @@ trait Guide
     }
 
     /**
-     * @param ImageDispenser $imageDispenser
-     * @param mixed          $width
-     * @param mixed          $height
-     * @param mixed          $color
-     * @param mixed          $fill
-     *
-     * @return Response
+     * @param mixed $width
+     * @param mixed $height
+     * @param mixed $color
+     * @param mixed $fill
      */
     public function dummy(
         ImageDispenser $imageDispenser,

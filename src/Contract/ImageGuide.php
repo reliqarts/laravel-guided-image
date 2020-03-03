@@ -14,23 +14,16 @@ interface ImageGuide
 {
     /**
      * Empty skim cache.
-     *
-     * @param ImageDispenser $imageDispenser
-     *
-     * @return JsonResponse
      */
     public function emptyCache(ImageDispenser $imageDispenser): JsonResponse;
 
     /**
      * Get a resized Guided Image.
      *
-     * @param ImageDispenser $imageDispenser
-     * @param Request        $request
-     * @param GuidedImage    $guidedImage
-     * @param mixed          $width
-     * @param mixed          $height
-     * @param mixed          $aspect         Keep aspect ratio?
-     * @param mixed          $upSize         Allow up-size?
+     * @param mixed $width
+     * @param mixed $height
+     * @param mixed $aspect Keep aspect ratio?
+     * @param mixed $upSize Allow up-size?
      *
      * @return Image|string intervention Image object or actual image url
      */
@@ -47,12 +40,9 @@ interface ImageGuide
     /**
      * Get a thumbnail.
      *
-     * @param ImageDispenser $imageDispenser
-     * @param Request        $request
-     * @param GuidedImage    $guidedImage
-     * @param string         $method         crop|fit
-     * @param int            $width
-     * @param int            $height
+     * @param string $method crop|fit
+     * @param int    $width
+     * @param int    $height
      *
      * @return Image|string intervention Image object or actual image url
      */
@@ -68,11 +58,10 @@ interface ImageGuide
     /**
      * Get dummy Guided Image.
      *
-     * @param ImageDispenser $imageDispenser
-     * @param mixed          $width
-     * @param mixed          $height
-     * @param mixed          $color
-     * @param mixed          $fill
+     * @param mixed $width
+     * @param mixed $height
+     * @param mixed $color
+     * @param mixed $fill
      *
      * @return Image|string intervention Image object or actual image url
      */

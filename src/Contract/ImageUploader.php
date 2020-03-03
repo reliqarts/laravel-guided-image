@@ -14,8 +14,6 @@ interface ImageUploader
      *
      * @param UploadedFile $imageFile File from request
      *                                .e.g. request->file('image');
-     *
-     * @return Result
      */
     public function upload(UploadedFile $imageFile): Result;
 }

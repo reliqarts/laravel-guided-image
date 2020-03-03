@@ -25,10 +25,6 @@ final class ClearSkimDirectories extends Command
 
     /**
      * Execute the console command.
-     *
-     * @param ImageDispenser $imageDispenser
-     *
-     * @return bool
      */
     public function handle(ImageDispenser $imageDispenser): bool
     {

@@ -22,8 +22,7 @@ final class ImageTest extends TestCase
      * @covers ::getWidth
      * @covers ::isValueConsideredNull
      *
-     * @param mixed    $width
-     * @param null|int $expectedResult
+     * @param mixed $width
      */
     public function testGetWidth($width, ?int $expectedResult): void
     {
@@ -38,8 +37,7 @@ final class ImageTest extends TestCase
      * @covers ::getHeight
      * @covers ::isValueConsideredNull
      *
-     * @param mixed    $height
-     * @param null|int $expectedResult
+     * @param mixed $height
      */
     public function testGetHeight($height, ?int $expectedResult): void
     {
@@ -55,7 +53,6 @@ final class ImageTest extends TestCase
      * @covers ::returnObject
      *
      * @param mixed $returnObject
-     * @param bool  $expectedResult
      */
     public function testReturnObject($returnObject, bool $expectedResult): void
     {
@@ -64,9 +61,6 @@ final class ImageTest extends TestCase
         $this->assertSame($expectedResult, $demand->returnObject());
     }
 
-    /**
-     * @return array
-     */
     public function widthAndHeightDataProvider(): array
     {
         return [
@@ -81,9 +75,6 @@ final class ImageTest extends TestCase
         ];
     }
 
-    /**
-     * @return array
-     */
     public function imageFlagDataProvider(): array
     {
         return [
@@ -102,7 +93,7 @@ final class ImageTest extends TestCase
      * @param $height
      * @param null $returnObject
      *
-     * @return \PHPUnit\Framework\MockObject\MockObject
+     * @return Image|MockObject
      */
     private function getImageDemand($width, $height, $returnObject = null): MockObject
     {

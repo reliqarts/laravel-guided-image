@@ -26,36 +26,30 @@ final class ImageUploader implements ImageUploaderContract
     /**
      * @var ConfigProvider
      */
-    private $configProvider;
+    private ConfigProvider $configProvider;
 
     /**
      * @var Filesystem
      */
-    private $uploadDisk;
+    private Filesystem $uploadDisk;
 
     /**
      * @var ValidationFactory
      */
-    private $validationFactory;
+    private ValidationFactory $validationFactory;
 
     /**
      * @var GuidedImage
      */
-    private $guidedImage;
+    private GuidedImage $guidedImage;
 
     /**
      * @var Logger
      */
-    private $logger;
+    private Logger $logger;
 
     /**
      * Uploader constructor.
-     *
-     * @param ConfigProvider    $configProvider
-     * @param FilesystemManager $filesystemManager
-     * @param ValidationFactory $validationFactory
-     * @param GuidedImage       $guidedImage
-     * @param Logger            $logger
      */
     public function __construct(
         ConfigProvider $configProvider,
@@ -74,7 +68,7 @@ final class ImageUploader implements ImageUploaderContract
     /**
      * {@inheritdoc}
      *
-     * @return Result
+     * @noinspection StaticInvocationViaThisInspection
      */
     public function upload(UploadedFile $imageFile): Result
     {
@@ -94,7 +88,7 @@ final class ImageUploader implements ImageUploaderContract
             // @noinspection PhpIncompatibleReturnTypeInspection
             return $result
                 ->addMessage(self::MESSAGE_IMAGE_REUSED)
-                ->setData($existing);
+                ->setExtra($existing);
         }
 
         try {
@@ -124,11 +118,6 @@ final class ImageUploader implements ImageUploaderContract
         return $result;
     }
 
-    /**
-     * @param UploadedFile $imageFile
-     *
-     * @return bool
-     */
     private function validate(UploadedFile $imageFile): bool
     {
         $allowedExtensions = $this->configProvider->getAllowedExtensions();
@@ -137,18 +126,10 @@ final class ImageUploader implements ImageUploaderContract
             [self::KEY_FILE => $this->configProvider->getImageRules()]
         );
 
-        if ($validator->fails()
-            || !in_array(strtolower($imageFile->getClientOriginalExtension()), $allowedExtensions, true)
-        ) {
-            return false;
-        }
-
-        return true;
+        return !($validator->fails()
+            || !in_array(strtolower($imageFile->getClientOriginalExtension()), $allowedExtensions, true));
     }
 
-    /**
-     * @return string
-     */
     private function getUploadDestination(): string
     {
         $destination = $this->configProvider->getUploadDirectory();
