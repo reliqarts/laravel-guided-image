@@ -142,10 +142,10 @@ $linkToImage = $image->routeResized([
 $linkToImage = $image->routeThumbnail([
     'crop',     // method: crop|fit
     '550',      // width
-    '_',        // height, 'null' is OK 
+    '_',        // height
 ]);
 ```
-**NB:** In the above example `_` is treated as `null`.
+**NB:** In the above example `_` resolves to `null`.
 
 Have a look at the [GuidedImage contract](https://github.com/ReliQArts/laravel-guided-image/blob/master/src/Contract/GuidedImage.php) for more info on model functions.
 
