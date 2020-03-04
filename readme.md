@@ -47,7 +47,7 @@ or require in *composer.json*:
 ```json
 {
     "require": {
-        "reliqarts/laravel-guided-image": "^2.0"
+        "reliqarts/laravel-guided-image": "^3.0"
     }
 }
 ```
@@ -59,7 +59,7 @@ Finally, publish package resources and configuration:
 php artisan vendor:publish --provider="ReliqArts\GuidedImage\ServiceProvider"
 ``` 
 
-You may opt to publish only configuration by using the `guided-image-config` tag:
+You may opt to publish only configuration by using the `guidedimage-config` tag:
 
 ```
 php artisan vendor:publish --provider="ReliqArts\GuidedImage\ServiceProvider" --tag="guidedimage-config"
