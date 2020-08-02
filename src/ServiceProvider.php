@@ -51,9 +51,8 @@ final class ServiceProvider extends ReliqArtsServiceProvider
      */
     public function boot(): void
     {
-        parent::boot();
-
         $this->handleRoutes();
+        $this->handleConfig();
         $this->handleCommands();
         $this->handleMigrations();
     }
