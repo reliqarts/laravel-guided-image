@@ -9,6 +9,6 @@ grumphp:
       no-progress-bar: true
     phpunit:
       config_file: ~
-      testsuite: ~
+      testsuite: Unit
       group: [ ]
       always_execute: false
