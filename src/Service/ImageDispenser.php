@@ -14,6 +14,7 @@ use Intervention\Image\Exception\NotReadableException;
 use Intervention\Image\Image;
 use Intervention\Image\ImageManager;
 use ReliqArts\GuidedImage\Contract\ConfigProvider;
+use ReliqArts\GuidedImage\Contract\FileHelper;
 use ReliqArts\GuidedImage\Contract\ImageDispenser as ImageDispenserContract;
 use ReliqArts\GuidedImage\Contract\Logger;
 use ReliqArts\GuidedImage\Demand\Dummy;
@@ -30,50 +31,16 @@ final class ImageDispenser implements ImageDispenserContract
     private const DEFAULT_IMAGE_ENCODING_FORMAT = 'png';
     private const DEFAULT_IMAGE_ENCODING_QUALITY = 90;
 
-    /**
-     * @var ConfigProvider
-     */
     private ConfigProvider $configProvider;
-
-    /**
-     * @var Filesystem
-     */
     private Filesystem $cacheDisk;
-
-    /**
-     * @var Filesystem
-     */
     private Filesystem $uploadDisk;
-
-    /**
-     * @var string
-     */
     private string $imageEncodingFormat;
-
-    /**
-     * @var int
-     */
     private int $imageEncodingQuality;
-
-    /**
-     * @var ImageManager
-     */
     private ImageManager $imageManager;
-
-    /**
-     * @var Logger
-     */
     private Logger $logger;
-
-    /**
-     * @var string
-     */
     private string $thumbsCachePath;
-
-    /**
-     * @var string
-     */
     private string $resizedCachePath;
+    private FileHelper $fileHelper;
 
     /**
      * ImageDispenser constructor.
@@ -82,7 +49,8 @@ final class ImageDispenser implements ImageDispenserContract
         ConfigProvider $configProvider,
         FilesystemManager $filesystemManager,
         ImageManager $imageManager,
-        Logger $logger
+        Logger $logger,
+        FileHelper $fileHelper
     ) {
         $this->configProvider = $configProvider;
         $this->cacheDisk = $filesystemManager->disk($configProvider->getCacheDiskName());
@@ -91,6 +59,7 @@ final class ImageDispenser implements ImageDispenserContract
         $this->imageEncodingFormat = $configProvider->getImageEncodingFormat();
         $this->imageEncodingQuality = $configProvider->getImageEncodingQuality();
         $this->logger = $logger;
+        $this->fileHelper = $fileHelper;
 
         $this->prepCacheDirectories();
     }
@@ -140,14 +109,18 @@ final class ImageDispenser implements ImageDispenserContract
                 $image = $this->makeImageWithEncoding($this->cacheDisk->path($cacheFilePath));
             } else {
                 $image = $this->makeImageWithEncoding($this->uploadDisk->path($guidedImage->getUrl(true)));
-                $image->resize($width, $height, static function (Constraint $constraint) use ($demand) {
-                    if ($demand->maintainAspectRatio()) {
-                        $constraint->aspectRatio();
+                $image->resize(
+                    $width,
+                    $height,
+                    static function (Constraint $constraint) use ($demand) {
+                        if ($demand->maintainAspectRatio()) {
+                            $constraint->aspectRatio();
+                        }
+                        if ($demand->allowUpSizing()) {
+                            $constraint->upsize();
+                        }
                     }
-                    if ($demand->allowUpSizing()) {
-                        $constraint->upsize();
-                    }
-                });
+                );
                 $image->save($this->cacheDisk->path($cacheFilePath));
             }
 
@@ -214,7 +187,10 @@ final class ImageDispenser implements ImageDispenserContract
                 /** @var Image $image */
                 $image = $this->imageManager
                     ->make($this->uploadDisk->path($guidedImage->getUrl(true)))
-                    ->{$method}($width, $height);
+                    ->{$method}(
+                        $width,
+                        $height
+                    );
 
                 $image->save($this->cacheDisk->path($cacheFilePath));
             }
@@ -262,7 +238,7 @@ final class ImageDispenser implements ImageDispenserContract
         $lastModified = $this->cacheDisk->lastModified($cacheFilePath);
         $modifiedSince = $request->header('If-Modified-Since', '');
         $etagHeader = trim($request->header('If-None-Match', ''));
-        $etagFile = md5_file($filePath);
+        $etagFile = $this->fileHelper->hashFile($filePath);
 
         // check if image hasn't changed
         if ($etagFile === $etagHeader || strtotime($modifiedSince) === $lastModified) {
@@ -273,12 +249,15 @@ final class ImageDispenser implements ImageDispenserContract
         }
 
         // adjust headers and return
-        return array_merge($this->getDefaultHeaders(), [
-            'Content-Type' => $image->mime,
-            'Content-Disposition' => sprintf('inline; filename=%s', $image->filename),
-            'Last-Modified' => date(DATE_RFC822, $lastModified),
-            'Etag' => $etagFile,
-        ]);
+        return array_merge(
+            $this->getDefaultHeaders(),
+            [
+                'Content-Type' => $image->mime,
+                'Content-Disposition' => sprintf('inline; filename=%s', $image->filename),
+                'Last-Modified' => date(DATE_RFC822, $lastModified),
+                'Etag' => $etagFile,
+            ]
+        );
     }
 
     private function prepCacheDirectories(): void

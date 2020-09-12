@@ -52,9 +52,6 @@ final class ConfigProvider implements ConfigProviderContract
 
     private const KEY_PREFIX = 'prefix';
 
-    /**
-     * @var ConfigAccessor
-     */
     private ConfigAccessor $configAccessor;
 
     /**

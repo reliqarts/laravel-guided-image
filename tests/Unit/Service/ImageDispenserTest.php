@@ -1,13 +1,15 @@
 <?php
 
-/** @noinspection PhpParamsInspection */
+/**
+ * @noinspection PhpParamsInspection
+ * @noinspection PhpUndefinedMethodInspection
+ * @noinspection PhpStrictTypeCheckingInspection
+ */
 
 declare(strict_types=1);
 
 namespace ReliqArts\GuidedImage\Tests\Unit\Service;
 
-use AspectMock\Proxy\FuncProxy;
-use AspectMock\Test;
 use Illuminate\Contracts\Filesystem\Factory as FilesystemManager;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use Illuminate\Contracts\Filesystem\Filesystem;
@@ -22,6 +24,7 @@ use Mockery\MockInterface;
 use Prophecy\Argument;
 use Prophecy\Prophecy\ObjectProphecy;
 use ReliqArts\GuidedImage\Contract\ConfigProvider;
+use ReliqArts\GuidedImage\Contract\FileHelper;
 use ReliqArts\GuidedImage\Contract\ImageDispenser as ImageDispenserContract;
 use ReliqArts\GuidedImage\Contract\Logger;
 use ReliqArts\GuidedImage\Demand\Dummy;
@@ -29,7 +32,8 @@ use ReliqArts\GuidedImage\Demand\Resize;
 use ReliqArts\GuidedImage\Demand\Thumbnail;
 use ReliqArts\GuidedImage\Service\ImageDispenser;
 use ReliqArts\GuidedImage\Tests\Fixtures\Model\GuidedImage;
-use ReliqArts\GuidedImage\Tests\Unit\AspectMockedTestCase;
+use ReliqArts\GuidedImage\Tests\Unit\TestCase;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
  * Class ImageDispenserTest.
@@ -38,7 +42,7 @@ use ReliqArts\GuidedImage\Tests\Unit\AspectMockedTestCase;
  *
  * @internal
  */
-final class ImageDispenserTest extends AspectMockedTestCase
+final class ImageDispenserTest extends TestCase
 {
     private const CACHE_DISK_NAME = 'local';
     private const CACHE_RESIZED_SUB_DIRECTORY = 'RESIZED';
@@ -48,6 +52,7 @@ final class ImageDispenserTest extends AspectMockedTestCase
     private const LAST_MODIFIED = 21343;
     private const IMAGE_NAME = 'my-image';
     private const IMAGE_URL = '//image_url';
+    private const FILE_HASH = '4387904830a4245a8ab767e5937d722c';
     private const CACHE_FILE_NAME_FORMAT_RESIZED = '%s/%d-%d-_-%d_%d_%s';
     private const CACHE_FILE_FORMAT_THUMBNAIL = '%s/%d-%d-_-%s_%s';
     private const IMAGE_WIDTH = 100;
@@ -61,62 +66,47 @@ final class ImageDispenserTest extends AspectMockedTestCase
     /**
      * @var ConfigProvider|ObjectProphecy
      */
-    private $configProvider;
+    private ObjectProphecy $configProvider;
 
     /**
      * @var FilesystemManager|ObjectProphecy
      */
-    private $filesystemManager;
+    private ObjectProphecy $filesystemManager;
 
     /**
      * @var Filesystem|FilesystemAdapter|ObjectProphecy
      */
-    private $cacheDisk;
+    private ObjectProphecy $cacheDisk;
 
     /**
      * @var Filesystem|FilesystemAdapter|ObjectProphecy
      */
-    private $uploadDisk;
+    private ObjectProphecy $uploadDisk;
 
     /**
      * @var ImageManager|ObjectProphecy
      */
-    private $imageManager;
+    private ObjectProphecy $imageManager;
 
     /**
      * @var Logger|ObjectProphecy
      */
-    private $logger;
+    private ObjectProphecy $logger;
 
     /**
      * @var ObjectProphecy|Request
      */
-    private $request;
+    private ObjectProphecy $request;
 
     /**
      * @var GuidedImage|ObjectProphecy
      */
-    private $guidedImage;
+    private ObjectProphecy $guidedImage;
 
-    /**
-     * @var ImageDispenserContract
-     */
-    private $subject;
+    private string $cacheThumbs;
+    private string $cacheResized;
 
-    /**
-     * @var string
-     */
-    private $cacheThumbs;
-
-    /**
-     * @var string
-     */
-    private $cacheResized;
-
-    /**
-     * @var FuncProxy
-     */
-    private $md5FileFunc;
+    private ImageDispenserContract $subject;
 
     protected function setUp(): void
     {
@@ -132,13 +122,8 @@ final class ImageDispenserTest extends AspectMockedTestCase
         $this->guidedImage = $this->prophesize(GuidedImage::class);
         $this->cacheResized = self::CACHE_RESIZED_SUB_DIRECTORY;
         $this->cacheThumbs = self::CACHE_THUMBS_SUB_DIRECTORY;
-        $this->md5FileFunc = Test::func(
-            $this->namespace,
-            'md5_file',
-            function ($path) {
-                return $path;
-            }
-        );
+
+        $fileHelper = $this->prophesize(FileHelper::class);
 
         $this->configProvider
             ->getCacheDiskName()
@@ -202,6 +187,10 @@ final class ImageDispenserTest extends AspectMockedTestCase
             ->path(self::IMAGE_URL)
             ->willReturn(self::IMAGE_URL);
 
+        $fileHelper
+            ->hashFile(Argument::type('string'))
+            ->willReturn(self::FILE_HASH);
+
         $this->request
             ->header(Argument::cetera())
             ->willReturn('');
@@ -217,7 +206,8 @@ final class ImageDispenserTest extends AspectMockedTestCase
             $this->configProvider->reveal(),
             $this->filesystemManager->reveal(),
             $this->imageManager->reveal(),
-            $this->logger->reveal()
+            $this->logger->reveal(),
+            $fileHelper->reveal()
         );
     }
 
@@ -238,7 +228,7 @@ final class ImageDispenserTest extends AspectMockedTestCase
 
         $result = $this->subject->emptyCache();
 
-        $this->assertTrue($result);
+        self::assertTrue($result);
     }
 
     /**
@@ -264,7 +254,7 @@ final class ImageDispenserTest extends AspectMockedTestCase
             new Dummy($width, $height, $color, $fill)
         );
 
-        $this->assertSame($imageResponse, $result);
+        self::assertSame($imageResponse, $result);
     }
 
     /**
@@ -289,7 +279,7 @@ final class ImageDispenserTest extends AspectMockedTestCase
             new Dummy($width, $height, $color, $fill, true)
         );
 
-        $this->assertSame($image, $result);
+        self::assertSame($image, $result);
     }
 
     /**
@@ -299,7 +289,10 @@ final class ImageDispenserTest extends AspectMockedTestCase
      * @covers ::getResizedImage
      * @covers ::makeImageWithEncoding
      * @covers ::prepCacheDirectories
-     * @covers \ReliqArts\GuidedImage\Demand\ExistingImage::<public>
+     * @covers \ReliqArts\GuidedImage\Demand\ExistingImage::getGuidedImage
+     * @covers \ReliqArts\GuidedImage\Demand\ExistingImage::getRequest
+     * @covers \ReliqArts\GuidedImage\Demand\ExistingImage::getHeight
+     * @covers \ReliqArts\GuidedImage\Demand\ExistingImage::getWidth
      *
      * @throws FileNotFoundException
      */
@@ -348,11 +341,9 @@ final class ImageDispenserTest extends AspectMockedTestCase
 
         $result = $this->subject->getResizedImage($demand);
 
-        $this->assertInstanceOf(Response::class, $result);
-        $this->assertSame(self::RESPONSE_HTTP_OK, $result->getStatusCode());
-        $this->assertSame($imageContent, $result->getOriginalContent());
-
-        $this->md5FileFunc->verifyInvokedOnce();
+        self::assertInstanceOf(Response::class, $result);
+        self::assertSame(self::RESPONSE_HTTP_OK, $result->getStatusCode());
+        self::assertSame($imageContent, $result->getOriginalContent());
     }
 
     /**
@@ -360,7 +351,10 @@ final class ImageDispenserTest extends AspectMockedTestCase
      * @covers ::getResizedImage
      * @covers ::makeImageWithEncoding
      * @covers ::prepCacheDirectories
-     * @covers \ReliqArts\GuidedImage\Demand\ExistingImage::<public>
+     * @covers \ReliqArts\GuidedImage\Demand\ExistingImage::getGuidedImage
+     * @covers \ReliqArts\GuidedImage\Demand\ExistingImage::getRequest
+     * @covers \ReliqArts\GuidedImage\Demand\ExistingImage::getHeight
+     * @covers \ReliqArts\GuidedImage\Demand\ExistingImage::getWidth
      */
     public function testGetResizedImageWhenImageInstanceIsExpected(): void
     {
@@ -408,9 +402,7 @@ final class ImageDispenserTest extends AspectMockedTestCase
 
         $result = $this->subject->getResizedImage($demand);
 
-        $this->assertSame($image, $result);
-
-        $this->md5FileFunc->verifyNeverInvoked();
+        self::assertSame($image, $result);
     }
 
     /**
@@ -420,7 +412,10 @@ final class ImageDispenserTest extends AspectMockedTestCase
      * @covers ::getResizedImage
      * @covers ::makeImageWithEncoding
      * @covers ::prepCacheDirectories
-     * @covers \ReliqArts\GuidedImage\Demand\ExistingImage::<public>
+     * @covers \ReliqArts\GuidedImage\Demand\ExistingImage::getGuidedImage
+     * @covers \ReliqArts\GuidedImage\Demand\ExistingImage::getRequest
+     * @covers \ReliqArts\GuidedImage\Demand\ExistingImage::getHeight
+     * @covers \ReliqArts\GuidedImage\Demand\ExistingImage::getWidth
      */
     public function testGetResizedImageWhenCacheFileExists(): void
     {
@@ -467,11 +462,9 @@ final class ImageDispenserTest extends AspectMockedTestCase
 
         $result = $this->subject->getResizedImage($demand);
 
-        $this->assertInstanceOf(Response::class, $result);
-        $this->assertSame(self::RESPONSE_HTTP_OK, $result->getStatusCode());
-        $this->assertSame($imageContent, $result->getOriginalContent());
-
-        $this->md5FileFunc->verifyInvokedOnce();
+        self::assertInstanceOf(Response::class, $result);
+        self::assertSame(self::RESPONSE_HTTP_OK, $result->getStatusCode());
+        self::assertSame($imageContent, $result->getOriginalContent());
     }
 
     /**
@@ -481,7 +474,10 @@ final class ImageDispenserTest extends AspectMockedTestCase
      * @covers ::getResizedImage
      * @covers ::makeImageWithEncoding
      * @covers ::prepCacheDirectories
-     * @covers \ReliqArts\GuidedImage\Demand\ExistingImage::<public>
+     * @covers \ReliqArts\GuidedImage\Demand\ExistingImage::getGuidedImage
+     * @covers \ReliqArts\GuidedImage\Demand\ExistingImage::getRequest
+     * @covers \ReliqArts\GuidedImage\Demand\ExistingImage::getHeight
+     * @covers \ReliqArts\GuidedImage\Demand\ExistingImage::getWidth
      */
     public function testGetResizedWhenImageRetrievalFails(): void
     {
@@ -533,18 +529,17 @@ final class ImageDispenserTest extends AspectMockedTestCase
         $this->logger
             ->error(
                 Argument::containingString('Exception'),
-                Argument::that(function (array $argument) use ($cacheFile) {
-                    return in_array($cacheFile, $argument, true) && in_array(self::IMAGE_URL, $argument, true);
-                })
+                Argument::that(
+                    function (array $argument) use ($cacheFile) {
+                        return in_array($cacheFile, $argument, true) && in_array(self::IMAGE_URL, $argument, true);
+                    }
+                )
             )
             ->shouldBeCalledTimes(1);
 
-        $result = $this->subject->getResizedImage($demand);
+        $this->expectException(NotFoundHttpException::class);
 
-        $this->assertEmpty($result);
-
-        $this->md5FileFunc->verifyNeverInvoked();
-        $this->abortFunc->verifyInvokedOnce();
+        $this->subject->getResizedImage($demand);
     }
 
     /**
@@ -554,7 +549,10 @@ final class ImageDispenserTest extends AspectMockedTestCase
      * @covers ::getImageThumbnail
      * @covers ::makeImageWithEncoding
      * @covers ::prepCacheDirectories
-     * @covers \ReliqArts\GuidedImage\Demand\ExistingImage::<public>
+     * @covers \ReliqArts\GuidedImage\Demand\ExistingImage::getGuidedImage
+     * @covers \ReliqArts\GuidedImage\Demand\ExistingImage::getRequest
+     * @covers \ReliqArts\GuidedImage\Demand\ExistingImage::getHeight
+     * @covers \ReliqArts\GuidedImage\Demand\ExistingImage::getWidth
      */
     public function testGetImageThumbnail(): void
     {
@@ -601,11 +599,9 @@ final class ImageDispenserTest extends AspectMockedTestCase
 
         $result = $this->subject->getImageThumbnail($demand);
 
-        $this->assertInstanceOf(Response::class, $result);
-        $this->assertSame(self::RESPONSE_HTTP_OK, $result->getStatusCode());
-        $this->assertSame($imageContent, $result->getOriginalContent());
-
-        $this->md5FileFunc->verifyInvokedOnce();
+        self::assertInstanceOf(Response::class, $result);
+        self::assertSame(self::RESPONSE_HTTP_OK, $result->getStatusCode());
+        self::assertSame($imageContent, $result->getOriginalContent());
     }
 
     /**
@@ -613,7 +609,10 @@ final class ImageDispenserTest extends AspectMockedTestCase
      * @covers ::getImageThumbnail
      * @covers ::makeImageWithEncoding
      * @covers ::prepCacheDirectories
-     * @covers \ReliqArts\GuidedImage\Demand\ExistingImage::<public>
+     * @covers \ReliqArts\GuidedImage\Demand\ExistingImage::getGuidedImage
+     * @covers \ReliqArts\GuidedImage\Demand\ExistingImage::getRequest
+     * @covers \ReliqArts\GuidedImage\Demand\ExistingImage::getHeight
+     * @covers \ReliqArts\GuidedImage\Demand\ExistingImage::getWidth
      */
     public function testGetImageThumbnailWhenImageInstanceIsExpected(): void
     {
@@ -659,9 +658,7 @@ final class ImageDispenserTest extends AspectMockedTestCase
 
         $result = $this->subject->getImageThumbnail($demand);
 
-        $this->assertSame($image, $result);
-
-        $this->md5FileFunc->verifyNeverInvoked();
+        self::assertSame($image, $result);
     }
 
     /**
@@ -671,7 +668,10 @@ final class ImageDispenserTest extends AspectMockedTestCase
      * @covers ::getImageThumbnail
      * @covers ::makeImageWithEncoding
      * @covers ::prepCacheDirectories
-     * @covers \ReliqArts\GuidedImage\Demand\ExistingImage::<public>
+     * @covers \ReliqArts\GuidedImage\Demand\ExistingImage::getGuidedImage
+     * @covers \ReliqArts\GuidedImage\Demand\ExistingImage::getRequest
+     * @covers \ReliqArts\GuidedImage\Demand\ExistingImage::getHeight
+     * @covers \ReliqArts\GuidedImage\Demand\ExistingImage::getWidth
      */
     public function testGetImageThumbnailWhenCacheFileExists(): void
     {
@@ -718,11 +718,9 @@ final class ImageDispenserTest extends AspectMockedTestCase
 
         $result = $this->subject->getImageThumbnail($demand);
 
-        $this->assertInstanceOf(Response::class, $result);
-        $this->assertSame(self::RESPONSE_HTTP_OK, $result->getStatusCode());
-        $this->assertSame($imageContent, $result->getOriginalContent());
-
-        $this->md5FileFunc->verifyInvokedOnce();
+        self::assertInstanceOf(Response::class, $result);
+        self::assertSame(self::RESPONSE_HTTP_OK, $result->getStatusCode());
+        self::assertSame($imageContent, $result->getOriginalContent());
     }
 
     /**
@@ -730,7 +728,10 @@ final class ImageDispenserTest extends AspectMockedTestCase
      * @covers ::getImageThumbnail
      * @covers ::makeImageWithEncoding
      * @covers ::prepCacheDirectories
-     * @covers \ReliqArts\GuidedImage\Demand\ExistingImage::<public>
+     * @covers \ReliqArts\GuidedImage\Demand\ExistingImage::getGuidedImage
+     * @covers \ReliqArts\GuidedImage\Demand\ExistingImage::getRequest
+     * @covers \ReliqArts\GuidedImage\Demand\ExistingImage::getHeight
+     * @covers \ReliqArts\GuidedImage\Demand\ExistingImage::getWidth
      */
     public function testGetImageThumbnailWhenDemandIsInvalid(): void
     {
@@ -778,12 +779,9 @@ final class ImageDispenserTest extends AspectMockedTestCase
             )
             ->shouldBeCalledTimes(1);
 
-        $result = $this->subject->getImageThumbnail($demand);
+        $this->expectException(NotFoundHttpException::class);
 
-        $this->assertSame(self::RESPONSE_HTTP_NOT_FOUND, $result);
-
-        $this->md5FileFunc->verifyNeverInvoked();
-        $this->abortFunc->verifyInvokedOnce();
+        $this->subject->getImageThumbnail($demand);
     }
 
     /**
@@ -793,7 +791,10 @@ final class ImageDispenserTest extends AspectMockedTestCase
      * @covers ::getImageThumbnail
      * @covers ::makeImageWithEncoding
      * @covers ::prepCacheDirectories
-     * @covers \ReliqArts\GuidedImage\Demand\ExistingImage::<public>
+     * @covers \ReliqArts\GuidedImage\Demand\ExistingImage::getGuidedImage
+     * @covers \ReliqArts\GuidedImage\Demand\ExistingImage::getRequest
+     * @covers \ReliqArts\GuidedImage\Demand\ExistingImage::getHeight
+     * @covers \ReliqArts\GuidedImage\Demand\ExistingImage::getWidth
      */
     public function testGetImageThumbnailWhenImageRetrievalFails(): void
     {
@@ -842,18 +843,17 @@ final class ImageDispenserTest extends AspectMockedTestCase
         $this->logger
             ->error(
                 Argument::containingString('Exception'),
-                Argument::that(function (array $argument) use ($cacheFile) {
-                    return in_array($cacheFile, $argument, true) && in_array(self::IMAGE_URL, $argument, true);
-                })
+                Argument::that(
+                    function (array $argument) use ($cacheFile) {
+                        return in_array($cacheFile, $argument, true) && in_array(self::IMAGE_URL, $argument, true);
+                    }
+                )
             )
             ->shouldBeCalledTimes(1);
 
-        $result = $this->subject->getImageThumbnail($demand);
+        $this->expectException(NotFoundHttpException::class);
 
-        $this->assertEmpty($result);
-
-        $this->md5FileFunc->verifyNeverInvoked();
-        $this->abortFunc->verifyInvokedOnce();
+        $this->subject->getImageThumbnail($demand);
     }
 
     /**

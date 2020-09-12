@@ -30,7 +30,7 @@ final class ThumbnailTest extends TestCase
             self::DIMENSION
         );
 
-        $this->assertSame($expectedResult, $demand->isValid());
+        self::assertSame($expectedResult, $demand->isValid());
     }
 
     public function isValidDataProvider(): array

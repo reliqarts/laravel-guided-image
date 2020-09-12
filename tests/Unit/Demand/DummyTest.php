@@ -31,7 +31,7 @@ final class DummyTest extends TestCase
             $color
         );
 
-        $this->assertSame($expectedResult, $demand->getColor());
+        self::assertSame($expectedResult, $demand->getColor());
     }
 
     /**
@@ -51,7 +51,7 @@ final class DummyTest extends TestCase
             $fill
         );
 
-        $this->assertSame($expectedResult, $demand->fill());
+        self::assertSame($expectedResult, $demand->fill());
     }
 
     public function colorDataProvider(): array

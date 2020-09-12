@@ -24,7 +24,7 @@ final class ExistingImageTest extends TestCase
     {
         $demand = $this->getExistingImageDemand(self::DIMENSION, self::DIMENSION, null);
 
-        $this->assertSame($this->request->reveal(), $demand->getRequest());
+        self::assertSame($this->request->reveal(), $demand->getRequest());
     }
 
     /**
@@ -35,7 +35,7 @@ final class ExistingImageTest extends TestCase
     {
         $demand = $this->getExistingImageDemand(self::DIMENSION, self::DIMENSION, null);
 
-        $this->assertSame($this->guidedImage->reveal(), $demand->getGuidedImage());
+        self::assertSame($this->guidedImage->reveal(), $demand->getGuidedImage());
     }
 
     /**

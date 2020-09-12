@@ -35,7 +35,7 @@ final class ResizeTest extends TestCase
             self::DIMENSION
         );
 
-        $this->assertSame($expectedResult, $demand->getWidth());
+        self::assertSame($expectedResult, $demand->getWidth());
     }
 
     /**
@@ -56,7 +56,7 @@ final class ResizeTest extends TestCase
             $height
         );
 
-        $this->assertSame($expectedResult, $demand->getHeight());
+        self::assertSame($expectedResult, $demand->getHeight());
     }
 
     /**
@@ -78,7 +78,7 @@ final class ResizeTest extends TestCase
             $maintainAspectRatio
         );
 
-        $this->assertSame($expectedResult, $demand->maintainAspectRatio());
+        self::assertSame($expectedResult, $demand->maintainAspectRatio());
     }
 
     /**
@@ -100,7 +100,7 @@ final class ResizeTest extends TestCase
             $upSize
         );
 
-        $this->assertSame($expectedResult, $demand->allowUpSizing());
+        self::assertSame($expectedResult, $demand->allowUpSizing());
     }
 
     /**
@@ -123,7 +123,7 @@ final class ResizeTest extends TestCase
             $returnObject
         );
 
-        $this->assertSame($expectedResult, $demand->returnObject());
+        self::assertSame($expectedResult, $demand->returnObject());
     }
 
     public function resizeDimensionDataProvider(): array

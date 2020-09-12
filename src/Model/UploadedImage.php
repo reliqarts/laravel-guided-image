@@ -6,6 +6,7 @@ namespace ReliqArts\GuidedImage\Model;
 
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Http\UploadedFile;
+use ReliqArts\GuidedImage\Contract\FileHelper;
 
 final class UploadedImage implements Arrayable
 {
@@ -18,21 +19,16 @@ final class UploadedImage implements Arrayable
     private const KEY_WIDTH = 'width';
     private const KEY_HEIGHT = 'height';
 
-    /**
-     * @var UploadedFile
-     */
+    private FileHelper $fileHelper;
     private UploadedFile $file;
-
-    /**
-     * @var string
-     */
     private string $destination;
 
     /**
      * UploadedImage constructor.
      */
-    public function __construct(UploadedFile $file, string $destination)
+    public function __construct(FileHelper $fileHelper, UploadedFile $file, string $destination)
     {
+        $this->fileHelper = $fileHelper;
         $this->file = $file;
         $this->destination = $destination;
     }
@@ -72,7 +68,9 @@ final class UploadedImage implements Arrayable
         $image[self::KEY_FULL_PATH] = urlencode(
             sprintf('%s/%s', $this->getDestination(), $this->getFilename())
         );
-        list($image[self::KEY_WIDTH], $image[self::KEY_HEIGHT]) = getimagesize($this->file->getRealPath());
+        [$image[self::KEY_WIDTH], $image[self::KEY_HEIGHT]] = $this->fileHelper->getImageSize(
+            $this->file->getRealPath()
+        );
 
         return $image;
     }

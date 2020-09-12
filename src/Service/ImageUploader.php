@@ -10,6 +10,7 @@ use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Contracts\Validation\Factory as ValidationFactory;
 use Illuminate\Http\UploadedFile;
 use ReliqArts\GuidedImage\Contract\ConfigProvider;
+use ReliqArts\GuidedImage\Contract\FileHelper;
 use ReliqArts\GuidedImage\Contract\GuidedImage;
 use ReliqArts\GuidedImage\Contract\ImageUploader as ImageUploaderContract;
 use ReliqArts\GuidedImage\Contract\Logger;
@@ -23,29 +24,11 @@ final class ImageUploader implements ImageUploaderContract
     private const MESSAGE_IMAGE_REUSED = 'Image reused.';
     private const UPLOAD_DATE_SUB_DIRECTORIES_PATTERN = 'Y/m/d/H/i';
 
-    /**
-     * @var ConfigProvider
-     */
     private ConfigProvider $configProvider;
-
-    /**
-     * @var Filesystem
-     */
     private Filesystem $uploadDisk;
-
-    /**
-     * @var ValidationFactory
-     */
+    private FileHelper $fileHelper;
     private ValidationFactory $validationFactory;
-
-    /**
-     * @var GuidedImage
-     */
     private GuidedImage $guidedImage;
-
-    /**
-     * @var Logger
-     */
     private Logger $logger;
 
     /**
@@ -54,12 +37,14 @@ final class ImageUploader implements ImageUploaderContract
     public function __construct(
         ConfigProvider $configProvider,
         FilesystemManager $filesystemManager,
+        FileHelper $fileHelper,
         ValidationFactory $validationFactory,
         GuidedImage $guidedImage,
         Logger $logger
     ) {
         $this->configProvider = $configProvider;
         $this->uploadDisk = $filesystemManager->disk($configProvider->getUploadDiskName());
+        $this->fileHelper = $fileHelper;
         $this->validationFactory = $validationFactory;
         $this->guidedImage = $guidedImage;
         $this->logger = $logger;
@@ -76,7 +61,7 @@ final class ImageUploader implements ImageUploaderContract
             return new Result(false, self::ERROR_INVALID_IMAGE);
         }
 
-        $uploadedImage = new UploadedImage($imageFile, $this->getUploadDestination());
+        $uploadedImage = new UploadedImage($this->fileHelper, $imageFile, $this->getUploadDestination());
         $existing = $this->guidedImage
             ->where(UploadedImage::KEY_NAME, $uploadedImage->getFilename())
             ->where(UploadedImage::KEY_SIZE, $uploadedImage->getSize())

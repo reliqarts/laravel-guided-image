@@ -28,7 +28,7 @@ final class ImageTest extends TestCase
     {
         $demand = $this->getImageDemand($width, self::DIMENSION, null);
 
-        $this->assertSame($expectedResult, $demand->getWidth());
+        self::assertSame($expectedResult, $demand->getWidth());
     }
 
     /**
@@ -43,7 +43,7 @@ final class ImageTest extends TestCase
     {
         $demand = $this->getImageDemand(self::DIMENSION, $height, null);
 
-        $this->assertSame($expectedResult, $demand->getHeight());
+        self::assertSame($expectedResult, $demand->getHeight());
     }
 
     /**
@@ -58,7 +58,7 @@ final class ImageTest extends TestCase
     {
         $demand = $this->getImageDemand(self::DIMENSION, self::DIMENSION, $returnObject);
 
-        $this->assertSame($expectedResult, $demand->returnObject());
+        self::assertSame($expectedResult, $demand->returnObject());
     }
 
     public function widthAndHeightDataProvider(): array

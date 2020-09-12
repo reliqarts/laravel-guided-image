@@ -9,10 +9,12 @@ use Illuminate\Contracts\Container\BindingResolutionException;
 use Monolog\Handler\StreamHandler;
 use ReliqArts\GuidedImage\Console\Command\ClearSkimDirectories;
 use ReliqArts\GuidedImage\Contract\ConfigProvider as ConfigProviderContract;
+use ReliqArts\GuidedImage\Contract\FileHelper as FileHelperContract;
 use ReliqArts\GuidedImage\Contract\GuidedImage;
 use ReliqArts\GuidedImage\Contract\ImageDispenser as ImageDispenserContract;
 use ReliqArts\GuidedImage\Contract\ImageUploader as ImageUploaderContract;
 use ReliqArts\GuidedImage\Contract\Logger as LoggerContract;
+use ReliqArts\GuidedImage\Helper\FileHelper;
 use ReliqArts\GuidedImage\Service\ConfigProvider;
 use ReliqArts\GuidedImage\Service\ImageDispenser;
 use ReliqArts\GuidedImage\Service\ImageUploader;
@@ -94,6 +96,11 @@ final class ServiceProvider extends ReliqArtsServiceProvider
         $this->app->singleton(
             ImageUploaderContract::class,
             ImageUploader::class
+        );
+
+        $this->app->singleton(
+            FileHelperContract::class,
+            FileHelper::class
         );
 
         $this->app->bind(GuidedImage::class, $guidedModelFQCN);

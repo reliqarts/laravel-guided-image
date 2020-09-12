@@ -1,13 +1,15 @@
 <?php
 
-/** @noinspection PhpParamsInspection */
+/**
+ * @noinspection PhpParamsInspection
+ * @noinspection PhpUndefinedMethodInspection
+ * @noinspection PhpStrictTypeCheckingInspection
+ */
 
 declare(strict_types=1);
 
 namespace ReliqArts\GuidedImage\Tests\Unit\Service;
 
-use AspectMock\Proxy\FuncProxy;
-use AspectMock\Test;
 use Exception;
 use Illuminate\Contracts\Filesystem\Factory as FilesystemManager;
 use Illuminate\Contracts\Filesystem\Filesystem;
@@ -21,12 +23,13 @@ use Mockery\MockInterface;
 use Prophecy\Argument;
 use Prophecy\Prophecy\ObjectProphecy;
 use ReliqArts\GuidedImage\Contract\ConfigProvider;
+use ReliqArts\GuidedImage\Contract\FileHelper;
 use ReliqArts\GuidedImage\Contract\ImageUploader as ImageUploaderContract;
 use ReliqArts\GuidedImage\Contract\Logger;
 use ReliqArts\GuidedImage\Result;
 use ReliqArts\GuidedImage\Service\ImageUploader;
 use ReliqArts\GuidedImage\Tests\Fixtures\Model\GuidedImage;
-use ReliqArts\GuidedImage\Tests\Unit\AspectMockedTestCase;
+use ReliqArts\GuidedImage\Tests\Unit\TestCase;
 
 /**
  * Class ImageUploaderTest.
@@ -35,52 +38,53 @@ use ReliqArts\GuidedImage\Tests\Unit\AspectMockedTestCase;
  *
  * @internal
  */
-final class ImageUploaderTest extends AspectMockedTestCase
+final class ImageUploaderTest extends TestCase
 {
     private const ALLOWED_EXTENSIONS = ['jpg'];
     private const IMAGE_RULES = 'required|mimes:png,gif,jpeg|max:2048';
     private const UPLOAD_DIRECTORY = 'uploads/images';
     private const UPLOAD_DISK_NAME = 'public';
+    private const UPLOADED_IMAGE_SIZE = [100, 200];
 
     /**
      * @var ConfigProvider|ObjectProphecy
      */
-    private $configProvider;
+    private ObjectProphecy $configProvider;
 
     /**
      * @var FilesystemManager|ObjectProphecy
      */
-    private $filesystemManager;
+    private ObjectProphecy $filesystemManager;
 
     /**
      * @var ObjectProphecy|ValidationFactory
      */
-    private $validationFactory;
+    private ObjectProphecy $validationFactory;
 
     /**
-     * @var Validator
+     * @var Validator|ObjectProphecy
      */
-    private $validator;
+    private ObjectProphecy $validator;
 
     /**
      * @var GuidedImage|ObjectProphecy
      */
-    private $guidedImage;
+    private ObjectProphecy $guidedImage;
 
     /**
      * @var Logger|ObjectProphecy
      */
-    private $logger;
+    private ObjectProphecy $logger;
 
     /**
      * @var Builder|ObjectProphecy
      */
-    private $builder;
+    private ObjectProphecy $builder;
 
     /**
      * @var MockInterface|UploadedFile
      */
-    private $uploadedFile;
+    private MockInterface $uploadedFile;
 
     /**
      * @var Filesystem|FilesystemAdapter|ObjectProphecy
@@ -88,19 +92,11 @@ final class ImageUploaderTest extends AspectMockedTestCase
     private $uploadDisk;
 
     /**
-     * @var ImageUploaderContract
+     * @var FileHelper|ObjectProphecy
      */
-    private $subject;
+    private $fileHelper;
 
-    /**
-     * @var FuncProxy
-     */
-    private $pathInfoFunc;
-
-    /**
-     * @var FuncProxy
-     */
-    private $getImageSizeFunc;
+    private ImageUploaderContract $subject;
 
     protected function setUp(): void
     {
@@ -108,6 +104,7 @@ final class ImageUploaderTest extends AspectMockedTestCase
 
         $this->configProvider = $this->prophesize(ConfigProvider::class);
         $this->filesystemManager = $this->prophesize(FilesystemManager::class);
+        $this->fileHelper = $this->prophesize(FileHelper::class);
         $this->validationFactory = $this->prophesize(ValidationFactory::class);
         $this->validator = $this->prophesize(Validator::class);
         $this->guidedImage = $this->prophesize(GuidedImage::class);
@@ -115,9 +112,6 @@ final class ImageUploaderTest extends AspectMockedTestCase
         $this->builder = $this->prophesize(Builder::class);
         $this->uploadedFile = $this->getUploadedFileMock();
         $this->uploadDisk = $this->prophesize(FilesystemAdapter::class);
-        $this->getImageSizeFunc = Test::func($this->modelNamespace, 'getimagesize', function () {
-            return [400, 600];
-        });
 
         $this->configProvider
             ->getAllowedExtensions()
@@ -178,9 +172,14 @@ final class ImageUploaderTest extends AspectMockedTestCase
             ->error(Argument::cetera())
             ->shouldNotBeCalled();
 
+        $this->fileHelper
+            ->getImageSize(Argument::type('string'))
+            ->willReturn(self::UPLOADED_IMAGE_SIZE);
+
         $this->subject = new ImageUploader(
             $this->configProvider->reveal(),
             $this->filesystemManager->reveal(),
+            $this->fileHelper->reveal(),
             $this->validationFactory->reveal(),
             $this->guidedImage->reveal(),
             $this->logger->reveal()
@@ -192,7 +191,11 @@ final class ImageUploaderTest extends AspectMockedTestCase
      * @covers ::getUploadDestination
      * @covers ::upload
      * @covers ::validate
-     * @covers \ReliqArts\GuidedImage\Model\UploadedImage::<public>
+     * @covers \ReliqArts\GuidedImage\Model\UploadedImage::toArray
+     * @covers \ReliqArts\GuidedImage\Model\UploadedImage::getDestination
+     * @covers \ReliqArts\GuidedImage\Model\UploadedImage::getFile
+     * @covers \ReliqArts\GuidedImage\Model\UploadedImage::getFilename
+     * @covers \ReliqArts\GuidedImage\Model\UploadedImage::getSize
      */
     public function testUpload(): void
     {
@@ -208,10 +211,8 @@ final class ImageUploaderTest extends AspectMockedTestCase
 
         $result = $this->subject->upload($this->uploadedFile);
 
-        $this->getImageSizeFunc->verifyInvokedOnce();
-
-        $this->assertInstanceOf(Result::class, $result);
-        $this->assertTrue($result->isSuccess());
+        self::assertInstanceOf(Result::class, $result);
+        self::assertTrue($result->isSuccess());
     }
 
     /**
@@ -219,7 +220,11 @@ final class ImageUploaderTest extends AspectMockedTestCase
      * @covers ::getUploadDestination
      * @covers ::upload
      * @covers ::validate
-     * @covers \ReliqArts\GuidedImage\Model\UploadedImage::<public>
+     * @covers \ReliqArts\GuidedImage\Model\UploadedImage::toArray
+     * @covers \ReliqArts\GuidedImage\Model\UploadedImage::getDestination
+     * @covers \ReliqArts\GuidedImage\Model\UploadedImage::getFile
+     * @covers \ReliqArts\GuidedImage\Model\UploadedImage::getFilename
+     * @covers \ReliqArts\GuidedImage\Model\UploadedImage::getSize
      */
     public function testUploadWhenFileShouldBeReused(): void
     {
@@ -251,10 +256,10 @@ final class ImageUploaderTest extends AspectMockedTestCase
 
         $result = $this->subject->upload($this->uploadedFile);
 
-        $this->assertInstanceOf(Result::class, $result);
-        $this->assertSame($existingGuidedImage, $result->getExtra());
-        $this->assertStringContainsStringIgnoringCase('reused', $result->getMessage());
-        $this->assertTrue($result->isSuccess());
+        self::assertInstanceOf(Result::class, $result);
+        self::assertSame($existingGuidedImage, $result->getExtra());
+        self::assertStringContainsStringIgnoringCase('reused', $result->getMessage());
+        self::assertTrue($result->isSuccess());
     }
 
     /**
@@ -306,18 +311,20 @@ final class ImageUploaderTest extends AspectMockedTestCase
 
         $result = $this->subject->upload($this->uploadedFile);
 
-        $this->getImageSizeFunc->verifyNeverInvoked();
-
-        $this->assertInstanceOf(Result::class, $result);
-        $this->assertFalse($result->isSuccess());
-        $this->assertStringContainsStringIgnoringCase('invalid', $result->getError());
+        self::assertInstanceOf(Result::class, $result);
+        self::assertFalse($result->isSuccess());
+        self::assertStringContainsStringIgnoringCase('invalid', $result->getError());
     }
 
     /**
      * @covers ::__construct
      * @covers ::upload
      * @covers ::validate
-     * @covers \ReliqArts\GuidedImage\Model\UploadedImage::<public>
+     * @covers \ReliqArts\GuidedImage\Model\UploadedImage::toArray
+     * @covers \ReliqArts\GuidedImage\Model\UploadedImage::getDestination
+     * @covers \ReliqArts\GuidedImage\Model\UploadedImage::getFile
+     * @covers \ReliqArts\GuidedImage\Model\UploadedImage::getFilename
+     * @covers \ReliqArts\GuidedImage\Model\UploadedImage::getSize
      */
     public function testUploadWhenFileUploadFails(): void
     {
@@ -342,10 +349,8 @@ final class ImageUploaderTest extends AspectMockedTestCase
 
         $result = $this->subject->upload($this->uploadedFile);
 
-        $this->getImageSizeFunc->verifyInvokedOnce();
-
-        $this->assertInstanceOf(Result::class, $result);
-        $this->assertFalse($result->isSuccess());
+        self::assertInstanceOf(Result::class, $result);
+        self::assertFalse($result->isSuccess());
     }
 
     /**
