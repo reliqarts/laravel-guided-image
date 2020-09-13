@@ -8,7 +8,7 @@ return [
     'model' => env('GUIDED_IMAGE_MODEL', 'Image'),
 
     // Set the guided model namespace.
-    'model_namespace' => env('GUIDED_IMAGE_MODEL_NAMESPACE', 'App\\'),
+    'model_namespace' => env('GUIDED_IMAGE_MODEL_NAMESPACE', 'App\\Models\\'),
 
     // Set the model to be guided.
     'database' => [
