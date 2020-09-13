@@ -30,7 +30,7 @@ class CreateGuidedImagesTable extends Migration
         if (!Schema::hasTable($tableName)) {
             Schema::create($tableName, function (Blueprint $table) {
                 $table->increments('id');
-                $table->string('name', 50);
+                $table->string('name', 191);
                 $table->string('mime_type', 20);
                 $table->string('extension', 10);
                 $table->integer('size');
