@@ -12,7 +12,7 @@ Guided Image is an image utility package for Laravel based on Intervention Image
 
 &nbsp;
 
-[![Guided Image for Laravel](https://raw.githubusercontent.com/reliqarts/laravel-guided-image/master/docs/images/logo.png)](#)
+[![Guided Image for Laravel](https://raw.githubusercontent.com/reliqarts/laravel-guided-image/main/docs/images/logo.png)](#)
 
 ## Key Features
 
