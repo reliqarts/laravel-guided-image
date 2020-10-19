@@ -23,6 +23,7 @@ final class ImageUploader implements ImageUploaderContract
     private const KEY_FILE = 'file';
     private const MESSAGE_IMAGE_REUSED = 'Image reused.';
     private const UPLOAD_DATE_SUB_DIRECTORIES_PATTERN = 'Y/m/d/H/i';
+    private const UPLOAD_VISIBILITY = 'public';
 
     private ConfigProvider $configProvider;
     private Filesystem $uploadDisk;
@@ -80,7 +81,8 @@ final class ImageUploader implements ImageUploaderContract
             $this->uploadDisk->putFileAs(
                 $uploadedImage->getDestination(),
                 $uploadedImage->getFile(),
-                $uploadedImage->getFilename()
+                $uploadedImage->getFilename(),
+                self::UPLOAD_VISIBILITY
             );
 
             $this->guidedImage->unguard();

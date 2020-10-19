@@ -48,7 +48,6 @@ final class ImageDispenserTest extends TestCase
     private const CACHE_RESIZED_SUB_DIRECTORY = 'RESIZED';
     private const CACHE_THUMBS_SUB_DIRECTORY = 'THUMBS';
     private const RESPONSE_HTTP_OK = Response::HTTP_OK;
-    private const RESPONSE_HTTP_NOT_FOUND = Response::HTTP_NOT_FOUND;
     private const LAST_MODIFIED = 21343;
     private const IMAGE_NAME = 'my-image';
     private const IMAGE_URL = '//image_url';
@@ -184,7 +183,7 @@ final class ImageDispenserTest extends TestCase
             ->willReturn(self::LAST_MODIFIED);
 
         $this->uploadDisk
-            ->path(self::IMAGE_URL)
+            ->url(self::IMAGE_URL)
             ->willReturn(self::IMAGE_URL);
 
         $fileHelper

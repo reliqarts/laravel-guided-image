@@ -57,7 +57,7 @@ return [
 
     // storage
     'storage' => [
-        // disk for in-built caching mechanism
+        // disk for in-built caching mechanism; MUST BE A LOCAL DISK, cloud disks such as s3 are not supported here.
         'cache_disk' => env('GUIDED_IMAGE_CACHE_DISK', 'local'),
 
         // upload disk

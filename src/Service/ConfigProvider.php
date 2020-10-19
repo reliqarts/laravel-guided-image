@@ -119,7 +119,7 @@ final class ConfigProvider implements ConfigProviderContract
      */
     public function getRouteGroupBindings(array $bindings = [], string $groupKey = self::ROUTE_GROUP_KEY_PUBLIC): array
     {
-        $defaults = (self::ROUTE_GROUP_KEY_PUBLIC === $groupKey) ? [self::KEY_PREFIX => $this->getRoutePrefix()] : [];
+        $defaults = self::ROUTE_GROUP_KEY_PUBLIC === $groupKey ? [self::KEY_PREFIX => $this->getRoutePrefix()] : [];
 
         $bindings = array_merge(
             $this->configAccessor->get(sprintf(self::CONFIG_KEY_ROUTES_BINDINGS_WITH_GROUP, $groupKey), []),

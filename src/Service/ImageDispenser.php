@@ -79,7 +79,7 @@ final class ImageDispenser implements ImageDispenserContract
         $image = $image->fill($demand->fill());
 
         // Return object or actual image
-        return ($demand->returnObject())
+        return $demand->returnObject()
             ? $image
             : $image->response();
     }
@@ -108,7 +108,7 @@ final class ImageDispenser implements ImageDispenserContract
             if ($this->cacheDisk->exists($cacheFilePath)) {
                 $image = $this->makeImageWithEncoding($this->cacheDisk->path($cacheFilePath));
             } else {
-                $image = $this->makeImageWithEncoding($this->uploadDisk->path($guidedImage->getUrl(true)));
+                $image = $this->makeImageWithEncoding($this->uploadDisk->url($guidedImage->getUrl(true)));
                 $image->resize(
                     $width,
                     $height,
@@ -186,7 +186,7 @@ final class ImageDispenser implements ImageDispenserContract
             } else {
                 /** @var Image $image */
                 $image = $this->imageManager
-                    ->make($this->uploadDisk->path($guidedImage->getUrl(true)))
+                    ->make($this->uploadDisk->url($guidedImage->getUrl(true)))
                     ->{$method}(
                         $width,
                         $height
