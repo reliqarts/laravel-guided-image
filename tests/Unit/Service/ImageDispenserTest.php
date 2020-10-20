@@ -183,7 +183,7 @@ final class ImageDispenserTest extends TestCase
             ->willReturn(self::LAST_MODIFIED);
 
         $this->uploadDisk
-            ->path(self::IMAGE_URL)
+            ->url(self::IMAGE_URL)
             ->willReturn(self::IMAGE_URL);
 
         $fileHelper
@@ -234,6 +234,7 @@ final class ImageDispenserTest extends TestCase
      * @covers ::__construct
      * @covers ::getDummyImage
      * @covers ::prepCacheDirectories
+     * @covers ::getImageFullUrl
      */
     public function testGetDummyImage(): void
     {
@@ -260,6 +261,7 @@ final class ImageDispenserTest extends TestCase
      * @covers ::__construct
      * @covers ::getDummyImage
      * @covers ::prepCacheDirectories
+     * @covers ::getImageFullUrl
      */
     public function testGetDummyImageWhenImageInstanceIsExpected(): void
     {
@@ -288,6 +290,7 @@ final class ImageDispenserTest extends TestCase
      * @covers ::getResizedImage
      * @covers ::makeImageWithEncoding
      * @covers ::prepCacheDirectories
+     * @covers ::getImageFullUrl
      * @covers \ReliqArts\GuidedImage\Demand\ExistingImage::getGuidedImage
      * @covers \ReliqArts\GuidedImage\Demand\ExistingImage::getRequest
      * @covers \ReliqArts\GuidedImage\Demand\ExistingImage::getHeight
@@ -350,6 +353,7 @@ final class ImageDispenserTest extends TestCase
      * @covers ::getResizedImage
      * @covers ::makeImageWithEncoding
      * @covers ::prepCacheDirectories
+     * @covers ::getImageFullUrl
      * @covers \ReliqArts\GuidedImage\Demand\ExistingImage::getGuidedImage
      * @covers \ReliqArts\GuidedImage\Demand\ExistingImage::getRequest
      * @covers \ReliqArts\GuidedImage\Demand\ExistingImage::getHeight
@@ -411,6 +415,7 @@ final class ImageDispenserTest extends TestCase
      * @covers ::getResizedImage
      * @covers ::makeImageWithEncoding
      * @covers ::prepCacheDirectories
+     * @covers ::getImageFullUrl
      * @covers \ReliqArts\GuidedImage\Demand\ExistingImage::getGuidedImage
      * @covers \ReliqArts\GuidedImage\Demand\ExistingImage::getRequest
      * @covers \ReliqArts\GuidedImage\Demand\ExistingImage::getHeight
@@ -473,6 +478,7 @@ final class ImageDispenserTest extends TestCase
      * @covers ::getResizedImage
      * @covers ::makeImageWithEncoding
      * @covers ::prepCacheDirectories
+     * @covers ::getImageFullUrl
      * @covers \ReliqArts\GuidedImage\Demand\ExistingImage::getGuidedImage
      * @covers \ReliqArts\GuidedImage\Demand\ExistingImage::getRequest
      * @covers \ReliqArts\GuidedImage\Demand\ExistingImage::getHeight
@@ -548,6 +554,7 @@ final class ImageDispenserTest extends TestCase
      * @covers ::getImageThumbnail
      * @covers ::makeImageWithEncoding
      * @covers ::prepCacheDirectories
+     * @covers ::getImageFullUrl
      * @covers \ReliqArts\GuidedImage\Demand\ExistingImage::getGuidedImage
      * @covers \ReliqArts\GuidedImage\Demand\ExistingImage::getRequest
      * @covers \ReliqArts\GuidedImage\Demand\ExistingImage::getHeight
@@ -608,6 +615,7 @@ final class ImageDispenserTest extends TestCase
      * @covers ::getImageThumbnail
      * @covers ::makeImageWithEncoding
      * @covers ::prepCacheDirectories
+     * @covers ::getImageFullUrl
      * @covers \ReliqArts\GuidedImage\Demand\ExistingImage::getGuidedImage
      * @covers \ReliqArts\GuidedImage\Demand\ExistingImage::getRequest
      * @covers \ReliqArts\GuidedImage\Demand\ExistingImage::getHeight
@@ -667,6 +675,7 @@ final class ImageDispenserTest extends TestCase
      * @covers ::getImageThumbnail
      * @covers ::makeImageWithEncoding
      * @covers ::prepCacheDirectories
+     * @covers ::getImageFullUrl
      * @covers \ReliqArts\GuidedImage\Demand\ExistingImage::getGuidedImage
      * @covers \ReliqArts\GuidedImage\Demand\ExistingImage::getRequest
      * @covers \ReliqArts\GuidedImage\Demand\ExistingImage::getHeight
@@ -727,6 +736,7 @@ final class ImageDispenserTest extends TestCase
      * @covers ::getImageThumbnail
      * @covers ::makeImageWithEncoding
      * @covers ::prepCacheDirectories
+     * @covers ::getImageFullUrl
      * @covers \ReliqArts\GuidedImage\Demand\ExistingImage::getGuidedImage
      * @covers \ReliqArts\GuidedImage\Demand\ExistingImage::getRequest
      * @covers \ReliqArts\GuidedImage\Demand\ExistingImage::getHeight
@@ -790,6 +800,7 @@ final class ImageDispenserTest extends TestCase
      * @covers ::getImageThumbnail
      * @covers ::makeImageWithEncoding
      * @covers ::prepCacheDirectories
+     * @covers ::getImageFullUrl
      * @covers \ReliqArts\GuidedImage\Demand\ExistingImage::getGuidedImage
      * @covers \ReliqArts\GuidedImage\Demand\ExistingImage::getRequest
      * @covers \ReliqArts\GuidedImage\Demand\ExistingImage::getHeight
