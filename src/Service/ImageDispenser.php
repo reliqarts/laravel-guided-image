@@ -13,9 +13,9 @@ use Intervention\Image\Constraint;
 use Intervention\Image\Exception\NotReadableException;
 use Intervention\Image\Image;
 use Intervention\Image\ImageManager;
-use League\Flysystem\Adapter\Local;
 use ReliqArts\GuidedImage\Contract\ConfigProvider;
 use ReliqArts\GuidedImage\Contract\FileHelper;
+use ReliqArts\GuidedImage\Contract\GuidedImage;
 use ReliqArts\GuidedImage\Contract\ImageDispenser as ImageDispenserContract;
 use ReliqArts\GuidedImage\Contract\Logger;
 use ReliqArts\GuidedImage\Demand\Dummy;
@@ -109,7 +109,7 @@ final class ImageDispenser implements ImageDispenserContract
             if ($this->cacheDisk->exists($cacheFilePath)) {
                 $image = $this->makeImageWithEncoding($this->cacheDisk->path($cacheFilePath));
             } else {
-                $image = $this->makeImageWithEncoding($this->uploadDisk->path($guidedImage->getUrl(true)));
+                $image = $this->makeImageWithEncoding($this->getImageFullUrl($guidedImage));
                 $image->resize(
                     $width,
                     $height,
@@ -187,7 +187,7 @@ final class ImageDispenser implements ImageDispenserContract
             } else {
                 /** @var Image $image */
                 $image = $this->imageManager
-                    ->make($this->uploadDisk->path($guidedImage->getUrl(true)))
+                    ->make($this->getImageFullUrl($guidedImage))
                     ->{$method}(
                         $width,
                         $height
@@ -303,5 +303,10 @@ final class ImageDispenser implements ImageDispenserContract
         return $this->imageManager
             ->make($data)
             ->encode(...$encoding);
+    }
+
+    private function getImageFullUrl(GuidedImage $guidedImage): string
+    {
+        return $this->uploadDisk->url($guidedImage->getUrl(true));
     }
 }
