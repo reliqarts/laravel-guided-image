@@ -183,7 +183,7 @@ final class ImageDispenserTest extends TestCase
             ->willReturn(self::LAST_MODIFIED);
 
         $this->uploadDisk
-            ->url(self::IMAGE_URL)
+            ->path(self::IMAGE_URL)
             ->willReturn(self::IMAGE_URL);
 
         $fileHelper
