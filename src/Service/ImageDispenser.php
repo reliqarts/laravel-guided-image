@@ -13,6 +13,7 @@ use Intervention\Image\Constraint;
 use Intervention\Image\Exception\NotReadableException;
 use Intervention\Image\Image;
 use Intervention\Image\ImageManager;
+use League\Flysystem\Adapter\Local;
 use ReliqArts\GuidedImage\Contract\ConfigProvider;
 use ReliqArts\GuidedImage\Contract\FileHelper;
 use ReliqArts\GuidedImage\Contract\ImageDispenser as ImageDispenserContract;
@@ -108,7 +109,7 @@ final class ImageDispenser implements ImageDispenserContract
             if ($this->cacheDisk->exists($cacheFilePath)) {
                 $image = $this->makeImageWithEncoding($this->cacheDisk->path($cacheFilePath));
             } else {
-                $image = $this->makeImageWithEncoding($this->uploadDisk->url($guidedImage->getUrl(true)));
+                $image = $this->makeImageWithEncoding($this->uploadDisk->path($guidedImage->getUrl(true)));
                 $image->resize(
                     $width,
                     $height,
@@ -186,7 +187,7 @@ final class ImageDispenser implements ImageDispenserContract
             } else {
                 /** @var Image $image */
                 $image = $this->imageManager
-                    ->make($this->uploadDisk->url($guidedImage->getUrl(true)))
+                    ->make($this->uploadDisk->path($guidedImage->getUrl(true)))
                     ->{$method}(
                         $width,
                         $height

@@ -23,7 +23,7 @@ final class ImageUploader implements ImageUploaderContract
     private const KEY_FILE = 'file';
     private const MESSAGE_IMAGE_REUSED = 'Image reused.';
     private const UPLOAD_DATE_SUB_DIRECTORIES_PATTERN = 'Y/m/d/H/i';
-    private const UPLOAD_VISIBILITY = 'public';
+    private const UPLOAD_VISIBILITY = Filesystem::VISIBILITY_PUBLIC;
 
     private ConfigProvider $configProvider;
     private Filesystem $uploadDisk;
