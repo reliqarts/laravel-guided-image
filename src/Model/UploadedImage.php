@@ -45,7 +45,7 @@ final class UploadedImage implements Arrayable
 
     public function getFilename(): string
     {
-        return $this->file->getClientOriginalName();
+        return str_replace(' ', '_', $this->file->getClientOriginalName());
     }
 
     public function getSize(): int
