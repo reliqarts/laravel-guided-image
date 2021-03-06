@@ -71,7 +71,7 @@ final class ImageUploader implements ImageUploaderContract
         if (!empty($existing)) {
             $result = new Result(true);
 
-            // @noinspection PhpIncompatibleReturnTypeInspection
+            /** @noinspection PhpIncompatibleReturnTypeInspection */
             return $result
                 ->addMessage(self::MESSAGE_IMAGE_REUSED)
                 ->setExtra($existing);
