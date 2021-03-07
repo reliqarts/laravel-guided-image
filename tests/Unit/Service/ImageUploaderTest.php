@@ -45,6 +45,7 @@ final class ImageUploaderTest extends TestCase
     private const UPLOAD_DIRECTORY = 'uploads/images';
     private const UPLOAD_DISK_NAME = 'public';
     private const UPLOADED_IMAGE_SIZE = [100, 200];
+    private const TEMP_FILE_PREFIX = 'LGI_';
 
     /**
      * @var ConfigProvider|ObjectProphecy
@@ -87,17 +88,20 @@ final class ImageUploaderTest extends TestCase
     private MockInterface $uploadedFile;
 
     /**
+     * @var ObjectProphecy|FileHelper
+     */
+    private ObjectProphecy $fileHelper;
+
+    /**
      * @var Filesystem|FilesystemAdapter|ObjectProphecy
      */
     private $uploadDisk;
 
-    /**
-     * @var FileHelper|ObjectProphecy
-     */
-    private $fileHelper;
-
     private ImageUploaderContract $subject;
 
+    /**
+     * @throws Exception
+     */
     protected function setUp(): void
     {
         parent::setUp();
@@ -191,18 +195,25 @@ final class ImageUploaderTest extends TestCase
      * @covers ::getUploadDestination
      * @covers ::upload
      * @covers ::validate
+     * @covers ::validateFileExtension
      * @covers \ReliqArts\GuidedImage\Model\UploadedImage::toArray
      * @covers \ReliqArts\GuidedImage\Model\UploadedImage::getDestination
      * @covers \ReliqArts\GuidedImage\Model\UploadedImage::getFile
      * @covers \ReliqArts\GuidedImage\Model\UploadedImage::getFilename
      * @covers \ReliqArts\GuidedImage\Model\UploadedImage::getSize
+     *
+     * @throws Exception
      */
     public function testUpload(): void
     {
         $this->guidedImage
-            ->create(Argument::that(function ($argument) {
-                return in_array($this->uploadedFile->getFilename(), $argument, true);
-            }))
+            ->create(
+                Argument::that(
+                    function ($argument) {
+                        return in_array($this->uploadedFile->getFilename(), $argument, true);
+                    }
+                )
+            )
             ->shouldBeCalledTimes(1);
 
         $this->uploadDisk
@@ -225,6 +236,8 @@ final class ImageUploaderTest extends TestCase
      * @covers \ReliqArts\GuidedImage\Model\UploadedImage::getFile
      * @covers \ReliqArts\GuidedImage\Model\UploadedImage::getFilename
      * @covers \ReliqArts\GuidedImage\Model\UploadedImage::getSize
+     *
+     * @throws Exception
      */
     public function testUploadWhenFileShouldBeReused(): void
     {
@@ -266,6 +279,8 @@ final class ImageUploaderTest extends TestCase
      * @covers ::__construct
      * @covers ::upload
      * @covers ::validate
+     *
+     * @throws Exception
      */
     public function testUploadWhenValidationFails(): void
     {
@@ -325,6 +340,8 @@ final class ImageUploaderTest extends TestCase
      * @covers \ReliqArts\GuidedImage\Model\UploadedImage::getFile
      * @covers \ReliqArts\GuidedImage\Model\UploadedImage::getFilename
      * @covers \ReliqArts\GuidedImage\Model\UploadedImage::getSize
+     *
+     * @throws Exception
      */
     public function testUploadWhenFileUploadFails(): void
     {
@@ -351,6 +368,94 @@ final class ImageUploaderTest extends TestCase
 
         self::assertInstanceOf(Result::class, $result);
         self::assertFalse($result->isSuccess());
+    }
+
+    /**
+     * @covers ::__construct
+     * @covers ::uploadFromUrl
+     * @covers ::getUploadDestination
+     * @covers ::upload
+     * @covers ::validate
+     * @covers ::validateFileExtension
+     * @covers \ReliqArts\GuidedImage\Model\UploadedImage::toArray
+     * @covers \ReliqArts\GuidedImage\Model\UploadedImage::getDestination
+     * @covers \ReliqArts\GuidedImage\Model\UploadedImage::getFile
+     * @covers \ReliqArts\GuidedImage\Model\UploadedImage::getFilename
+     * @covers \ReliqArts\GuidedImage\Model\UploadedImage::getSize
+     *
+     * @throws Exception
+     */
+    public function testUploadFromUrl(): void
+    {
+        $url = '//url';
+        $imageContent = 'foo';
+        $tempName = 'tmp.name';
+        $systemTempDir = 'sys.temp';
+        $mimeType = 'img/jpeg';
+
+        $this->fileHelper
+            ->getSystemTempDirectory()
+            ->shouldBeCalledTimes(1)
+            ->willReturn($systemTempDir);
+        $this->fileHelper
+            ->tempName($systemTempDir, self::TEMP_FILE_PREFIX)
+            ->shouldBeCalledTimes(1)
+            ->willReturn($tempName);
+        $this->fileHelper
+            ->getContents($url)
+            ->shouldBeCalledTimes(1)
+            ->willReturn($imageContent);
+        $this->fileHelper
+            ->putContents($tempName, $imageContent)
+            ->shouldBeCalledTimes(1)
+            ->willReturn(1234);
+        $this->fileHelper
+            ->getMimeType($tempName)
+            ->shouldBeCalledTimes(1)
+            ->willReturn($mimeType);
+        $this->fileHelper
+            ->mime2Ext($mimeType)
+            ->shouldBeCalledTimes(1)
+            ->willReturn('jpeg');
+        $this->fileHelper
+            ->createUploadedFile($tempName, Argument::type('string'), $mimeType)
+            ->shouldBeCalledTimes(1)
+            ->willReturn($this->uploadedFile);
+        $this->fileHelper
+            ->unlink($tempName)
+            ->shouldBeCalledTimes(1)
+            ->willReturn(true);
+
+        $this->configProvider
+            ->getImageRules()
+            ->shouldNotBeCalled();
+
+        $this->validationFactory
+            ->make(Argument::cetera())
+            ->shouldNotBeCalled();
+
+        $this->validator
+            ->fails()
+            ->shouldNotBeCalled();
+
+        $this->guidedImage
+            ->create(
+                Argument::that(
+                    function ($argument) {
+                        return in_array($this->uploadedFile->getFilename(), $argument, true);
+                    }
+                )
+            )
+            ->shouldBeCalledTimes(1);
+
+        $this->uploadDisk
+            ->putFileAs(Argument::cetera())
+            ->shouldBeCalled();
+
+        $result = $this->subject->uploadFromUrl($url);
+
+        self::assertInstanceOf(Result::class, $result);
+        self::assertTrue($result->isSuccess());
     }
 
     /**

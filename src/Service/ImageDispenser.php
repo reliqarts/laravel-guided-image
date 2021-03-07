@@ -13,6 +13,7 @@ use Intervention\Image\Constraint;
 use Intervention\Image\Exception\NotReadableException;
 use Intervention\Image\Image;
 use Intervention\Image\ImageManager;
+use InvalidArgumentException;
 use ReliqArts\GuidedImage\Contract\ConfigProvider;
 use ReliqArts\GuidedImage\Contract\FileHelper;
 use ReliqArts\GuidedImage\Contract\GuidedImage;
@@ -21,6 +22,7 @@ use ReliqArts\GuidedImage\Contract\Logger;
 use ReliqArts\GuidedImage\Demand\Dummy;
 use ReliqArts\GuidedImage\Demand\Resize;
 use ReliqArts\GuidedImage\Demand\Thumbnail;
+use RuntimeException;
 
 final class ImageDispenser implements ImageDispenserContract
 {
@@ -89,6 +91,8 @@ final class ImageDispenser implements ImageDispenserContract
      * {@inheritdoc}
      *
      * @return Image|Response|void
+     * @throws InvalidArgumentException
+     * @throws RuntimeException
      */
     public function getResizedImage(Resize $demand)
     {
@@ -134,7 +138,7 @@ final class ImageDispenser implements ImageDispenserContract
                 self::RESPONSE_HTTP_OK,
                 $this->getImageHeaders($cacheFilePath, $demand->getRequest(), $image) ?: []
             );
-        } catch (NotReadableException | FileNotFoundException $exception) {
+        } catch (FileNotFoundException $exception) {
             $this->logger->error(
                 sprintf(
                     'Exception was encountered while building resized image; %s',
@@ -154,6 +158,10 @@ final class ImageDispenser implements ImageDispenserContract
      * {@inheritdoc}
      *
      * @return Image|Response|void
+     * @throws InvalidArgumentException
+     * @throws RuntimeException
+     *
+     * @noinspection PhpVoidFunctionResultUsedInspection
      */
     public function getImageThumbnail(Thumbnail $demand)
     {
@@ -305,6 +313,9 @@ final class ImageDispenser implements ImageDispenserContract
             ->encode(...$encoding);
     }
 
+    /**
+     * @throws RuntimeException
+     */
     private function getImageFullUrl(GuidedImage $guidedImage): string
     {
         return $this->uploadDisk->url($guidedImage->getUrl(true));

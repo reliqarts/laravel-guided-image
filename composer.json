@@ -27,7 +27,8 @@
     "intervention/image": "^2.4",
     "intervention/imagecache": "^2.3",
     "reliqarts/laravel-common": "^5.4",
-    "ext-json": "*"
+    "ext-json": "*",
+    "ext-fileinfo": "*"
   },
   "require-dev": {
     "orchestra/testbench": "4 - 6",
