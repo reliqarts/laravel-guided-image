@@ -22,7 +22,7 @@
     }
   ],
   "require": {
-    "php": "^7.4",
+    "php": "^7.4 || ^8.0",
     "illuminate/support": "6 - 8",
     "intervention/image": "^2.4",
     "intervention/imagecache": "^2.3",
@@ -32,7 +32,7 @@
   },
   "require-dev": {
     "orchestra/testbench": "4 - 6",
-    "phpro/grumphp": "^0.19.1",
+    "phpro/grumphp": "^1.0",
     "phpspec/prophecy-phpunit": "^2.0",
     "phpunit/phpunit": "^9.3",
     "symplify/easy-coding-standard": "^8.1"
