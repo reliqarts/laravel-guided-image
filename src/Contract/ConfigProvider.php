@@ -80,4 +80,6 @@ interface ConfigProvider
     public function getCacheDiskName(): string;
 
     public function getUploadDiskName(): string;
+
+    public function isRawImageFallbackEnabled(): bool;
 }

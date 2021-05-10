@@ -15,7 +15,6 @@ use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Filesystem\FilesystemAdapter;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 use Intervention\Image\Exception\NotReadableException;
 use Intervention\Image\Image;
 use Intervention\Image\ImageManager;
@@ -33,6 +32,7 @@ use ReliqArts\GuidedImage\Demand\Thumbnail;
 use ReliqArts\GuidedImage\Service\ImageDispenser;
 use ReliqArts\GuidedImage\Tests\Fixtures\Model\GuidedImage;
 use ReliqArts\GuidedImage\Tests\Unit\TestCase;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
@@ -152,6 +152,9 @@ final class ImageDispenserTest extends TestCase
         $this->configProvider
             ->getImageEncodingQuality()
             ->willReturn(self::IMAGE_ENCODING_QUALITY);
+        $this->configProvider
+            ->isRawImageFallbackEnabled()
+            ->willReturn(false);
 
         $this->filesystemManager
             ->disk(self::CACHE_DISK_NAME)
@@ -479,6 +482,7 @@ final class ImageDispenserTest extends TestCase
      * @covers ::makeImageWithEncoding
      * @covers ::prepCacheDirectories
      * @covers ::getImageFullUrl
+     * @covers ::handleNotReadableException
      * @covers \ReliqArts\GuidedImage\Demand\ExistingImage::getGuidedImage
      * @covers \ReliqArts\GuidedImage\Demand\ExistingImage::getRequest
      * @covers \ReliqArts\GuidedImage\Demand\ExistingImage::getHeight
@@ -534,11 +538,7 @@ final class ImageDispenserTest extends TestCase
         $this->logger
             ->error(
                 Argument::containingString('Exception'),
-                Argument::that(
-                    function (array $argument) use ($cacheFile) {
-                        return in_array($cacheFile, $argument, true) && in_array(self::IMAGE_URL, $argument, true);
-                    }
-                )
+                Argument::type('array')
             )
             ->shouldBeCalledTimes(1);
 
@@ -845,19 +845,10 @@ final class ImageDispenserTest extends TestCase
             ->shouldBeCalledTimes(1)
             ->willThrow(NotReadableException::class);
 
-        $this->guidedImage
-            ->getUrl()
-            ->shouldBeCalledTimes(1)
-            ->willReturn(self::IMAGE_URL);
-
         $this->logger
             ->error(
                 Argument::containingString('Exception'),
-                Argument::that(
-                    function (array $argument) use ($cacheFile) {
-                        return in_array($cacheFile, $argument, true) && in_array(self::IMAGE_URL, $argument, true);
-                    }
-                )
+                Argument::type('array')
             )
             ->shouldBeCalledTimes(1);
 

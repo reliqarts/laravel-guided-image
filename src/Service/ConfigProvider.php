@@ -30,6 +30,7 @@ final class ConfigProvider implements ConfigProviderContract
     private const CONFIG_KEY_HEADERS_ADDITIONAL = 'headers.additional';
     private const CONFIG_KEY_IMAGE_ENCODING_FORMAT = 'encoding.format';
     private const CONFIG_KEY_IMAGE_ENCODING_QUALITY = 'encoding.quality';
+    private const CONFIG_KEY_DISPENSER_RAW_IMAGE_FALLBACK_ENABLED = 'dispenser.raw_image_fallback_enabled';
 
     private const DEFAULT_ALLOWED_EXTENSIONS = ['gif', 'jpg', 'jpeg', 'png'];
     private const DEFAULT_ROUTES_PREFIX = 'image';
@@ -49,6 +50,7 @@ final class ConfigProvider implements ConfigProviderContract
     private const DEFAULT_ADDITIONAL_HEADERS = [];
     private const DEFAULT_IMAGE_ENCODING_FORMAT = 'png';
     private const DEFAULT_IMAGE_ENCODING_QUALITY = 90;
+    private const DEFAULT_DISPENSER_RAW_IMAGE_FALLBACK_ENABLED = false;
 
     private const KEY_PREFIX = 'prefix';
 
@@ -227,5 +229,13 @@ final class ConfigProvider implements ConfigProviderContract
     public function getUploadDiskName(): string
     {
         return $this->configAccessor->get(self::CONFIG_KEY_STORAGE_UPLOAD_DISK, self::DEFAULT_STORAGE_UPLOAD_DISK);
+    }
+
+    public function isRawImageFallbackEnabled(): bool
+    {
+        return $this->configAccessor->get(
+            self::CONFIG_KEY_DISPENSER_RAW_IMAGE_FALLBACK_ENABLED,
+            self::DEFAULT_DISPENSER_RAW_IMAGE_FALLBACK_ENABLED
+        );
     }
 }

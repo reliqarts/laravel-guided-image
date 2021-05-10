@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace ReliqArts\GuidedImage\Contract;
 
-use Illuminate\Http\Response;
 use Intervention\Image\Image;
 use ReliqArts\GuidedImage\Demand\Dummy;
 use ReliqArts\GuidedImage\Demand\Resize;
 use ReliqArts\GuidedImage\Demand\Thumbnail;
+use Symfony\Component\HttpFoundation\Response;
 
 interface ImageDispenser
 {

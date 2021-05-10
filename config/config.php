@@ -88,4 +88,9 @@ return [
         // any additional headers for guided images
         'additional' => [],
     ],
+
+    'dispenser' => [
+        // whether raw image should be served as fallback if NotReadableException occurs
+        'raw_image_fallback_enabled' => env('GUIDED_IMAGE_DISPENSER_RAW_IMAGE_FALLBACK_ENABLED', false),
+    ]
 ];

@@ -1,6 +1,6 @@
 <?php
 
-/** @noinspection PhpTooManyParametersInspection */
+/** @noinspection PhpTooManyParametersInspection PhpUnused */
 
 declare(strict_types=1);
 
@@ -8,13 +8,13 @@ namespace ReliqArts\GuidedImage\Concern;
 
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 use ReliqArts\GuidedImage\Contract\GuidedImage;
 use ReliqArts\GuidedImage\Contract\ImageDispenser;
 use ReliqArts\GuidedImage\Demand\Dummy;
 use ReliqArts\GuidedImage\Demand\Resize;
 use ReliqArts\GuidedImage\Demand\Thumbnail;
 use ReliqArts\GuidedImage\Result;
+use Symfony\Component\HttpFoundation\Response;
 
 trait Guide
 {

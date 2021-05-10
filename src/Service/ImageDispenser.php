@@ -23,6 +23,8 @@ use ReliqArts\GuidedImage\Demand\Dummy;
 use ReliqArts\GuidedImage\Demand\Resize;
 use ReliqArts\GuidedImage\Demand\Thumbnail;
 use RuntimeException;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 
 final class ImageDispenser implements ImageDispenserContract
 {
@@ -70,7 +72,7 @@ final class ImageDispenser implements ImageDispenserContract
     /**
      * {@inheritdoc}
      *
-     * @return Image|Response
+     * @return Image|SymfonyResponse
      */
     public function getDummyImage(Dummy $demand)
     {
@@ -90,9 +92,10 @@ final class ImageDispenser implements ImageDispenserContract
     /**
      * {@inheritdoc}
      *
-     * @return Image|Response|void
+     * @return Image|SymfonyResponse|void
      * @throws InvalidArgumentException
      * @throws RuntimeException
+     * @noinspection PhpRedundantCatchClauseInspection
      */
     public function getResizedImage(Resize $demand)
     {
@@ -138,6 +141,8 @@ final class ImageDispenser implements ImageDispenserContract
                 self::RESPONSE_HTTP_OK,
                 $this->getImageHeaders($cacheFilePath, $demand->getRequest(), $image) ?: []
             );
+        } catch (NotReadableException $exception) {
+            return $this->handleNotReadableException($exception, $guidedImage);
         } catch (FileNotFoundException $exception) {
             $this->logger->error(
                 sprintf(
@@ -157,7 +162,7 @@ final class ImageDispenser implements ImageDispenserContract
     /**
      * {@inheritdoc}
      *
-     * @return Image|Response|void
+     * @return Image|SymfonyResponse|void
      * @throws InvalidArgumentException
      * @throws RuntimeException
      *
@@ -213,7 +218,9 @@ final class ImageDispenser implements ImageDispenserContract
                 self::RESPONSE_HTTP_OK,
                 $this->getImageHeaders($cacheFilePath, $demand->getRequest(), $image) ?: []
             );
-        } catch (NotReadableException | FileNotFoundException $exception) {
+        } catch (NotReadableException $exception) {
+            return $this->handleNotReadableException($exception, $guidedImage);
+        } catch (FileNotFoundException $exception) {
             $this->logger->error(
                 sprintf(
                     'Exception was encountered while building thumbnail; %s',
@@ -319,5 +326,39 @@ final class ImageDispenser implements ImageDispenserContract
     private function getImageFullUrl(GuidedImage $guidedImage): string
     {
         return $this->uploadDisk->url($guidedImage->getUrl(true));
+    }
+
+    /**
+     * @param NotReadableException $exception
+     * @param GuidedImage $guidedImage
+     *
+     * @return BinaryFileResponse
+     * @throws RuntimeException
+     */
+    private function handleNotReadableException(
+        NotReadableException $exception,
+        GuidedImage $guidedImage
+    ): BinaryFileResponse {
+        $errorMessage = 'Intervention image creation failed with NotReadableException;';
+        $context = ['imageUrl' => $this->getImageFullUrl($guidedImage)];
+
+        if (!$this->configProvider->isRawImageFallbackEnabled()) {
+            $this->logger->error(
+                sprintf('%s %s. Raw image fallback is disabled.', $errorMessage, $exception->getMessage()),
+                $context
+            );
+
+            abort(self::RESPONSE_HTTP_NOT_FOUND);
+        }
+
+        $this->logger->warning(
+            printf('%s; %s. Serving raw image as fallback.', $errorMessage, $exception->getMessage()),
+            $context
+        );
+
+        return response()->file(
+            $this->uploadDisk->path($guidedImage->getUrl(true)),
+            ['X-Guided-Image-Fallback' => true]
+        );
     }
 }
