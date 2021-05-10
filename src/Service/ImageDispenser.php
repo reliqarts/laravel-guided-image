@@ -352,7 +352,7 @@ final class ImageDispenser implements ImageDispenserContract
         }
 
         $this->logger->warning(
-            printf('%s; %s. Serving raw image as fallback.', $errorMessage, $exception->getMessage()),
+            sprintf('%s; %s. Serving raw image as fallback.', $errorMessage, $exception->getMessage()),
             $context
         );
 
