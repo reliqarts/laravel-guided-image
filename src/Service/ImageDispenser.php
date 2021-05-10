@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace ReliqArts\GuidedImage\Service;
 
+use Exception;
 use Illuminate\Contracts\Filesystem\Factory as FilesystemManager;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use Illuminate\Contracts\Filesystem\Filesystem;
@@ -14,6 +15,7 @@ use Intervention\Image\Exception\NotReadableException;
 use Intervention\Image\Image;
 use Intervention\Image\ImageManager;
 use InvalidArgumentException;
+use Psr\Log\LogLevel;
 use ReliqArts\GuidedImage\Contract\ConfigProvider;
 use ReliqArts\GuidedImage\Contract\FileHelper;
 use ReliqArts\GuidedImage\Contract\GuidedImage;
@@ -33,6 +35,7 @@ final class ImageDispenser implements ImageDispenserContract
     private const ONE_DAY_IN_SECONDS = 60 * 60 * 24;
     private const DEFAULT_IMAGE_ENCODING_FORMAT = 'png';
     private const DEFAULT_IMAGE_ENCODING_QUALITY = 90;
+    private const MAX_READ_ATTEMPTS = 3;
 
     private ConfigProvider $configProvider;
     private Filesystem $cacheDisk;
@@ -298,6 +301,8 @@ final class ImageDispenser implements ImageDispenserContract
     /**
      * @param mixed $data
      * @param mixed ...$encoding
+     *
+     * @throws \Psr\Log\InvalidArgumentException
      */
     private function makeImageWithEncoding($data, ...$encoding): Image
     {
@@ -308,9 +313,25 @@ final class ImageDispenser implements ImageDispenserContract
             ];
         }
 
-        return $this->imageManager
-            ->make($data)
-            ->encode(...$encoding);
+        $try = 1;
+        while ($try <= self::MAX_READ_ATTEMPTS) {
+            try {
+                return $this->imageManager
+                    ->make($data)
+                    ->encode(...$encoding);
+            } catch (Exception $exception) {
+                $this->logger->log(
+                    LogLevel::WARNING,
+                    sprintf(
+                        'Failed to read image with data (in context) on try #%d; %s',
+                        $try,
+                        $exception->getMessage()
+                    ),
+                    ['data' => $data]
+                );
+            }
+            $try++;
+        }
     }
 
     /**
