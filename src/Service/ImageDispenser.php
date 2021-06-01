@@ -296,6 +296,7 @@ final class ImageDispenser implements ImageDispenserContract
 
         return array_merge(
             [
+                'X-Guided-Image' => true,
                 'Cache-Control' => sprintf('public, max-age=%s', $maxAge),
             ],
             $this->configProvider->getAdditionalHeaders()
@@ -351,14 +352,12 @@ final class ImageDispenser implements ImageDispenserContract
             abort(self::RESPONSE_HTTP_NOT_FOUND);
         }
 
-        $this->logger->warning(
-            sprintf('%s; %s. Serving raw image as fallback.', $errorMessage, $exception->getMessage()),
-            $context
-        );
-
         return response()->file(
             $this->uploadDisk->path($guidedImage->getUrl(true)),
-            ['X-Guided-Image-Fallback' => true]
+            array_merge(
+                $this->getDefaultHeaders(),
+                ['X-Guided-Image-Fallback' => true]
+            )
         );
     }
 }
