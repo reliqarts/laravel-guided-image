@@ -18,7 +18,7 @@ trait GuidedRepository
 {
     public static function upload(UploadedFile $file): Result
     {
-        /** @var ImageUploader */
+        /** @var ImageUploader $uploader */
         $uploader = resolve(ImageUploader::class);
 
         return $uploader->upload($file);
