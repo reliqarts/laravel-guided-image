@@ -13,7 +13,9 @@ jobs:
         php-version: ['7.4', '8.0', '8.1']
         exclude:
           - laravel-version: ^6.0
-            php-version: 8.1
+            php-version: 8.0
+#          - laravel-version: ^6.0
+#            php-version: 8.1
           - laravel-version: ^7.0
             php-version: 8.1
           - laravel-version: ^9.0
