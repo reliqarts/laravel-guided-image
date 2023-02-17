@@ -31,7 +31,7 @@
     "ext-fileinfo": "*"
   },
   "require-dev": {
-    "orchestra/testbench": "4 - 7",
+    "orchestra/testbench": "4 - 8",
     "phpro/grumphp": "^1.0",
     "phpspec/prophecy-phpunit": "^2.0",
     "phpunit/phpunit": "^9.3",
