@@ -40,6 +40,8 @@ jobs:
           php-version: ${{ matrix.php-version }}
           extensions: mbstring, xdebug
           coverage: xdebug
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Install dependencies
         run: |
           composer require --no-update --no-interaction "illuminate/support:${{ matrix.laravel-version }}"
