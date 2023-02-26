@@ -25,7 +25,7 @@
     "php": "^7.4 || ^8.0",
     "illuminate/support": "6 - 10",
     "intervention/image": "^2.4",
-    "intervention/imagecache": "dev-temp-support-laravel-10",
+    "intervention/imagecache": "^2.0",
     "reliqarts/laravel-common": ">=5.4",
     "ext-json": "*",
     "ext-fileinfo": "*",
@@ -38,12 +38,6 @@
     "phpunit/phpunit": "^9.3",
     "symplify/easy-coding-standard": ">=8.2"
   },
-  "repositories": [
-    {
-      "type": "vcs",
-      "url": "https://github.com/reliq/intervention-imagecache"
-    }
-  ],
   "autoload": {
     "psr-4": {
       "ReliqArts\\GuidedImage\\": "src/",
