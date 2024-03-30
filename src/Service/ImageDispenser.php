@@ -9,8 +9,7 @@ use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Intervention\Image\Constraint;
-use Intervention\Image\Exception\NotReadableException;
+use Intervention\Image\Exceptions\RuntimeException as InterventionRuntimeException;
 use Intervention\Image\Image;
 use Intervention\Image\ImageManager;
 use InvalidArgumentException;
@@ -29,42 +28,42 @@ use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 final class ImageDispenser implements ImageDispenserContract
 {
     private const KEY_IMAGE_URL = 'image url';
+
     private const KEY_CACHE_FILE = 'cache file';
-    private const RESPONSE_HTTP_OK = Response::HTTP_OK;
-    private const RESPONSE_HTTP_NOT_FOUND = Response::HTTP_NOT_FOUND;
+
+    private const RESPONSE_HTTP_OK = SymfonyResponse::HTTP_OK;
+
+    private const RESPONSE_HTTP_NOT_FOUND = SymfonyResponse::HTTP_NOT_FOUND;
+
     private const ONE_DAY_IN_SECONDS = 60 * 60 * 24;
+
     private const DEFAULT_IMAGE_ENCODING_FORMAT = 'png';
+
     private const DEFAULT_IMAGE_ENCODING_QUALITY = 90;
 
-    private ConfigProvider $configProvider;
     private Filesystem $cacheDisk;
-    private Filesystem $uploadDisk;
-    private string $imageEncodingFormat;
-    private int $imageEncodingQuality;
-    private ImageManager $imageManager;
-    private Logger $logger;
-    private string $thumbsCachePath;
-    private string $resizedCachePath;
-    private FileHelper $fileHelper;
 
-    /**
-     * ImageDispenser constructor.
-     */
+    private Filesystem $uploadDisk;
+
+    private string $imageEncodingFormat;
+
+    private int $imageEncodingQuality;
+
+    private string $thumbsCachePath;
+
+    private string $resizedCachePath;
+
     public function __construct(
-        ConfigProvider $configProvider,
+        private readonly ConfigProvider $configProvider,
         FilesystemManager $filesystemManager,
-        ImageManager $imageManager,
-        Logger $logger,
-        FileHelper $fileHelper
+        private readonly ImageManager $imageManager,
+        private readonly Logger $logger,
+        private readonly FileHelper $fileHelper
     ) {
-        $this->configProvider = $configProvider;
         $this->cacheDisk = $filesystemManager->disk($configProvider->getCacheDiskName());
         $this->uploadDisk = $filesystemManager->disk($configProvider->getUploadDiskName());
-        $this->imageManager = $imageManager;
         $this->imageEncodingFormat = $configProvider->getImageEncodingFormat();
         $this->imageEncodingQuality = $configProvider->getImageEncodingQuality();
-        $this->logger = $logger;
-        $this->fileHelper = $fileHelper;
 
         $this->prepCacheDirectories();
     }
@@ -72,30 +71,23 @@ final class ImageDispenser implements ImageDispenserContract
     /**
      * {@inheritdoc}
      *
-     * @return Image|SymfonyResponse
+     * @throws RuntimeException
      */
-    public function getDummyImage(Dummy $demand)
+    public function getDummyImage(Dummy $demand): Image
     {
-        $image = $this->imageManager->canvas(
+        return $this->imageManager->create(
             $demand->getWidth(),
-            $demand->getHeight(),
-            $demand->getColor()
-        );
-        $image = $image->fill($demand->fill());
-
-        // Return object or actual image
-        return $demand->returnObject()
-            ? $image
-            : $image->response();
+            $demand->getHeight()
+        )->fill($demand->getColor());
     }
 
     /**
      * {@inheritdoc}
      *
      * @return Image|SymfonyResponse|void
+     *
      * @throws InvalidArgumentException
      * @throws RuntimeException
-     * @noinspection PhpRedundantCatchClauseInspection
      */
     public function getResizedImage(Resize $demand)
     {
@@ -117,18 +109,12 @@ final class ImageDispenser implements ImageDispenserContract
                 $image = $this->makeImageWithEncoding($this->cacheDisk->path($cacheFilePath));
             } else {
                 $image = $this->makeImageWithEncoding($this->getImageFullUrl($guidedImage));
-                $image->resize(
-                    $width,
-                    $height,
-                    static function (Constraint $constraint) use ($demand) {
-                        if ($demand->maintainAspectRatio()) {
-                            $constraint->aspectRatio();
-                        }
-                        if ($demand->allowUpSizing()) {
-                            $constraint->upsize();
-                        }
-                    }
-                );
+                $sizingMethod = $demand->allowUpSizing() ? 'resize' : 'resizeDown';
+                if ($demand->maintainAspectRatio()) {
+                    $sizingMethod = $demand->allowUpSizing() ? 'scale' : 'scaleDown';
+                }
+
+                $image->{$sizingMethod}($width, $height);
                 $image->save($this->cacheDisk->path($cacheFilePath));
             }
 
@@ -141,8 +127,8 @@ final class ImageDispenser implements ImageDispenserContract
                 self::RESPONSE_HTTP_OK,
                 $this->getImageHeaders($cacheFilePath, $demand->getRequest(), $image) ?: []
             );
-        } catch (NotReadableException $exception) {
-            return $this->handleNotReadableException($exception, $guidedImage);
+        } catch (InterventionRuntimeException $exception) {
+            return $this->handleInterventionRuntimeException($exception, $guidedImage);
         } catch (FileNotFoundException $exception) {
             $this->logger->error(
                 sprintf(
@@ -163,6 +149,7 @@ final class ImageDispenser implements ImageDispenserContract
      * {@inheritdoc}
      *
      * @return Image|SymfonyResponse|void
+     *
      * @throws InvalidArgumentException
      * @throws RuntimeException
      *
@@ -170,7 +157,7 @@ final class ImageDispenser implements ImageDispenserContract
      */
     public function getImageThumbnail(Thumbnail $demand)
     {
-        if (!$demand->isValid()) {
+        if (! $demand->isValid()) {
             $this->logger->warning(
                 sprintf('Invalid demand for thumbnail image. Method: %s', $demand->getMethod()),
                 [
@@ -200,7 +187,7 @@ final class ImageDispenser implements ImageDispenserContract
             } else {
                 /** @var Image $image */
                 $image = $this->imageManager
-                    ->make($this->getImageFullUrl($guidedImage))
+                    ->read($this->getImageFullUrl($guidedImage))
                     ->{$method}(
                         $width,
                         $height
@@ -218,8 +205,8 @@ final class ImageDispenser implements ImageDispenserContract
                 self::RESPONSE_HTTP_OK,
                 $this->getImageHeaders($cacheFilePath, $demand->getRequest(), $image) ?: []
             );
-        } catch (NotReadableException $exception) {
-            return $this->handleNotReadableException($exception, $guidedImage);
+        } catch (InterventionRuntimeException $exception) {
+            return $this->handleInterventionRuntimeException($exception, $guidedImage);
         } catch (FileNotFoundException $exception) {
             $this->logger->error(
                 sprintf(
@@ -250,7 +237,7 @@ final class ImageDispenser implements ImageDispenserContract
      */
     private function getImageHeaders(string $cacheFilePath, Request $request, Image $image): array
     {
-        $filePath = sprintf('%s/%s', $image->dirname, $image->basename);
+        $filePath = $image->origin()->filePath();
         $lastModified = $this->cacheDisk->lastModified($cacheFilePath);
         $modifiedSince = $request->header('If-Modified-Since', '');
         $etagHeader = trim($request->header('If-None-Match', ''));
@@ -268,8 +255,8 @@ final class ImageDispenser implements ImageDispenserContract
         return array_merge(
             $this->getDefaultHeaders(),
             [
-                'Content-Type' => $image->mime,
-                'Content-Disposition' => sprintf('inline; filename=%s', $image->filename),
+                'Content-Type' => $image->origin()->mediaType(),
+                'Content-Disposition' => sprintf('inline; filename=%s', basename($image->origin()->filePath())),
                 'Last-Modified' => date(DATE_RFC822, $lastModified),
                 'Etag' => $etagFile,
             ]
@@ -281,11 +268,11 @@ final class ImageDispenser implements ImageDispenserContract
         $this->resizedCachePath = $this->configProvider->getResizedCachePath();
         $this->thumbsCachePath = $this->configProvider->getThumbsCachePath();
 
-        if (!$this->cacheDisk->exists($this->thumbsCachePath)) {
+        if (! $this->cacheDisk->exists($this->thumbsCachePath)) {
             $this->cacheDisk->makeDirectory($this->thumbsCachePath);
         }
 
-        if (!$this->cacheDisk->exists($this->resizedCachePath)) {
+        if (! $this->cacheDisk->exists($this->resizedCachePath)) {
             $this->cacheDisk->makeDirectory($this->resizedCachePath);
         }
     }
@@ -304,10 +291,11 @@ final class ImageDispenser implements ImageDispenserContract
     }
 
     /**
-     * @param mixed $data
-     * @param mixed ...$encoding
+     * @param  mixed  ...$encoding
+     *
+     * @throws InterventionRuntimeException
      */
-    private function makeImageWithEncoding($data, ...$encoding): Image
+    private function makeImageWithEncoding(mixed $data, ...$encoding): Image
     {
         if (empty($encoding)) {
             $encoding = [
@@ -316,9 +304,11 @@ final class ImageDispenser implements ImageDispenserContract
             ];
         }
 
-        return $this->imageManager
-            ->make($data)
+        $encodedImage = $this->imageManager
+            ->read($data)
             ->encode(...$encoding);
+
+        return $this->imageManager->read($encodedImage->toFilePointer());
     }
 
     /**
@@ -330,20 +320,16 @@ final class ImageDispenser implements ImageDispenserContract
     }
 
     /**
-     * @param NotReadableException $exception
-     * @param GuidedImage $guidedImage
-     *
-     * @return BinaryFileResponse
      * @throws RuntimeException
      */
-    private function handleNotReadableException(
-        NotReadableException $exception,
+    private function handleInterventionRuntimeException(
+        InterventionRuntimeException $exception,
         GuidedImage $guidedImage
     ): BinaryFileResponse {
         $errorMessage = 'Intervention image creation failed with NotReadableException;';
         $context = ['imageUrl' => $this->getImageFullUrl($guidedImage)];
 
-        if (!$this->configProvider->isRawImageFallbackEnabled()) {
+        if (! $this->configProvider->isRawImageFallbackEnabled()) {
             $this->logger->error(
                 sprintf('%s %s. Raw image fallback is disabled.', $errorMessage, $exception->getMessage()),
                 $context

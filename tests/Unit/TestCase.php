@@ -17,6 +17,6 @@ abstract class TestCase extends BaseTestCase
     {
         parent::setUp();
 
-        $this->setGroups(array_merge($this->getGroups(), [self::GROUP]));
+        $this->setGroups(array_merge($this->groups(), [self::GROUP]));
     }
 }

@@ -23,17 +23,27 @@ use Symfony\Component\HttpFoundation\File\Exception\FileNotFoundException;
 final class ImageUploader implements ImageUploaderContract
 {
     private const ERROR_INVALID_IMAGE = 'Invalid image size or type.';
+
     private const KEY_FILE = 'file';
+
     private const MESSAGE_IMAGE_REUSED = 'Image reused.';
+
     private const UPLOAD_DATE_SUB_DIRECTORIES_PATTERN = 'Y/m/d/H/i';
+
     private const UPLOAD_VISIBILITY = Filesystem::VISIBILITY_PUBLIC;
+
     private const TEMP_FILE_PREFIX = 'LGI_';
 
     private ConfigProvider $configProvider;
+
     private Filesystem $uploadDisk;
+
     private FileHelper $fileHelper;
+
     private ValidationFactory $validationFactory;
+
     private GuidedImage $guidedImage;
+
     private Logger $logger;
 
     /**
@@ -62,7 +72,7 @@ final class ImageUploader implements ImageUploaderContract
      */
     public function upload(UploadedFile $imageFile, bool $isUrlUpload = false): Result
     {
-        if (!$this->validate($imageFile, $isUrlUpload)) {
+        if (! $this->validate($imageFile, $isUrlUpload)) {
             return new Result(false, self::ERROR_INVALID_IMAGE);
         }
 
@@ -73,10 +83,9 @@ final class ImageUploader implements ImageUploaderContract
             ->where(UploadedImage::KEY_SIZE, $uploadedImage->getSize())
             ->first();
 
-        if (!empty($existing)) {
+        if (! empty($existing)) {
             $result = new Result(true);
 
-            /** @noinspection PhpIncompatibleReturnTypeInspection */
             return $result
                 ->addMessage(self::MESSAGE_IMAGE_REUSED)
                 ->setExtra($existing);
@@ -137,7 +146,7 @@ final class ImageUploader implements ImageUploaderContract
             $this->fileHelper->unlink($tempFile);
 
             return $result;
-        } catch (FileNotFoundException | FileException $exception) {
+        } catch (FileNotFoundException|FileException $exception) {
             throw UrlUploadFailed::forUrl($url, $exception);
         }
     }
@@ -158,7 +167,7 @@ final class ImageUploader implements ImageUploaderContract
             [self::KEY_FILE => $this->configProvider->getImageRules()]
         );
 
-        return $this->validateFileExtension($imageFile) && !$validator->fails();
+        return $this->validateFileExtension($imageFile) && ! $validator->fails();
     }
 
     private function validateFileExtension(UploadedFile $imageFile): bool
@@ -174,7 +183,7 @@ final class ImageUploader implements ImageUploaderContract
     {
         $destination = $this->configProvider->getUploadDirectory();
 
-        if (!$this->configProvider->generateUploadDateSubDirectories()) {
+        if (! $this->configProvider->generateUploadDateSubDirectories()) {
             return $destination;
         }
 

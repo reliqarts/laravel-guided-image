@@ -8,6 +8,7 @@ use Intervention\Image\Image;
 use ReliqArts\GuidedImage\Demand\Dummy;
 use ReliqArts\GuidedImage\Demand\Resize;
 use ReliqArts\GuidedImage\Demand\Thumbnail;
+use RuntimeException;
 use Symfony\Component\HttpFoundation\Response;
 
 interface ImageDispenser
@@ -27,9 +28,9 @@ interface ImageDispenser
     /**
      * Get dummy Guided Image.
      *
-     * @return Image|Response
+     * @throws RuntimeException
      */
-    public function getDummyImage(Dummy $demand);
+    public function getDummyImage(Dummy $demand): Image;
 
     public function emptyCache(): bool;
 }

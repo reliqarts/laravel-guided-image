@@ -1,5 +1,4 @@
 <?php
-
 /**
  * @noinspection PhpParamsInspection
  * @noinspection PhpUndefinedMethodInspection
@@ -45,21 +44,37 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 final class ImageDispenserTest extends TestCase
 {
     private const CACHE_DISK_NAME = 'local';
+
     private const CACHE_RESIZED_SUB_DIRECTORY = 'RESIZED';
+
     private const CACHE_THUMBS_SUB_DIRECTORY = 'THUMBS';
+
     private const RESPONSE_HTTP_OK = Response::HTTP_OK;
+
     private const LAST_MODIFIED = 21343;
+
     private const IMAGE_NAME = 'my-image';
+
     private const IMAGE_URL = '//image_url';
+
     private const FILE_HASH = '4387904830a4245a8ab767e5937d722c';
+
     private const CACHE_FILE_NAME_FORMAT_RESIZED = '%s/%d-%d-_-%d_%d_%s';
+
     private const CACHE_FILE_FORMAT_THUMBNAIL = '%s/%d-%d-_-%s_%s';
+
     private const IMAGE_WIDTH = 100;
+
     private const IMAGE_HEIGHT = 200;
+
     private const THUMBNAIL_METHOD_CROP = 'crop';
+
     private const THUMBNAIL_METHOD_FIT = 'fit';
+
     private const IMAGE_ENCODING_FORMAT = 'png';
+
     private const IMAGE_ENCODING_QUALITY = 90;
+
     private const UPLOAD_DISK_NAME = 'public';
 
     /**
@@ -103,6 +118,7 @@ final class ImageDispenserTest extends TestCase
     private ObjectProphecy $guidedImage;
 
     private string $cacheThumbs;
+
     private string $cacheResized;
 
     private ImageDispenserContract $subject;
@@ -858,11 +874,9 @@ final class ImageDispenserTest extends TestCase
     }
 
     /**
-     * @param Response $imageResponse
-     *
      * @return Image|MockInterface
      */
-    private function getImageMock(Response $imageResponse = null): MockInterface
+    private function getImageMock(?Response $imageResponse = null): MockInterface
     {
         $imageMethodNames = [
             'fill',

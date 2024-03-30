@@ -1,9 +1,9 @@
 <?php
-
 /**
  * @noinspection PhpParamsInspection
  * @noinspection PhpUndefinedMethodInspection
  * @noinspection PhpStrictTypeCheckingInspection
+ * @noinspection PhpVoidFunctionResultUsedInspection
  */
 
 declare(strict_types=1);
@@ -41,61 +41,34 @@ use ReliqArts\GuidedImage\Tests\Unit\TestCase;
 final class ImageUploaderTest extends TestCase
 {
     private const ALLOWED_EXTENSIONS = ['jpg'];
+
     private const IMAGE_RULES = 'required|mimes:png,gif,jpeg|max:2048';
+
     private const UPLOAD_DIRECTORY = 'uploads/images';
+
     private const UPLOAD_DISK_NAME = 'public';
+
     private const UPLOADED_IMAGE_SIZE = [100, 200];
+
     private const TEMP_FILE_PREFIX = 'LGI_';
 
-    /**
-     * @var ConfigProvider|ObjectProphecy
-     */
-    private ObjectProphecy $configProvider;
+    private ObjectProphecy|ConfigProvider $configProvider;
 
-    /**
-     * @var FilesystemManager|ObjectProphecy
-     */
-    private ObjectProphecy $filesystemManager;
+    private ObjectProphecy|ValidationFactory $validationFactory;
 
-    /**
-     * @var ObjectProphecy|ValidationFactory
-     */
-    private ObjectProphecy $validationFactory;
+    private ObjectProphecy|Validator $validator;
 
-    /**
-     * @var Validator|ObjectProphecy
-     */
-    private ObjectProphecy $validator;
+    private ObjectProphecy|GuidedImage $guidedImage;
 
-    /**
-     * @var GuidedImage|ObjectProphecy
-     */
-    private ObjectProphecy $guidedImage;
+    private ObjectProphecy|Logger $logger;
 
-    /**
-     * @var Logger|ObjectProphecy
-     */
-    private ObjectProphecy $logger;
+    private ObjectProphecy|Builder $builder;
 
-    /**
-     * @var Builder|ObjectProphecy
-     */
-    private ObjectProphecy $builder;
+    private MockInterface|UploadedFile $uploadedFile;
 
-    /**
-     * @var MockInterface|UploadedFile
-     */
-    private MockInterface $uploadedFile;
+    private ObjectProphecy|FileHelper $fileHelper;
 
-    /**
-     * @var ObjectProphecy|FileHelper
-     */
-    private ObjectProphecy $fileHelper;
-
-    /**
-     * @var Filesystem|FilesystemAdapter|ObjectProphecy
-     */
-    private $uploadDisk;
+    private ObjectProphecy|Filesystem|FilesystemAdapter $uploadDisk;
 
     private ImageUploaderContract $subject;
 
@@ -107,7 +80,7 @@ final class ImageUploaderTest extends TestCase
         parent::setUp();
 
         $this->configProvider = $this->prophesize(ConfigProvider::class);
-        $this->filesystemManager = $this->prophesize(FilesystemManager::class);
+        $filesystemManager = $this->prophesize(FilesystemManager::class);
         $this->fileHelper = $this->prophesize(FileHelper::class);
         $this->validationFactory = $this->prophesize(ValidationFactory::class);
         $this->validator = $this->prophesize(Validator::class);
@@ -138,7 +111,7 @@ final class ImageUploaderTest extends TestCase
             ->shouldBeCalledTimes(1)
             ->willReturn(1);
 
-        $this->filesystemManager
+        $filesystemManager
             ->disk(self::UPLOAD_DISK_NAME)
             ->shouldBeCalledTimes(1)
             ->willReturn($this->uploadDisk);
@@ -182,7 +155,7 @@ final class ImageUploaderTest extends TestCase
 
         $this->subject = new ImageUploader(
             $this->configProvider->reveal(),
-            $this->filesystemManager->reveal(),
+            $filesystemManager->reveal(),
             $this->fileHelper->reveal(),
             $this->validationFactory->reveal(),
             $this->guidedImage->reveal(),
@@ -458,9 +431,6 @@ final class ImageUploaderTest extends TestCase
         self::assertTrue($result->isSuccess());
     }
 
-    /**
-     * @return MockInterface|UploadedFile
-     */
     private function getUploadedFileMock(
         string $filename = 'myimage',
         string $mimeType = 'image/jpeg',
