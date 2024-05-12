@@ -21,7 +21,7 @@ return [
 
     // image encoding @see: http://image.intervention.io/api/encode
     'encoding' => [
-        'format' => env('GUIDED_IMAGE_ENCODING_FORMAT', 'png'),
+        'mime_type' => env('GUIDED_IMAGE_ENCODING_MIME_TYPE', 'image/png'),
         'quality' => env('GUIDED_IMAGE_ENCODING_QUALITY', 90),
     ],
 
@@ -92,5 +92,5 @@ return [
     'dispenser' => [
         // whether raw image should be served as fallback if NotReadableException occurs
         'raw_image_fallback_enabled' => env('GUIDED_IMAGE_DISPENSER_RAW_IMAGE_FALLBACK_ENABLED', false),
-    ]
+    ],
 ];

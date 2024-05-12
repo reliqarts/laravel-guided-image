@@ -17,7 +17,7 @@ final class Thumbnail extends ExistingImage
 
     private const METHOD_FIT = 'fit';
 
-    private const METHODS = [self::METHOD_CROP, self::METHOD_FIT, self::METHOD_COVER];
+    private const METHODS = [self::METHOD_CROP, self::METHOD_COVER, self::METHOD_FIT];
 
     public function __construct(
         Request $request,

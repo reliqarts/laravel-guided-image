@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace ReliqArts\GuidedImage\Contract;
 
-use Intervention\Image\Image;
+use Intervention\Image\Interfaces\ImageInterface;
 use ReliqArts\GuidedImage\Demand\Dummy;
 use ReliqArts\GuidedImage\Demand\Resize;
 use ReliqArts\GuidedImage\Demand\Thumbnail;
@@ -14,14 +14,14 @@ use Symfony\Component\HttpFoundation\Response;
 interface ImageDispenser
 {
     /**
-     * @return Image|Response
+     * @return ImageInterface|Response
      */
     public function getImageThumbnail(Thumbnail $demand);
 
     /**
      * Get a resized Guided Image.
      *
-     * @return Image|Response
+     * @return ImageInterface|Response
      */
     public function getResizedImage(Resize $demand);
 
@@ -30,7 +30,7 @@ interface ImageDispenser
      *
      * @throws RuntimeException
      */
-    public function getDummyImage(Dummy $demand): Image;
+    public function getDummyImage(Dummy $demand): ImageInterface;
 
     public function emptyCache(): bool;
 }

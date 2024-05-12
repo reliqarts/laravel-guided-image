@@ -9,15 +9,15 @@ use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Intervention\Image\Exceptions\RuntimeException as InterventionRuntimeException;
-use Intervention\Image\Image;
-use Intervention\Image\ImageManager;
+use Intervention\Image\Encoders\AutoEncoder;
+use Intervention\Image\Interfaces\ImageInterface;
 use InvalidArgumentException;
+use ReliqArts\Contract\Logger;
 use ReliqArts\GuidedImage\Contract\ConfigProvider;
 use ReliqArts\GuidedImage\Contract\FileHelper;
 use ReliqArts\GuidedImage\Contract\GuidedImage;
 use ReliqArts\GuidedImage\Contract\ImageDispenser as ImageDispenserContract;
-use ReliqArts\GuidedImage\Contract\Logger;
+use ReliqArts\GuidedImage\Contract\ImageManager;
 use ReliqArts\GuidedImage\Demand\Dummy;
 use ReliqArts\GuidedImage\Demand\Resize;
 use ReliqArts\GuidedImage\Demand\Thumbnail;
@@ -37,7 +37,7 @@ final class ImageDispenser implements ImageDispenserContract
 
     private const ONE_DAY_IN_SECONDS = 60 * 60 * 24;
 
-    private const DEFAULT_IMAGE_ENCODING_FORMAT = 'png';
+    private const DEFAULT_IMAGE_ENCODING_MIME_TYPE = 'image/png';
 
     private const DEFAULT_IMAGE_ENCODING_QUALITY = 90;
 
@@ -45,7 +45,7 @@ final class ImageDispenser implements ImageDispenserContract
 
     private Filesystem $uploadDisk;
 
-    private string $imageEncodingFormat;
+    private string $imageEncodingMimeType;
 
     private int $imageEncodingQuality;
 
@@ -62,7 +62,7 @@ final class ImageDispenser implements ImageDispenserContract
     ) {
         $this->cacheDisk = $filesystemManager->disk($configProvider->getCacheDiskName());
         $this->uploadDisk = $filesystemManager->disk($configProvider->getUploadDiskName());
-        $this->imageEncodingFormat = $configProvider->getImageEncodingFormat();
+        $this->imageEncodingMimeType = $configProvider->getImageEncodingMimeType();
         $this->imageEncodingQuality = $configProvider->getImageEncodingQuality();
 
         $this->prepCacheDirectories();
@@ -73,7 +73,7 @@ final class ImageDispenser implements ImageDispenserContract
      *
      * @throws RuntimeException
      */
-    public function getDummyImage(Dummy $demand): Image
+    public function getDummyImage(Dummy $demand): ImageInterface
     {
         return $this->imageManager->create(
             $demand->getWidth(),
@@ -84,7 +84,7 @@ final class ImageDispenser implements ImageDispenserContract
     /**
      * {@inheritdoc}
      *
-     * @return Image|SymfonyResponse|void
+     * @return ImageInterface|SymfonyResponse|void
      *
      * @throws InvalidArgumentException
      * @throws RuntimeException
@@ -127,8 +127,8 @@ final class ImageDispenser implements ImageDispenserContract
                 self::RESPONSE_HTTP_OK,
                 $this->getImageHeaders($cacheFilePath, $demand->getRequest(), $image) ?: []
             );
-        } catch (InterventionRuntimeException $exception) {
-            return $this->handleInterventionRuntimeException($exception, $guidedImage);
+        } catch (RuntimeException $exception) {
+            return $this->handleRuntimeException($exception, $guidedImage);
         } catch (FileNotFoundException $exception) {
             $this->logger->error(
                 sprintf(
@@ -148,7 +148,7 @@ final class ImageDispenser implements ImageDispenserContract
     /**
      * {@inheritdoc}
      *
-     * @return Image|SymfonyResponse|void
+     * @return ImageInterface|SymfonyResponse|never
      *
      * @throws InvalidArgumentException
      * @throws RuntimeException
@@ -185,7 +185,7 @@ final class ImageDispenser implements ImageDispenserContract
             if ($this->cacheDisk->exists($cacheFilePath)) {
                 $image = $this->makeImageWithEncoding($this->cacheDisk->path($cacheFilePath));
             } else {
-                /** @var Image $image */
+                /** @var ImageInterface $image */
                 $image = $this->imageManager
                     ->read($this->getImageFullUrl($guidedImage))
                     ->{$method}(
@@ -205,8 +205,8 @@ final class ImageDispenser implements ImageDispenserContract
                 self::RESPONSE_HTTP_OK,
                 $this->getImageHeaders($cacheFilePath, $demand->getRequest(), $image) ?: []
             );
-        } catch (InterventionRuntimeException $exception) {
-            return $this->handleInterventionRuntimeException($exception, $guidedImage);
+        } catch (RuntimeException $exception) {
+            return $this->handleRuntimeException($exception, $guidedImage);
         } catch (FileNotFoundException $exception) {
             $this->logger->error(
                 sprintf(
@@ -235,7 +235,7 @@ final class ImageDispenser implements ImageDispenserContract
      *
      * @return array image headers
      */
-    private function getImageHeaders(string $cacheFilePath, Request $request, Image $image): array
+    private function getImageHeaders(string $cacheFilePath, Request $request, ImageInterface $image): array
     {
         $filePath = $image->origin()->filePath();
         $lastModified = $this->cacheDisk->lastModified($cacheFilePath);
@@ -291,22 +291,18 @@ final class ImageDispenser implements ImageDispenserContract
     }
 
     /**
-     * @param  mixed  ...$encoding
-     *
-     * @throws InterventionRuntimeException
+     * @throws RuntimeException
      */
-    private function makeImageWithEncoding(mixed $data, ...$encoding): Image
+    private function makeImageWithEncoding(mixed $data): ImageInterface
     {
-        if (empty($encoding)) {
-            $encoding = [
-                $this->imageEncodingFormat ?: self::DEFAULT_IMAGE_ENCODING_FORMAT,
-                $this->imageEncodingQuality ?: self::DEFAULT_IMAGE_ENCODING_QUALITY,
-            ];
-        }
+        $encoder = new AutoEncoder(
+            $this->imageEncodingMimeType ?: self::DEFAULT_IMAGE_ENCODING_MIME_TYPE,
+            quality: $this->imageEncodingQuality ?: self::DEFAULT_IMAGE_ENCODING_QUALITY,
+        );
 
         $encodedImage = $this->imageManager
             ->read($data)
-            ->encode(...$encoding);
+            ->encode($encoder);
 
         return $this->imageManager->read($encodedImage->toFilePointer());
     }
@@ -322,8 +318,8 @@ final class ImageDispenser implements ImageDispenserContract
     /**
      * @throws RuntimeException
      */
-    private function handleInterventionRuntimeException(
-        InterventionRuntimeException $exception,
+    private function handleRuntimeException(
+        RuntimeException $exception,
         GuidedImage $guidedImage
     ): BinaryFileResponse {
         $errorMessage = 'Intervention image creation failed with NotReadableException;';

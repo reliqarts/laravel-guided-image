@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace ReliqArts\GuidedImage\Tests\Unit\Demand;
 
+use Exception;
 use ReliqArts\GuidedImage\Demand\Dummy;
 
 /**
@@ -17,11 +18,14 @@ final class DummyTest extends TestCase
 {
     /**
      * @dataProvider colorDataProvider
+     *
      * @covers ::__construct
      * @covers ::getColor
      * @covers ::isValueConsideredNull
      *
-     * @param mixed $color
+     * @param  mixed  $color
+     *
+     * @throws Exception
      */
     public function testGetColor($color, string $expectedResult): void
     {
@@ -36,11 +40,12 @@ final class DummyTest extends TestCase
 
     /**
      * @dataProvider fillDataProvider
+     *
      * @covers ::__construct
      * @covers ::fill
      * @covers ::isValueConsideredNull
      *
-     * @param mixed $fill
+     * @param  mixed  $fill
      */
     public function testFill($fill, ?string $expectedResult): void
     {
@@ -54,7 +59,7 @@ final class DummyTest extends TestCase
         self::assertSame($expectedResult, $demand->fill());
     }
 
-    public function colorDataProvider(): array
+    public static function colorDataProvider(): array
     {
         return [
             ['0f0', '0f0'],
@@ -67,7 +72,7 @@ final class DummyTest extends TestCase
         ];
     }
 
-    public function fillDataProvider(): array
+    public static function fillDataProvider(): array
     {
         return [
             ['0f0', '0f0'],
