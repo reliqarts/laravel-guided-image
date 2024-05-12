@@ -46,8 +46,8 @@
   },
   "scripts": {
     "test": "phpunit",
-    "test:ci": "phpunit --verbose --colors=auto --coverage-clover=coverage.xml",
-    "test:unit": "phpunit --testsuite=Unit --verbose --coverage-clover=coverage.xml"
+    "test:ci": "phpunit --colors=auto --coverage-clover=build/coverage.xml",
+    "test:unit": "phpunit --testsuite=Unit --verbose --coverage-clover=build/coverage.xml"
   },
   "config": {
     "sort-packages": true,
