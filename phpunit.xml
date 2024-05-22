@@ -7,9 +7,6 @@
     </report>
   </coverage>
   <testsuites>
-    <testsuite name="Tests">
-      <directory suffix=".php">tests</directory>
-    </testsuite>
     <testsuite name="Integration">
       <directory suffix="Test.php">tests/Feature</directory>
     </testsuite>

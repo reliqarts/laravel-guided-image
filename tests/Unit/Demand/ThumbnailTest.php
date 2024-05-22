@@ -4,22 +4,21 @@ declare(strict_types=1);
 
 namespace ReliqArts\GuidedImage\Tests\Unit\Demand;
 
+use Exception;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
 use ReliqArts\GuidedImage\Demand\Thumbnail;
 
 /**
- * Class ThumbnailTest.
- *
- * @coversDefaultClass \ReliqArts\GuidedImage\Demand\Thumbnail
- *
  * @internal
  */
+#[CoversClass(Thumbnail::class)]
 final class ThumbnailTest extends TestCase
 {
     /**
-     * @dataProvider isValidDataProvider
-     * @covers ::__construct
-     * @covers ::isValid
+     * @throws Exception
      */
+    #[DataProvider('isValidDataProvider')]
     public function testIsValid(string $method, bool $expectedResult): void
     {
         $demand = new Thumbnail(
@@ -33,11 +32,12 @@ final class ThumbnailTest extends TestCase
         self::assertSame($expectedResult, $demand->isValid());
     }
 
-    public function isValidDataProvider(): array
+    public static function isValidDataProvider(): array
     {
         return [
-            ['fit', true],
             ['crop', true],
+            ['cover', true],
+            ['fit', true],
             ['grab', false],
             ['spook', false],
         ];

@@ -6,26 +6,21 @@ declare(strict_types=1);
 
 namespace ReliqArts\GuidedImage\Tests\Unit\Demand;
 
+use Exception;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
 use ReliqArts\GuidedImage\Demand\Resize;
 
 /**
- * Class ImageTest.
- *
- * @coversDefaultClass \ReliqArts\GuidedImage\Demand\Resize
- *
  * @internal
  */
+#[CoversClass(Resize::class)]
 final class ResizeTest extends TestCase
 {
     /**
-     * @dataProvider resizeDimensionDataProvider
-     * @covers ::__construct
-     * @covers ::getWidth
-     * @covers ::isValueConsideredNull
-     * @covers       \ReliqArts\GuidedImage\Demand\Image::__construct
-     *
-     * @param mixed $width
+     * @throws Exception
      */
+    #[DataProvider('resizeDimensionDataProvider')]
     public function testGetWidth($width, ?int $expectedResult): void
     {
         $demand = new Resize(
@@ -39,14 +34,9 @@ final class ResizeTest extends TestCase
     }
 
     /**
-     * @dataProvider resizeDimensionDataProvider
-     * @covers ::__construct
-     * @covers ::getHeight
-     * @covers ::isValueConsideredNull
-     * @covers       \ReliqArts\GuidedImage\Demand\Image::__construct
-     *
-     * @param mixed $height
+     * @throws Exception
      */
+    #[DataProvider('resizeDimensionDataProvider')]
     public function testGetHeight($height, ?int $expectedResult): void
     {
         $demand = new Resize(
@@ -60,14 +50,9 @@ final class ResizeTest extends TestCase
     }
 
     /**
-     * @dataProvider resizeFlagDataProvider
-     * @covers ::__construct
-     * @covers ::isValueConsideredNull
-     * @covers ::maintainAspectRatio
-     * @covers       \ReliqArts\GuidedImage\Demand\Image::__construct
-     *
-     * @param mixed $maintainAspectRatio
+     * @throws Exception
      */
+    #[DataProvider('resizeFlagDataProvider')]
     public function testMaintainAspectRatio($maintainAspectRatio, bool $expectedResult): void
     {
         $demand = new Resize(
@@ -82,13 +67,9 @@ final class ResizeTest extends TestCase
     }
 
     /**
-     * @dataProvider resizeFlagDataProvider
-     * @covers ::__construct
-     * @covers ::allowUpSizing
-     * @covers       \ReliqArts\GuidedImage\Demand\Image::__construct
-     *
-     * @param mixed $upSize
+     * @throws Exception
      */
+    #[DataProvider('resizeFlagDataProvider')]
     public function testAllowUpSizing($upSize, bool $expectedResult): void
     {
         $demand = new Resize(
@@ -104,13 +85,9 @@ final class ResizeTest extends TestCase
     }
 
     /**
-     * @dataProvider resizeFlagDataProvider
-     * @covers ::__construct
-     * @covers ::returnObject
-     * @covers       \ReliqArts\GuidedImage\Demand\Image::__construct
-     *
-     * @param mixed $returnObject
+     * @throws Exception
      */
+    #[DataProvider('resizeFlagDataProvider')]
     public function testReturnObject($returnObject, bool $expectedResult): void
     {
         $demand = new Resize(
@@ -126,7 +103,7 @@ final class ResizeTest extends TestCase
         self::assertSame($expectedResult, $demand->returnObject());
     }
 
-    public function resizeDimensionDataProvider(): array
+    public static function resizeDimensionDataProvider(): array
     {
         return [
             [self::DIMENSION, self::DIMENSION],
@@ -139,7 +116,7 @@ final class ResizeTest extends TestCase
         ];
     }
 
-    public function resizeFlagDataProvider(): array
+    public static function resizeFlagDataProvider(): array
     {
         return [
             [true, true],

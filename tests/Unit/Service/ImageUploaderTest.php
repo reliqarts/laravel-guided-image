@@ -20,24 +20,22 @@ use Illuminate\Filesystem\FilesystemAdapter;
 use Illuminate\Http\UploadedFile;
 use Mockery;
 use Mockery\MockInterface;
+use PHPUnit\Framework\Attributes\CoversClass;
 use Prophecy\Argument;
 use Prophecy\Prophecy\ObjectProphecy;
+use ReliqArts\Contract\Logger;
 use ReliqArts\GuidedImage\Contract\ConfigProvider;
 use ReliqArts\GuidedImage\Contract\FileHelper;
 use ReliqArts\GuidedImage\Contract\ImageUploader as ImageUploaderContract;
-use ReliqArts\GuidedImage\Contract\Logger;
 use ReliqArts\GuidedImage\Result;
 use ReliqArts\GuidedImage\Service\ImageUploader;
 use ReliqArts\GuidedImage\Tests\Fixtures\Model\GuidedImage;
 use ReliqArts\GuidedImage\Tests\Unit\TestCase;
 
 /**
- * Class ImageUploaderTest.
- *
- * @coversDefaultClass \ReliqArts\GuidedImage\Service\ImageUploader
- *
  * @internal
  */
+#[CoversClass(ImageUploader::class)]
 final class ImageUploaderTest extends TestCase
 {
     private const ALLOWED_EXTENSIONS = ['jpg'];
@@ -164,17 +162,6 @@ final class ImageUploaderTest extends TestCase
     }
 
     /**
-     * @covers ::__construct
-     * @covers ::getUploadDestination
-     * @covers ::upload
-     * @covers ::validate
-     * @covers ::validateFileExtension
-     * @covers \ReliqArts\GuidedImage\Model\UploadedImage::toArray
-     * @covers \ReliqArts\GuidedImage\Model\UploadedImage::getDestination
-     * @covers \ReliqArts\GuidedImage\Model\UploadedImage::getFile
-     * @covers \ReliqArts\GuidedImage\Model\UploadedImage::getFilename
-     * @covers \ReliqArts\GuidedImage\Model\UploadedImage::getSize
-     *
      * @throws Exception
      */
     public function testUpload(): void
@@ -200,16 +187,6 @@ final class ImageUploaderTest extends TestCase
     }
 
     /**
-     * @covers ::__construct
-     * @covers ::getUploadDestination
-     * @covers ::upload
-     * @covers ::validate
-     * @covers \ReliqArts\GuidedImage\Model\UploadedImage::toArray
-     * @covers \ReliqArts\GuidedImage\Model\UploadedImage::getDestination
-     * @covers \ReliqArts\GuidedImage\Model\UploadedImage::getFile
-     * @covers \ReliqArts\GuidedImage\Model\UploadedImage::getFilename
-     * @covers \ReliqArts\GuidedImage\Model\UploadedImage::getSize
-     *
      * @throws Exception
      */
     public function testUploadWhenFileShouldBeReused(): void
@@ -249,10 +226,6 @@ final class ImageUploaderTest extends TestCase
     }
 
     /**
-     * @covers ::__construct
-     * @covers ::upload
-     * @covers ::validate
-     *
      * @throws Exception
      */
     public function testUploadWhenValidationFails(): void
@@ -305,15 +278,6 @@ final class ImageUploaderTest extends TestCase
     }
 
     /**
-     * @covers ::__construct
-     * @covers ::upload
-     * @covers ::validate
-     * @covers \ReliqArts\GuidedImage\Model\UploadedImage::toArray
-     * @covers \ReliqArts\GuidedImage\Model\UploadedImage::getDestination
-     * @covers \ReliqArts\GuidedImage\Model\UploadedImage::getFile
-     * @covers \ReliqArts\GuidedImage\Model\UploadedImage::getFilename
-     * @covers \ReliqArts\GuidedImage\Model\UploadedImage::getSize
-     *
      * @throws Exception
      */
     public function testUploadWhenFileUploadFails(): void
@@ -344,18 +308,6 @@ final class ImageUploaderTest extends TestCase
     }
 
     /**
-     * @covers ::__construct
-     * @covers ::uploadFromUrl
-     * @covers ::getUploadDestination
-     * @covers ::upload
-     * @covers ::validate
-     * @covers ::validateFileExtension
-     * @covers \ReliqArts\GuidedImage\Model\UploadedImage::toArray
-     * @covers \ReliqArts\GuidedImage\Model\UploadedImage::getDestination
-     * @covers \ReliqArts\GuidedImage\Model\UploadedImage::getFile
-     * @covers \ReliqArts\GuidedImage\Model\UploadedImage::getFilename
-     * @covers \ReliqArts\GuidedImage\Model\UploadedImage::getSize
-     *
      * @throws Exception
      */
     public function testUploadFromUrl(): void
@@ -431,20 +383,18 @@ final class ImageUploaderTest extends TestCase
         self::assertTrue($result->isSuccess());
     }
 
-    private function getUploadedFileMock(
-        string $filename = 'myimage',
-        string $mimeType = 'image/jpeg',
-        string $extension = 'jpg',
-        int $size = 80000
-    ): UploadedFile {
+    private function getUploadedFileMock(): UploadedFile
+    {
+        $filename = 'my-image';
+
         return Mockery::mock(
             UploadedFile::class,
             [
                 'getFilename' => $filename,
                 'getClientOriginalName' => $filename,
-                'getClientOriginalExtension' => $extension,
-                'getMimeType' => $mimeType,
-                'getSize' => $size,
+                'getClientOriginalExtension' => 'jpg',
+                'getMimeType' => 'image/jpeg',
+                'getSize' => 80000,
                 'getRealPath' => $filename,
                 'move' => null,
             ]

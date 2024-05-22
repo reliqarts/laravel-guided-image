@@ -18,7 +18,7 @@ final class Resize extends ExistingImage
         mixed $height,
         private readonly mixed $maintainAspectRatio = true,
         private readonly mixed $allowUpSizing = null,
-        private readonly bool $returnObject = false
+        private readonly mixed $returnObject = false
     ) {
         parent::__construct($request, $guidedImage, $width, $height);
     }
@@ -35,6 +35,6 @@ final class Resize extends ExistingImage
 
     public function returnObject(): bool
     {
-        return $this->returnObject;
+        return ! $this->isValueConsideredNull($this->returnObject);
     }
 }

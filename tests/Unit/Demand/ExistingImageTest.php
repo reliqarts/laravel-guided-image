@@ -4,54 +4,51 @@ declare(strict_types=1);
 
 namespace ReliqArts\GuidedImage\Tests\Unit\Demand;
 
-use PHPUnit\Framework\MockObject\MockObject;
+use Exception;
+use PHPUnit\Framework\Attributes\CoversClass;
 use ReliqArts\GuidedImage\Demand\ExistingImage;
+use ReliqArts\GuidedImage\Demand\Thumbnail;
 
 /**
- * Class ExistingImageTest.
- *
- * @coversDefaultClass \ReliqArts\GuidedImage\Demand\ExistingImage
- *
  * @internal
  */
+#[CoversClass(ExistingImage::class)]
 final class ExistingImageTest extends TestCase
 {
     /**
-     * @covers ::__construct
-     * @covers ::getRequest
+     * @throws Exception
      */
     public function testGetRequest(): void
     {
-        $demand = $this->getExistingImageDemand(self::DIMENSION, self::DIMENSION, null);
-
-        self::assertSame($this->request->reveal(), $demand->getRequest());
+        self::assertSame(
+            $this->request->reveal(),
+            $this->getExistingImageDemand()->getRequest()
+        );
     }
 
     /**
-     * @covers ::__construct
-     * @covers ::getGuidedImage
+     * @throws Exception
      */
     public function testGetGuidedImage(): void
     {
-        $demand = $this->getExistingImageDemand(self::DIMENSION, self::DIMENSION, null);
-
-        self::assertSame($this->guidedImage->reveal(), $demand->getGuidedImage());
+        self::assertSame(
+            $this->guidedImage->reveal(),
+            $this->getExistingImageDemand()
+                ->getGuidedImage()
+        );
     }
 
     /**
-     * @param $width
-     * @param $height
-     * @param null $returnObject
-     *
-     * @return ExistingImage|MockObject
+     * @throws Exception
      */
-    private function getExistingImageDemand(
-        $width,
-        $height,
-        $returnObject = null
-    ): MockObject {
-        return $this->getMockBuilder(ExistingImage::class)
-            ->setConstructorArgs([$this->request->reveal(), $this->guidedImage->reveal(), $width, $height, $returnObject])
-            ->getMockForAbstractClass();
+    private function getExistingImageDemand(): ExistingImage
+    {
+        return new Thumbnail(
+            $this->request->reveal(),
+            $this->guidedImage->reveal(),
+            'crop',
+            self::DIMENSION,
+            self::DIMENSION
+        );
     }
 }
