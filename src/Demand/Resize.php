@@ -11,47 +11,30 @@ final class Resize extends ExistingImage
 {
     public const ROUTE_TYPE_NAME = 'resize';
 
-    /**
-     * @var mixed
-     */
-    private $maintainAspectRatio;
-
-    /**
-     * @var mixed
-     */
-    private $allowUpSizing;
-
-    /**
-     * Resized constructor.
-     *
-     * @param mixed $width
-     * @param mixed $height
-     * @param mixed $aspect
-     * @param mixed $upSize
-     * @param mixed $returnObject
-     */
     public function __construct(
         Request $request,
         GuidedImage $guidedImage,
-        $width,
-        $height,
-        $aspect = true,
-        $upSize = null,
-        $returnObject = null
+        mixed $width,
+        mixed $height,
+        private readonly mixed $maintainAspectRatio = true,
+        private readonly mixed $allowUpSizing = null,
+        private readonly mixed $returnObject = false
     ) {
-        parent::__construct($request, $guidedImage, $width, $height, $returnObject);
-
-        $this->maintainAspectRatio = $aspect;
-        $this->allowUpSizing = $upSize;
+        parent::__construct($request, $guidedImage, $width, $height);
     }
 
     public function maintainAspectRatio(): bool
     {
-        return !$this->isValueConsideredNull($this->maintainAspectRatio);
+        return ! $this->isValueConsideredNull($this->maintainAspectRatio);
     }
 
     public function allowUpSizing(): bool
     {
-        return !$this->isValueConsideredNull($this->allowUpSizing);
+        return ! $this->isValueConsideredNull($this->allowUpSizing);
+    }
+
+    public function returnObject(): bool
+    {
+        return ! $this->isValueConsideredNull($this->returnObject);
     }
 }

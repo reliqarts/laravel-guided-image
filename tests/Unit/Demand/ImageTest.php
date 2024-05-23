@@ -4,64 +4,41 @@ declare(strict_types=1);
 
 namespace ReliqArts\GuidedImage\Tests\Unit\Demand;
 
-use PHPUnit\Framework\MockObject\MockObject;
+use Exception;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
+use ReliqArts\GuidedImage\Demand\Dummy;
 use ReliqArts\GuidedImage\Demand\Image;
 
 /**
- * Class ImageTest.
- *
- * @coversDefaultClass \ReliqArts\GuidedImage\Demand\Image
- *
  * @internal
  */
+#[CoversClass(Image::class)]
 final class ImageTest extends TestCase
 {
     /**
-     * @dataProvider widthAndHeightDataProvider
-     * @covers ::__construct
-     * @covers ::getWidth
-     * @covers ::isValueConsideredNull
-     *
-     * @param mixed $width
+     * @throws Exception
      */
+    #[DataProvider('widthAndHeightDataProvider')]
     public function testGetWidth($width, ?int $expectedResult): void
     {
-        $demand = $this->getImageDemand($width, self::DIMENSION, null);
+        $demand = $this->getImageDemand($width, self::DIMENSION);
 
         self::assertSame($expectedResult, $demand->getWidth());
     }
 
     /**
-     * @dataProvider widthAndHeightDataProvider
-     * @covers ::__construct
-     * @covers ::getHeight
-     * @covers ::isValueConsideredNull
-     *
-     * @param mixed $height
+     * @throws Exception
      */
+    #[DataProvider('widthAndHeightDataProvider')]
     public function testGetHeight($height, ?int $expectedResult): void
     {
-        $demand = $this->getImageDemand(self::DIMENSION, $height, null);
+        $demand = $this->getImageDemand(self::DIMENSION, $height);
 
         self::assertSame($expectedResult, $demand->getHeight());
     }
 
-    /**
-     * @dataProvider imageFlagDataProvider
-     * @covers ::__construct
-     * @covers ::isValueConsideredNull
-     * @covers ::returnObject
-     *
-     * @param mixed $returnObject
-     */
-    public function testReturnObject($returnObject, bool $expectedResult): void
-    {
-        $demand = $this->getImageDemand(self::DIMENSION, self::DIMENSION, $returnObject);
-
-        self::assertSame($expectedResult, $demand->returnObject());
-    }
-
-    public function widthAndHeightDataProvider(): array
+    public static function widthAndHeightDataProvider(): array
     {
         return [
             [200, 200],
@@ -75,30 +52,8 @@ final class ImageTest extends TestCase
         ];
     }
 
-    public function imageFlagDataProvider(): array
+    private function getImageDemand($width, $height): Image
     {
-        return [
-            [true, true],
-            ['n', false],
-            ['_', false],
-            ['false', false],
-            ['null', false],
-            [false, false],
-            [null, false],
-        ];
-    }
-
-    /**
-     * @param $width
-     * @param $height
-     * @param null $returnObject
-     *
-     * @return Image|MockObject
-     */
-    private function getImageDemand($width, $height, $returnObject = null): MockObject
-    {
-        return $this->getMockBuilder(Image::class)
-            ->setConstructorArgs([$width, $height, $returnObject])
-            ->getMockForAbstractClass();
+        return new Dummy($width, $height);
     }
 }

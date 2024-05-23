@@ -12,10 +12,5 @@ interface ImageDemand
 
     public function getHeight(): ?int;
 
-    public function returnObject(): bool;
-
-    /**
-     * @param mixed $value
-     */
-    public function isValueConsideredNull($value): bool;
+    public function isValueConsideredNull(mixed $value): bool;
 }

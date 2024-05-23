@@ -27,8 +27,7 @@ interface ConfigProvider
     /**
      * Get image model for guided image routes.
      *
-     * @param bool $lowered whether model should be returned in lowercase form
-     *
+     * @param  bool  $lowered  whether model should be returned in lowercase form
      * @return string model name
      */
     public function getGuidedModelName(bool $lowered = false): string;
@@ -36,8 +35,7 @@ interface ConfigProvider
     /**
      * Get image model namespace for guided image routes.
      *
-     * @param bool $lowered whether model should be returned in lowercase form
-     *
+     * @param  bool  $lowered  whether model should be returned in lowercase form
      * @return string model namespace
      */
     public function getGuidedModelNamespace(bool $lowered = false): string;
@@ -73,7 +71,7 @@ interface ConfigProvider
 
     public function getCacheDirectory(): string;
 
-    public function getImageEncodingFormat(): string;
+    public function getImageEncodingMimeType(): string;
 
     public function getImageEncodingQuality(): int;
 

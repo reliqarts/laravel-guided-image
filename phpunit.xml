@@ -1,21 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" backupGlobals="false" backupStaticAttributes="false" beStrictAboutTestsThatDoNotTestAnything="true" bootstrap="tests/bootstrap.php" cacheResult="false" colors="true" convertErrorsToExceptions="true" convertNoticesToExceptions="true" convertWarningsToExceptions="true" processIsolation="false" stopOnFailure="false" verbose="true" xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.3/phpunit.xsd">
-  <coverage processUncoveredFiles="true">
-    <include>
-      <directory suffix=".php">src</directory>
-    </include>
-    <exclude>
-      <directory suffix=".php">src/Concerns</directory>
-    </exclude>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" backupGlobals="false" beStrictAboutTestsThatDoNotTestAnything="true" bootstrap="tests/bootstrap.php" cacheResult="false" colors="true" processIsolation="false" stopOnFailure="false" xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/11.0/phpunit.xsd" cacheDirectory=".phpunit.cache" backupStaticProperties="false">
+  <coverage>
     <report>
       <clover outputFile="build/coverage.xml"/>
       <text outputFile="build/coverage.txt"/>
     </report>
   </coverage>
   <testsuites>
-    <testsuite name="Tests">
-      <directory suffix=".php">tests</directory>
-    </testsuite>
     <testsuite name="Integration">
       <directory suffix="Test.php">tests/Feature</directory>
     </testsuite>
@@ -32,4 +23,12 @@
     <env name="GUIDED_IMAGE_MODEL" value="GuidedImage"/>
   </php>
   <logging/>
+  <source>
+    <include>
+      <directory suffix=".php">src</directory>
+    </include>
+    <exclude>
+      <directory suffix=".php">src/Concerns</directory>
+    </exclude>
+  </source>
 </phpunit>

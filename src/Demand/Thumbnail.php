@@ -12,32 +12,22 @@ final class Thumbnail extends ExistingImage
     public const ROUTE_TYPE_NAME = 'thumb';
 
     private const METHOD_CROP = 'crop';
+
+    private const METHOD_COVER = 'cover';
+
     private const METHOD_FIT = 'fit';
-    private const METHODS = [self::METHOD_CROP, self::METHOD_FIT];
 
-    /**
-     * @var string
-     */
-    private string $method;
+    private const METHODS = [self::METHOD_CROP, self::METHOD_COVER, self::METHOD_FIT];
 
-    /**
-     * Thumbnail constructor.
-     *
-     * @param mixed $width
-     * @param mixed $height
-     * @param mixed $returnObject
-     */
     public function __construct(
         Request $request,
         GuidedImage $guidedImage,
-        string $method,
+        private readonly string $method,
         $width,
         $height,
-        $returnObject = null
+        private readonly bool $returnObject = false
     ) {
-        parent::__construct($request, $guidedImage, $width, $height, $returnObject);
-
-        $this->method = $method;
+        parent::__construct($request, $guidedImage, $width, $height);
     }
 
     /**
@@ -45,11 +35,22 @@ final class Thumbnail extends ExistingImage
      */
     public function getMethod(): string
     {
+        // since intervention/image v3; fit() was replaced by cover() and other methods
+        // see https://image.intervention.io/v3/introduction/upgrade
+        if ($this->method === self::METHOD_FIT) {
+            return self::METHOD_COVER;
+        }
+
         return $this->method;
     }
 
     public function isValid(): bool
     {
         return in_array($this->method, self::METHODS, true);
+    }
+
+    public function returnObject(): bool
+    {
+        return $this->returnObject;
     }
 }

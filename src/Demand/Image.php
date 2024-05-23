@@ -8,54 +8,21 @@ use ReliqArts\GuidedImage\Contract\ImageDemand;
 
 abstract class Image implements ImageDemand
 {
-    /**
-     * @var mixed
-     */
-    private $width;
-
-    /**
-     * @var mixed
-     */
-    private $height;
-
-    /**
-     * @var mixed
-     */
-    private $returnObject;
-
-    /**
-     * Image constructor.
-     *
-     * @param mixed $width
-     * @param mixed $height
-     * @param mixed $returnObject
-     */
-    public function __construct($width, $height, $returnObject = null)
+    public function __construct(private readonly mixed $width, private readonly mixed $height)
     {
-        $this->width = $width;
-        $this->height = $height;
-        $this->returnObject = $returnObject;
     }
 
     final public function getWidth(): ?int
     {
-        return $this->isValueConsideredNull($this->width) ? null : (int)$this->width;
+        return $this->isValueConsideredNull($this->width) ? null : (int) $this->width;
     }
 
     final public function getHeight(): ?int
     {
-        return $this->isValueConsideredNull($this->height) ? null : (int)$this->height;
+        return $this->isValueConsideredNull($this->height) ? null : (int) $this->height;
     }
 
-    final public function returnObject(): bool
-    {
-        return !$this->isValueConsideredNull($this->returnObject);
-    }
-
-    /**
-     * @param mixed $value
-     */
-    final public function isValueConsideredNull($value): bool
+    final public function isValueConsideredNull(mixed $value): bool
     {
         return in_array($value, static::NULLS, true);
     }

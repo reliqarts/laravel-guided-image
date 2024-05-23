@@ -6,19 +6,23 @@ namespace ReliqArts\GuidedImage;
 
 use Illuminate\Config\Repository as ConfigRepository;
 use Illuminate\Contracts\Container\BindingResolutionException;
-use Monolog\Handler\StreamHandler;
+use Illuminate\Contracts\Filesystem\Factory as FilesystemManager;
+use Illuminate\Contracts\Validation\Factory as ValidationFactory;
+use InvalidArgumentException;
+use ReliqArts\Contract\Logger as LoggerContract;
+use ReliqArts\Factory\LoggerFactory;
 use ReliqArts\GuidedImage\Console\Command\ClearSkimDirectories;
 use ReliqArts\GuidedImage\Contract\ConfigProvider as ConfigProviderContract;
 use ReliqArts\GuidedImage\Contract\FileHelper as FileHelperContract;
 use ReliqArts\GuidedImage\Contract\GuidedImage;
 use ReliqArts\GuidedImage\Contract\ImageDispenser as ImageDispenserContract;
+use ReliqArts\GuidedImage\Contract\ImageManager as ImageManagerContract;
 use ReliqArts\GuidedImage\Contract\ImageUploader as ImageUploaderContract;
-use ReliqArts\GuidedImage\Contract\Logger as LoggerContract;
 use ReliqArts\GuidedImage\Helper\FileHelper;
 use ReliqArts\GuidedImage\Service\ConfigProvider;
 use ReliqArts\GuidedImage\Service\ImageDispenser;
+use ReliqArts\GuidedImage\Service\ImageManager;
 use ReliqArts\GuidedImage\Service\ImageUploader;
-use ReliqArts\GuidedImage\Service\Logger;
 use ReliqArts\Service\ConfigProvider as ReliqArtsConfigProvider;
 use ReliqArts\ServiceProvider as ReliqArtsServiceProvider;
 
@@ -28,22 +32,20 @@ use ReliqArts\ServiceProvider as ReliqArtsServiceProvider;
 final class ServiceProvider extends ReliqArtsServiceProvider
 {
     protected const CONFIG_KEY = 'guidedimage';
-    protected const ASSET_DIRECTORY = __DIR__ . '/..';
-    protected const LOGGER_NAME = self::CONFIG_KEY . '-logger';
-    protected const LOG_FILENAME = self::CONFIG_KEY;
+
+    protected const ASSET_DIRECTORY = __DIR__.'/..';
+
+    protected const LOGGER_NAME = self::CONFIG_KEY.'-logger';
+
+    protected const LOG_FILE_BASENAME = self::CONFIG_KEY;
 
     /**
      * List of commands.
-     *
-     * @var array
      */
     protected array $commands = [
         ClearSkimDirectories::class,
     ];
 
-    /**
-     * @var ConfigProviderContract
-     */
     private ConfigProviderContract $configProvider;
 
     /**
@@ -59,6 +61,9 @@ final class ServiceProvider extends ReliqArtsServiceProvider
         $this->handleMigrations();
     }
 
+    /**
+     * @throws InvalidArgumentException
+     */
     public function register(): void
     {
         $this->configProvider = new ConfigProvider(
@@ -67,8 +72,11 @@ final class ServiceProvider extends ReliqArtsServiceProvider
                 $this->getConfigKey()
             )
         );
+
         $guidedModelFQCN = $this->configProvider->getGuidedModelNamespace()
-            . $this->configProvider->getGuidedModelName();
+            .$this->configProvider->getGuidedModelName();
+
+        $this->app->bind(GuidedImage::class, $guidedModelFQCN);
 
         $this->app->singleton(
             ConfigProviderContract::class,
@@ -78,24 +86,8 @@ final class ServiceProvider extends ReliqArtsServiceProvider
         );
 
         $this->app->singleton(
-            LoggerContract::class,
-            function (): LoggerContract {
-                $logger = new Logger($this->getLoggerName());
-                $logFile = storage_path(sprintf('logs/%s.log', $this->getLogFilename()));
-                $logger->pushHandler(new StreamHandler($logFile, Logger::DEBUG));
-
-                return $logger;
-            }
-        );
-
-        $this->app->singleton(
-            ImageDispenserContract::class,
-            ImageDispenser::class
-        );
-
-        $this->app->singleton(
-            ImageUploaderContract::class,
-            ImageUploader::class
+            ImageManagerContract::class,
+            ImageManager::class
         );
 
         $this->app->singleton(
@@ -103,7 +95,30 @@ final class ServiceProvider extends ReliqArtsServiceProvider
             FileHelper::class
         );
 
-        $this->app->bind(GuidedImage::class, $guidedModelFQCN);
+        $logger = $this->createLogger();
+
+        $this->app->singleton(
+            ImageUploaderContract::class,
+            fn (): ImageUploaderContract => new ImageUploader(
+                $this->configProvider,
+                resolve(FilesystemManager::class),
+                resolve(FileHelperContract::class),
+                resolve(ValidationFactory::class),
+                resolve(GuidedImage::class),
+                $logger,
+            )
+        );
+
+        $this->app->singleton(
+            ImageDispenserContract::class,
+            fn (): ImageDispenserContract => new ImageDispenser(
+                $this->configProvider,
+                resolve(FilesystemManager::class),
+                resolve(ImageManagerContract::class),
+                $logger,
+                resolve(FileHelperContract::class)
+            )
+        );
     }
 
     public function provides(): array
@@ -147,10 +162,9 @@ final class ServiceProvider extends ReliqArtsServiceProvider
         $router = $this->app->make('router');
         $modelName = $this->configProvider->getGuidedModelName();
 
-        if (!$this->app->routesAreCached()) {
-            $router->model(strtolower($modelName), $this->configProvider->getGuidedModelNamespace() . $modelName);
+        if (! $this->app->routesAreCached()) {
+            $router->model(strtolower($modelName), $this->configProvider->getGuidedModelNamespace().$modelName);
 
-            /** @noinspection PhpIncludeInspection */
             require_once sprintf('%s/routes/web.php', $this->getAssetDirectory());
         }
     }
@@ -158,5 +172,16 @@ final class ServiceProvider extends ReliqArtsServiceProvider
     private function handleMigrations(): void
     {
         $this->loadMigrationsFrom(sprintf('%s/database/migrations', $this->getAssetDirectory()));
+    }
+
+    /**
+     * @throws InvalidArgumentException
+     */
+    private function createLogger(): LoggerContract
+    {
+        /** @var LoggerFactory $loggerFactory */
+        $loggerFactory = resolve(LoggerFactory::class);
+
+        return $loggerFactory->create($this->getLoggerName(), $this->getLogFileBasename());
     }
 }

@@ -10,7 +10,6 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use ReliqArts\GuidedImage\Contract\GuidedImage;
 use ReliqArts\GuidedImage\Contract\ImageDispenser;
-use ReliqArts\GuidedImage\Demand\Dummy;
 use ReliqArts\GuidedImage\Demand\Resize;
 use ReliqArts\GuidedImage\Demand\Thumbnail;
 use ReliqArts\GuidedImage\Result;
@@ -36,59 +35,30 @@ trait Guide
         );
     }
 
-    /**
-     * @param mixed $width
-     * @param mixed $height
-     * @param mixed $aspect
-     * @param mixed $upSize
-     */
     public function resized(
         ImageDispenser $imageDispenser,
         Request $request,
         GuidedImage $guidedImage,
-        $width,
-        $height,
-        $aspect = true,
-        $upSize = false
+        mixed $width,
+        mixed $height,
+        mixed $aspect = true,
+        mixed $upSize = false
     ): Response {
         $demand = new Resize($request, $guidedImage, $width, $height, $aspect, $upSize);
 
         return $imageDispenser->getResizedImage($demand);
     }
 
-    /**
-     * @param mixed $method
-     * @param mixed $width
-     * @param mixed $height
-     */
     public function thumb(
         ImageDispenser $imageDispenser,
         Request $request,
         GuidedImage $guidedImage,
-        $method,
-        $width,
-        $height
+        mixed $method,
+        mixed $width,
+        mixed $height
     ): Response {
         $demand = new Thumbnail($request, $guidedImage, $method, $width, $height);
 
         return $imageDispenser->getImageThumbnail($demand);
-    }
-
-    /**
-     * @param mixed $width
-     * @param mixed $height
-     * @param mixed $color
-     * @param mixed $fill
-     */
-    public function dummy(
-        ImageDispenser $imageDispenser,
-        $width,
-        $height,
-        $color = null,
-        $fill = null
-    ): Response {
-        $demand = new Dummy($width, $height, $color, $fill);
-
-        return $imageDispenser->getDummyImage($demand);
     }
 }

@@ -1,9 +1,9 @@
 <?php
-
 /**
  * @noinspection PhpParamsInspection
  * @noinspection PhpUndefinedMethodInspection
  * @noinspection PhpStrictTypeCheckingInspection
+ * @noinspection PhpVoidFunctionResultUsedInspection
  */
 
 declare(strict_types=1);
@@ -20,82 +20,53 @@ use Illuminate\Filesystem\FilesystemAdapter;
 use Illuminate\Http\UploadedFile;
 use Mockery;
 use Mockery\MockInterface;
+use PHPUnit\Framework\Attributes\CoversClass;
 use Prophecy\Argument;
 use Prophecy\Prophecy\ObjectProphecy;
+use ReliqArts\Contract\Logger;
 use ReliqArts\GuidedImage\Contract\ConfigProvider;
 use ReliqArts\GuidedImage\Contract\FileHelper;
 use ReliqArts\GuidedImage\Contract\ImageUploader as ImageUploaderContract;
-use ReliqArts\GuidedImage\Contract\Logger;
 use ReliqArts\GuidedImage\Result;
 use ReliqArts\GuidedImage\Service\ImageUploader;
 use ReliqArts\GuidedImage\Tests\Fixtures\Model\GuidedImage;
 use ReliqArts\GuidedImage\Tests\Unit\TestCase;
 
 /**
- * Class ImageUploaderTest.
- *
- * @coversDefaultClass \ReliqArts\GuidedImage\Service\ImageUploader
- *
  * @internal
  */
+#[CoversClass(ImageUploader::class)]
 final class ImageUploaderTest extends TestCase
 {
     private const ALLOWED_EXTENSIONS = ['jpg'];
+
     private const IMAGE_RULES = 'required|mimes:png,gif,jpeg|max:2048';
+
     private const UPLOAD_DIRECTORY = 'uploads/images';
+
     private const UPLOAD_DISK_NAME = 'public';
+
     private const UPLOADED_IMAGE_SIZE = [100, 200];
+
     private const TEMP_FILE_PREFIX = 'LGI_';
 
-    /**
-     * @var ConfigProvider|ObjectProphecy
-     */
-    private ObjectProphecy $configProvider;
+    private ObjectProphecy|ConfigProvider $configProvider;
 
-    /**
-     * @var FilesystemManager|ObjectProphecy
-     */
-    private ObjectProphecy $filesystemManager;
+    private ObjectProphecy|ValidationFactory $validationFactory;
 
-    /**
-     * @var ObjectProphecy|ValidationFactory
-     */
-    private ObjectProphecy $validationFactory;
+    private ObjectProphecy|Validator $validator;
 
-    /**
-     * @var Validator|ObjectProphecy
-     */
-    private ObjectProphecy $validator;
+    private ObjectProphecy|GuidedImage $guidedImage;
 
-    /**
-     * @var GuidedImage|ObjectProphecy
-     */
-    private ObjectProphecy $guidedImage;
+    private ObjectProphecy|Logger $logger;
 
-    /**
-     * @var Logger|ObjectProphecy
-     */
-    private ObjectProphecy $logger;
+    private ObjectProphecy|Builder $builder;
 
-    /**
-     * @var Builder|ObjectProphecy
-     */
-    private ObjectProphecy $builder;
+    private MockInterface|UploadedFile $uploadedFile;
 
-    /**
-     * @var MockInterface|UploadedFile
-     */
-    private MockInterface $uploadedFile;
+    private ObjectProphecy|FileHelper $fileHelper;
 
-    /**
-     * @var ObjectProphecy|FileHelper
-     */
-    private ObjectProphecy $fileHelper;
-
-    /**
-     * @var Filesystem|FilesystemAdapter|ObjectProphecy
-     */
-    private $uploadDisk;
+    private ObjectProphecy|Filesystem|FilesystemAdapter $uploadDisk;
 
     private ImageUploaderContract $subject;
 
@@ -107,7 +78,7 @@ final class ImageUploaderTest extends TestCase
         parent::setUp();
 
         $this->configProvider = $this->prophesize(ConfigProvider::class);
-        $this->filesystemManager = $this->prophesize(FilesystemManager::class);
+        $filesystemManager = $this->prophesize(FilesystemManager::class);
         $this->fileHelper = $this->prophesize(FileHelper::class);
         $this->validationFactory = $this->prophesize(ValidationFactory::class);
         $this->validator = $this->prophesize(Validator::class);
@@ -138,7 +109,7 @@ final class ImageUploaderTest extends TestCase
             ->shouldBeCalledTimes(1)
             ->willReturn(1);
 
-        $this->filesystemManager
+        $filesystemManager
             ->disk(self::UPLOAD_DISK_NAME)
             ->shouldBeCalledTimes(1)
             ->willReturn($this->uploadDisk);
@@ -182,7 +153,7 @@ final class ImageUploaderTest extends TestCase
 
         $this->subject = new ImageUploader(
             $this->configProvider->reveal(),
-            $this->filesystemManager->reveal(),
+            $filesystemManager->reveal(),
             $this->fileHelper->reveal(),
             $this->validationFactory->reveal(),
             $this->guidedImage->reveal(),
@@ -191,17 +162,6 @@ final class ImageUploaderTest extends TestCase
     }
 
     /**
-     * @covers ::__construct
-     * @covers ::getUploadDestination
-     * @covers ::upload
-     * @covers ::validate
-     * @covers ::validateFileExtension
-     * @covers \ReliqArts\GuidedImage\Model\UploadedImage::toArray
-     * @covers \ReliqArts\GuidedImage\Model\UploadedImage::getDestination
-     * @covers \ReliqArts\GuidedImage\Model\UploadedImage::getFile
-     * @covers \ReliqArts\GuidedImage\Model\UploadedImage::getFilename
-     * @covers \ReliqArts\GuidedImage\Model\UploadedImage::getSize
-     *
      * @throws Exception
      */
     public function testUpload(): void
@@ -227,16 +187,6 @@ final class ImageUploaderTest extends TestCase
     }
 
     /**
-     * @covers ::__construct
-     * @covers ::getUploadDestination
-     * @covers ::upload
-     * @covers ::validate
-     * @covers \ReliqArts\GuidedImage\Model\UploadedImage::toArray
-     * @covers \ReliqArts\GuidedImage\Model\UploadedImage::getDestination
-     * @covers \ReliqArts\GuidedImage\Model\UploadedImage::getFile
-     * @covers \ReliqArts\GuidedImage\Model\UploadedImage::getFilename
-     * @covers \ReliqArts\GuidedImage\Model\UploadedImage::getSize
-     *
      * @throws Exception
      */
     public function testUploadWhenFileShouldBeReused(): void
@@ -276,10 +226,6 @@ final class ImageUploaderTest extends TestCase
     }
 
     /**
-     * @covers ::__construct
-     * @covers ::upload
-     * @covers ::validate
-     *
      * @throws Exception
      */
     public function testUploadWhenValidationFails(): void
@@ -332,15 +278,6 @@ final class ImageUploaderTest extends TestCase
     }
 
     /**
-     * @covers ::__construct
-     * @covers ::upload
-     * @covers ::validate
-     * @covers \ReliqArts\GuidedImage\Model\UploadedImage::toArray
-     * @covers \ReliqArts\GuidedImage\Model\UploadedImage::getDestination
-     * @covers \ReliqArts\GuidedImage\Model\UploadedImage::getFile
-     * @covers \ReliqArts\GuidedImage\Model\UploadedImage::getFilename
-     * @covers \ReliqArts\GuidedImage\Model\UploadedImage::getSize
-     *
      * @throws Exception
      */
     public function testUploadWhenFileUploadFails(): void
@@ -371,18 +308,6 @@ final class ImageUploaderTest extends TestCase
     }
 
     /**
-     * @covers ::__construct
-     * @covers ::uploadFromUrl
-     * @covers ::getUploadDestination
-     * @covers ::upload
-     * @covers ::validate
-     * @covers ::validateFileExtension
-     * @covers \ReliqArts\GuidedImage\Model\UploadedImage::toArray
-     * @covers \ReliqArts\GuidedImage\Model\UploadedImage::getDestination
-     * @covers \ReliqArts\GuidedImage\Model\UploadedImage::getFile
-     * @covers \ReliqArts\GuidedImage\Model\UploadedImage::getFilename
-     * @covers \ReliqArts\GuidedImage\Model\UploadedImage::getSize
-     *
      * @throws Exception
      */
     public function testUploadFromUrl(): void
@@ -458,23 +383,18 @@ final class ImageUploaderTest extends TestCase
         self::assertTrue($result->isSuccess());
     }
 
-    /**
-     * @return MockInterface|UploadedFile
-     */
-    private function getUploadedFileMock(
-        string $filename = 'myimage',
-        string $mimeType = 'image/jpeg',
-        string $extension = 'jpg',
-        int $size = 80000
-    ): UploadedFile {
+    private function getUploadedFileMock(): UploadedFile
+    {
+        $filename = 'my-image';
+
         return Mockery::mock(
             UploadedFile::class,
             [
                 'getFilename' => $filename,
                 'getClientOriginalName' => $filename,
-                'getClientOriginalExtension' => $extension,
-                'getMimeType' => $mimeType,
-                'getSize' => $size,
+                'getClientOriginalExtension' => 'jpg',
+                'getMimeType' => 'image/jpeg',
+                'getSize' => 80000,
                 'getRealPath' => $filename,
                 'move' => null,
             ]
