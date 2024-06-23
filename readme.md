@@ -48,7 +48,7 @@ or require in *composer.json*:
 ```json
 {
     "require": {
-        "reliqarts/laravel-guided-image": "^3.0"
+        "reliqarts/laravel-guided-image": "^5.0"
     }
 }
 ```
