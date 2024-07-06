@@ -20,19 +20,19 @@ $modelName = $configProvider->getGuidedModelName(true);
 // get controllers for routes and create the routes for each
 foreach ($configProvider->getControllersForRoutes() as $controllerName) {
     // if controller name's empty skip
-    if (!$controllerName) {
+    if (! $controllerName) {
         continue;
     }
 
     // if controller name doesn't contain namespace, add it
-    if (false === strpos($controllerName, '\\')) {
+    if (! str_contains($controllerName, '\\')) {
         $controllerName = sprintf('App\\Http\\Controllers\\%s', $controllerName);
     }
 
     // the public route group
     Route::group(
         $configProvider->getRouteGroupBindings(),
-        function () use ($configProvider, $controllerName, $modelName) {
+        static function () use ($configProvider, $controllerName, $modelName) {
             // $guidedModel thumbnail
             Route::get(
                 sprintf('.tmb/{%s}//m.{method}/{width}-{height}', $modelName),
@@ -45,16 +45,10 @@ foreach ($configProvider->getControllersForRoutes() as $controllerName) {
                 sprintf('%s@resized', $controllerName)
             )->name(sprintf('%s.resize', $modelName));
 
-            // Dummy $guidedModel
-            Route::get(
-                '.dum//{width}-{height}/{color?}/{fill?}',
-                sprintf('%s@dummy', $controllerName)
-            )->name(sprintf('%s.dummy', $modelName));
-
             // admin route group
             Route::group(
                 $configProvider->getRouteGroupBindings([], 'admin'),
-                function () use ($controllerName, $modelName) {
+                static function () use ($controllerName, $modelName) {
                     // Used to empty directory photo cache (skimDir)
                     Route::get(
                         'empty-cache',

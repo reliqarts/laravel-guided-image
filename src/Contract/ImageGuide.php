@@ -20,11 +20,10 @@ interface ImageGuide
     /**
      * Get a resized Guided Image.
      *
-     * @param mixed $width
-     * @param mixed $height
-     * @param mixed $aspect Keep aspect ratio?
-     * @param mixed $upSize Allow up-size?
-     *
+     * @param  mixed  $width
+     * @param  mixed  $height
+     * @param  mixed  $aspect  Keep aspect ratio?
+     * @param  mixed  $upSize  Allow up-size?
      * @return Image|string intervention Image object or actual image url
      */
     public function resized(
@@ -40,10 +39,9 @@ interface ImageGuide
     /**
      * Get a thumbnail.
      *
-     * @param string $method crop|fit
-     * @param int    $width
-     * @param int    $height
-     *
+     * @param  string  $method  crop|fit
+     * @param  int  $width
+     * @param  int  $height
      * @return Image|string intervention Image object or actual image url
      */
     public function thumb(
@@ -53,23 +51,5 @@ interface ImageGuide
         string $method,
         $width,
         $height
-    );
-
-    /**
-     * Get dummy Guided Image.
-     *
-     * @param mixed $width
-     * @param mixed $height
-     * @param mixed $color
-     * @param mixed $fill
-     *
-     * @return Image|string intervention Image object or actual image url
-     */
-    public function dummy(
-        ImageDispenser $imageDispenser,
-        $width,
-        $height,
-        $color = '#eefefe',
-        $fill = false
     );
 }
