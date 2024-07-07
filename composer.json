@@ -24,7 +24,7 @@
   "require": {
     "php": "^8.2",
     "illuminate/support": "^11.1",
-    "intervention/image": "^3.6",
+    "intervention/image": "^3.7",
     "reliqarts/laravel-common": "^8.0",
     "ext-json": "*",
     "ext-fileinfo": "*",
