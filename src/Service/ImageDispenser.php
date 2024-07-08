@@ -7,7 +7,6 @@ namespace ReliqArts\GuidedImage\Service;
 use Illuminate\Contracts\Filesystem\Factory as FilesystemManager;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use Illuminate\Contracts\Filesystem\Filesystem;
-use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Intervention\Image\Encoders\AutoEncoder;
 use Intervention\Image\Interfaces\ImageInterface;
@@ -19,6 +18,7 @@ use ReliqArts\GuidedImage\Contract\GuidedImage;
 use ReliqArts\GuidedImage\Contract\ImageDispenser as ImageDispenserContract;
 use ReliqArts\GuidedImage\Contract\ImageManager;
 use ReliqArts\GuidedImage\Demand\Dummy;
+use ReliqArts\GuidedImage\Demand\ExistingImage;
 use ReliqArts\GuidedImage\Demand\Resize;
 use ReliqArts\GuidedImage\Demand\Thumbnail;
 use RuntimeException;
@@ -108,7 +108,7 @@ final class ImageDispenser implements ImageDispenserContract
             if ($this->cacheDisk->exists($cacheFilePath)) {
                 $image = $this->makeImageWithEncoding($this->cacheDisk->path($cacheFilePath));
             } else {
-                $image = $this->makeImageWithEncoding($this->getImageFullUrl($guidedImage));
+                $image = $this->makeImageWithEncoding($this->getImageFullPath($guidedImage));
                 $sizingMethod = $demand->allowUpSizing() ? 'resize' : 'resizeDown';
                 if ($demand->maintainAspectRatio()) {
                     $sizingMethod = $demand->allowUpSizing() ? 'scale' : 'scaleDown';
@@ -125,7 +125,7 @@ final class ImageDispenser implements ImageDispenserContract
             return new Response(
                 $this->cacheDisk->get($cacheFilePath),
                 self::RESPONSE_HTTP_OK,
-                $this->getImageHeaders($cacheFilePath, $demand->getRequest(), $image) ?: []
+                $this->getImageHeaders($cacheFilePath, $demand, $image) ?: []
             );
         } catch (RuntimeException $exception) {
             return $this->handleRuntimeException($exception, $guidedImage);
@@ -187,7 +187,7 @@ final class ImageDispenser implements ImageDispenserContract
             } else {
                 /** @var ImageInterface $image */
                 $image = $this->imageManager
-                    ->read($this->getImageFullUrl($guidedImage))
+                    ->read($this->getImageFullPath($guidedImage))
                     ->{$method}(
                         $width,
                         $height
@@ -203,7 +203,7 @@ final class ImageDispenser implements ImageDispenserContract
             return new Response(
                 $this->cacheDisk->get($cacheFilePath),
                 self::RESPONSE_HTTP_OK,
-                $this->getImageHeaders($cacheFilePath, $demand->getRequest(), $image) ?: []
+                $this->getImageHeaders($cacheFilePath, $demand, $image) ?: []
             );
         } catch (RuntimeException $exception) {
             return $this->handleRuntimeException($exception, $guidedImage);
@@ -235,13 +235,15 @@ final class ImageDispenser implements ImageDispenserContract
      *
      * @return array image headers
      */
-    private function getImageHeaders(string $cacheFilePath, Request $request, ImageInterface $image): array
+    private function getImageHeaders(string $relativeCacheFilePath, ExistingImage $demand, ImageInterface $image): array
     {
-        $filePath = $image->origin()->filePath();
-        $lastModified = $this->cacheDisk->lastModified($cacheFilePath);
+        $request = $demand->getRequest();
+        $fullCacheFilePath = $this->cacheDisk->path($relativeCacheFilePath);
+        $lastModified = $this->cacheDisk->lastModified($relativeCacheFilePath);
         $modifiedSince = $request->header('If-Modified-Since', '');
         $etagHeader = trim($request->header('If-None-Match', ''));
-        $etagFile = $this->fileHelper->hashFile($filePath);
+        $etagFile = $this->fileHelper->hashFile($fullCacheFilePath);
+        $originalImageRelativePath = $demand->getGuidedImage()->getUrl(true);
 
         // check if image hasn't changed
         if ($etagFile === $etagHeader || strtotime($modifiedSince) === $lastModified) {
@@ -256,7 +258,7 @@ final class ImageDispenser implements ImageDispenserContract
             $this->getDefaultHeaders(),
             [
                 'Content-Type' => $image->origin()->mediaType(),
-                'Content-Disposition' => sprintf('inline; filename=%s', basename($image->origin()->filePath())),
+                'Content-Disposition' => sprintf('inline; filename=%s', basename($originalImageRelativePath)),
                 'Last-Modified' => date(DATE_RFC822, $lastModified),
                 'Etag' => $etagFile,
             ]
@@ -307,12 +309,9 @@ final class ImageDispenser implements ImageDispenserContract
         return $this->imageManager->read($encodedImage->toFilePointer());
     }
 
-    /**
-     * @throws RuntimeException
-     */
-    private function getImageFullUrl(GuidedImage $guidedImage): string
+    private function getImageFullPath(GuidedImage $guidedImage): string
     {
-        return $this->uploadDisk->url($guidedImage->getUrl(true));
+        return $this->uploadDisk->path($guidedImage->getUrl(true));
     }
 
     /**
@@ -322,8 +321,8 @@ final class ImageDispenser implements ImageDispenserContract
         RuntimeException $exception,
         GuidedImage $guidedImage
     ): BinaryFileResponse {
-        $errorMessage = 'Intervention image creation failed with NotReadableException;';
-        $context = ['imageUrl' => $this->getImageFullUrl($guidedImage)];
+        $errorMessage = 'Intervention image creation failed with RuntimeException;';
+        $context = ['imageUrl' => $this->getImageFullPath($guidedImage)];
 
         if (! $this->configProvider->isRawImageFallbackEnabled()) {
             $this->logger->error(

@@ -64,7 +64,7 @@ final class ImageDispenserTest extends TestCase
 
     private const IMAGE_NAME = 'my-image';
 
-    private const IMAGE_URL = '//image_url';
+    private const IMAGE_PATH = './image_path';
 
     private const IMAGE_WIDTH = 100;
 
@@ -186,8 +186,8 @@ final class ImageDispenserTest extends TestCase
             ->willReturn(self::LAST_MODIFIED);
 
         $uploadDisk
-            ->url(self::IMAGE_URL)
-            ->willReturn(self::IMAGE_URL);
+            ->path(self::IMAGE_PATH)
+            ->willReturn(self::IMAGE_PATH);
 
         $fileHelper
             ->hashFile(Argument::type('string'))
@@ -202,7 +202,7 @@ final class ImageDispenserTest extends TestCase
             ->willReturn(self::IMAGE_NAME);
         $this->guidedImage
             ->getUrl(true)
-            ->willReturn(self::IMAGE_URL);
+            ->willReturn(self::IMAGE_PATH);
 
         $this->subject = new ImageDispenser(
             $configProvider->reveal(),
@@ -278,7 +278,7 @@ final class ImageDispenserTest extends TestCase
             ->willReturn(false);
         $this->cacheDisk
             ->path($cacheFile)
-            ->shouldBeCalledTimes(1)
+            ->shouldBeCalledTimes(2)
             ->willReturn($cacheFile);
         $this->cacheDisk
             ->get($cacheFile)
@@ -289,7 +289,7 @@ final class ImageDispenserTest extends TestCase
             ->read($cacheFile)
             ->shouldNotBeCalled();
         $this->imageManager
-            ->read(Argument::in([self::IMAGE_URL, self::FOO_RESOURCE]))
+            ->read(Argument::in([self::IMAGE_PATH, self::FOO_RESOURCE]))
             ->shouldBeCalledTimes(2)
             ->willReturn($image);
 
@@ -333,7 +333,7 @@ final class ImageDispenserTest extends TestCase
             ->read($cacheFile)
             ->shouldNotBeCalled();
         $this->imageManager
-            ->read(Argument::in([self::IMAGE_URL, self::FOO_RESOURCE]))
+            ->read(Argument::in([self::IMAGE_PATH, self::FOO_RESOURCE]))
             ->shouldBeCalledTimes(2)
             ->willReturn($image);
 
@@ -358,7 +358,7 @@ final class ImageDispenserTest extends TestCase
             ->willReturn(true);
         $this->cacheDisk
             ->path($cacheFile)
-            ->shouldBeCalledTimes(1)
+            ->shouldBeCalledTimes(2)
             ->willReturn($cacheFile);
         $this->cacheDisk
             ->get($cacheFile)
@@ -370,7 +370,7 @@ final class ImageDispenserTest extends TestCase
             ->shouldBeCalledTimes(2)
             ->willReturn($image);
         $this->imageManager
-            ->read(self::IMAGE_URL)
+            ->read(self::IMAGE_PATH)
             ->shouldNotBeCalled();
 
         $result = $this->subject->getResizedImage(
@@ -420,14 +420,14 @@ final class ImageDispenserTest extends TestCase
             ->read($cacheFile)
             ->shouldNotBeCalled();
         $this->imageManager
-            ->read(Argument::in([self::IMAGE_URL, self::FOO_RESOURCE]))
+            ->read(Argument::in([self::IMAGE_PATH, self::FOO_RESOURCE]))
             ->shouldBeCalledTimes(2)
             ->willReturn($image);
 
         $this->guidedImage
             ->getUrl()
             ->shouldBeCalledTimes(1)
-            ->willReturn(self::IMAGE_URL);
+            ->willReturn(self::IMAGE_PATH);
 
         $this->logger
             ->error(
@@ -476,14 +476,14 @@ final class ImageDispenserTest extends TestCase
             ->willReturn($imageContent);
         $this->cacheDisk
             ->path($cacheFile)
-            ->shouldBeCalledTimes(1)
+            ->shouldBeCalledTimes(2)
             ->willReturn($cacheFile);
 
         $this->imageManager
             ->read($cacheFile)
             ->shouldNotBeCalled();
         $this->imageManager
-            ->read(self::IMAGE_URL)
+            ->read(self::IMAGE_PATH)
             ->shouldBeCalledTimes(1)
             ->willReturn($image);
 
@@ -527,7 +527,7 @@ final class ImageDispenserTest extends TestCase
             ->read($cacheFile)
             ->shouldNotBeCalled();
         $this->imageManager
-            ->read(Argument::in([self::IMAGE_URL, self::FOO_RESOURCE]))
+            ->read(Argument::in([self::IMAGE_PATH, self::FOO_RESOURCE]))
             ->shouldBeCalledTimes(1)
             ->willReturn($image);
 
@@ -569,7 +569,7 @@ final class ImageDispenserTest extends TestCase
             ->willReturn(true);
         $this->cacheDisk
             ->path($cacheFile)
-            ->shouldBeCalledTimes(1)
+            ->shouldBeCalledTimes(2)
             ->willReturn($cacheFile);
         $this->cacheDisk
             ->get($cacheFile)
@@ -581,7 +581,7 @@ final class ImageDispenserTest extends TestCase
             ->shouldBeCalledTimes(2)
             ->willReturn($image);
         $this->imageManager
-            ->read(self::IMAGE_URL)
+            ->read(self::IMAGE_PATH)
             ->shouldNotBeCalled();
 
         $result = $this->subject->getImageThumbnail(
@@ -636,7 +636,7 @@ final class ImageDispenserTest extends TestCase
             ->read($cacheFile)
             ->shouldNotBeCalled();
         $this->imageManager
-            ->read(self::IMAGE_URL)
+            ->read(self::IMAGE_PATH)
             ->shouldNotBeCalled();
 
         $this->logger
@@ -691,7 +691,7 @@ final class ImageDispenserTest extends TestCase
             ->read($cacheFile)
             ->shouldNotBeCalled();
         $this->imageManager
-            ->read(self::IMAGE_URL)
+            ->read(self::IMAGE_PATH)
             ->shouldBeCalledTimes(1)
             ->willThrow(RuntimeException::class);
 
