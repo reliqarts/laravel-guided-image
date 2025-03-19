@@ -23,7 +23,7 @@
   ],
   "require": {
     "php": "^8.2",
-    "illuminate/support": "^11.1",
+    "illuminate/support": "^11.1 || ^12.1",
     "intervention/image": "^3.7",
     "reliqarts/laravel-common": "^8.0",
     "ext-json": "*",
@@ -32,7 +32,7 @@
   },
   "require-dev": {
     "laravel/pint": "^1.15",
-    "orchestra/testbench": "^9.0",
+    "orchestra/testbench": "^9.0 || ^10.0",
     "phpro/grumphp": "^2.5",
     "phpspec/prophecy-phpunit": "^2.0",
     "phpunit/phpunit": "^11.0",
