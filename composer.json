@@ -23,7 +23,7 @@
   ],
   "require": {
     "php": "^8.2",
-    "illuminate/support": "^11.1",
+    "illuminate/support": "^11.1||^12.1",
     "intervention/image": "^3.7",
     "reliqarts/laravel-common": "^8.0",
     "ext-json": "*",

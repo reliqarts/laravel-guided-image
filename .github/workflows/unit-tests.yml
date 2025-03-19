@@ -8,9 +8,9 @@ jobs:
     strategy:
       max-parallel: 10
       matrix:
-        laravel-version: ['^11.1']
+        laravel-version: ['^11.1', '^12.1']
         preference: ['stable']
-        php-version: ['8.2', '8.3']
+        php-version: ['8.2', '8.3', '8.4']
     name: Laravel ${{ matrix.laravel-version }} (${{ matrix.preference }}) on PHP ${{ matrix.php-version }}
     steps:
       - name: Checkout
