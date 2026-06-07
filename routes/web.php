@@ -35,13 +35,13 @@ foreach ($configProvider->getControllersForRoutes() as $controllerName) {
         static function () use ($configProvider, $controllerName, $modelName) {
             // $guidedModel thumbnail
             Route::get(
-                sprintf('.tmb/{%s}//m.{method}/{width}-{height}', $modelName),
+                sprintf('.tmb/{%s}/m.{method}/{width}-{height}', $modelName),
                 sprintf('%s@thumb', $controllerName)
             )->name(sprintf('%s.thumb', $modelName));
 
             // Resized $guidedModel
             Route::get(
-                sprintf('.res/{%s}//{width}-{height}/{aspect?}/{upSize?}', $modelName),
+                sprintf('.res/{%s}/{width}-{height}/{aspect?}/{upSize?}', $modelName),
                 sprintf('%s@resized', $controllerName)
             )->name(sprintf('%s.resize', $modelName));
 
