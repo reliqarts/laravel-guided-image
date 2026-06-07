@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace ReliqArts\GuidedImage\Tests\Feature;
 
-use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use PHPUnit\Framework\Attributes\CoversNothing;
 use ReliqArts\GuidedImage\Tests\TestCase;
@@ -28,32 +27,20 @@ final class RouteRegistrationTest extends TestCase
         $app['config']->set('guidedimage.routes.controllers', ['App\\Http\\Controllers\\ImageController']);
     }
 
-    public function testResizeRouteIsRegistered(): void
+    public function testResizeRouteUriHasNoDoubleSlash(): void
     {
         $route = Route::getRoutes()->getByName(self::RESIZE_ROUTE);
 
         self::assertNotNull($route, 'Resize route must be registered.');
-    }
-
-    public function testThumbRouteIsRegistered(): void
-    {
-        $route = Route::getRoutes()->getByName(self::THUMB_ROUTE);
-
-        self::assertNotNull($route, 'Thumb route must be registered.');
-    }
-
-    public function testResizeRouteUriHasNoDoubleSlash(): void
-    {
-        $uri = Route::getRoutes()->getByName(self::RESIZE_ROUTE)->uri();
-
-        self::assertStringNotContainsString('//', $uri);
+        self::assertStringNotContainsString('//', $route->uri());
     }
 
     public function testThumbRouteUriHasNoDoubleSlash(): void
     {
-        $uri = Route::getRoutes()->getByName(self::THUMB_ROUTE)->uri();
+        $route = Route::getRoutes()->getByName(self::THUMB_ROUTE);
 
-        self::assertStringNotContainsString('//', $uri);
+        self::assertNotNull($route, 'Thumb route must be registered.');
+        self::assertStringNotContainsString('//', $route->uri());
     }
 
     public function testResizeRouteGeneratesCleanUrl(): void

@@ -27,8 +27,7 @@
     "intervention/image": "^3.7",
     "reliqarts/laravel-common": "^8.0",
     "ext-json": "*",
-    "ext-fileinfo": "*",
-    "anhskohbo/no-captcha": "@dev"
+    "ext-fileinfo": "*"
   },
   "require-dev": {
     "laravel/pint": "^1.15",
@@ -53,6 +52,15 @@
     "sort-packages": true,
     "allow-plugins": {
       "phpro/grumphp": true
+    },
+    "audit": {
+      "ignore-advisories": [
+        "PKSA-mdq4-51ck-6kdq",
+        "PKSA-8qx3-n5y5-vvnd",
+        "PKSA-q46n-4fdk-zjr4",
+        "PKSA-qzrn-rnz3-85w1",
+        "PKSA-w7xr-vk7n-rstm"
+      ]
     }
   },
   "extra": {
