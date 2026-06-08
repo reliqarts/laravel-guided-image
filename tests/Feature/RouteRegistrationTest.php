@@ -20,13 +20,6 @@ final class RouteRegistrationTest extends TestCase
 
     private const THUMB_ROUTE = self::MODEL_NAME . '.thumb';
 
-    protected function getEnvironmentSetUp($app): void
-    {
-        parent::getEnvironmentSetUp($app);
-
-        $app['config']->set('guidedimage.routes.controllers', ['App\\Http\\Controllers\\ImageController']);
-    }
-
     public function testResizeRouteUriHasNoDoubleSlash(): void
     {
         $route = Route::getRoutes()->getByName(self::RESIZE_ROUTE);
