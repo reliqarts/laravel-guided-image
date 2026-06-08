@@ -52,9 +52,11 @@
     "sort-packages": true,
     "allow-plugins": {
       "phpro/grumphp": true
-    },
-    "audit": {
-      "ignore-advisories": [
+    }
+  },
+  "policy": {
+    "advisories": {
+      "ignore-id": [
         "PKSA-mdq4-51ck-6kdq",
         "PKSA-8qx3-n5y5-vvnd",
         "PKSA-q46n-4fdk-zjr4",
