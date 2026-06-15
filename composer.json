@@ -27,8 +27,7 @@
     "intervention/image": "^3.7",
     "reliqarts/laravel-common": "^8.0",
     "ext-json": "*",
-    "ext-fileinfo": "*",
-    "anhskohbo/no-captcha": "@dev"
+    "ext-fileinfo": "*"
   },
   "require-dev": {
     "laravel/pint": "^1.15",

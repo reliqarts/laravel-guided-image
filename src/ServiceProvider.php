@@ -55,8 +55,8 @@ final class ServiceProvider extends ReliqArtsServiceProvider
      */
     public function boot(): void
     {
-        $this->handleRoutes();
         $this->handleConfig();
+        $this->handleRoutes();
         $this->handleCommands();
         $this->handleMigrations();
     }
@@ -165,7 +165,7 @@ final class ServiceProvider extends ReliqArtsServiceProvider
         if (! $this->app->routesAreCached()) {
             $router->model(strtolower($modelName), $this->configProvider->getGuidedModelNamespace().$modelName);
 
-            require_once sprintf('%s/routes/web.php', $this->getAssetDirectory());
+            require sprintf('%s/routes/web.php', $this->getAssetDirectory());
         }
     }
 
