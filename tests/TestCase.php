@@ -11,23 +11,21 @@ use ReliqArts\GuidedImage\ServiceProvider;
 abstract class TestCase extends TestbenchTestCase
 {
     /**
-     * @param Application $app
+     * @param  Application  $app
      */
-    protected function getEnvironmentSetUp($app)
+    protected function defineEnvironment($app): void
     {
         // set base path
-        $app->setBasePath(__DIR__ . '/..');
+        $app->setBasePath(__DIR__.'/..');
 
         // set app config
         $app['config']->set('database.default', 'testing');
     }
 
     /**
-     * @param Application $app
-     *
-     * @return array
+     * @param  Application  $app
      */
-    protected function getPackageProviders($app)
+    protected function getPackageProviders($app): array
     {
         return [
             ServiceProvider::class,

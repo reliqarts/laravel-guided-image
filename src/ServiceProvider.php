@@ -9,6 +9,7 @@ use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Contracts\Filesystem\Factory as FilesystemManager;
 use Illuminate\Contracts\Validation\Factory as ValidationFactory;
 use InvalidArgumentException;
+use Override;
 use ReliqArts\Contract\Logger as LoggerContract;
 use ReliqArts\Factory\LoggerFactory;
 use ReliqArts\GuidedImage\Console\Command\ClearSkimDirectories;
@@ -31,13 +32,13 @@ use ReliqArts\ServiceProvider as ReliqArtsServiceProvider;
  */
 final class ServiceProvider extends ReliqArtsServiceProvider
 {
-    protected const CONFIG_KEY = 'guidedimage';
+    protected const string CONFIG_KEY = 'guidedimage';
 
-    protected const ASSET_DIRECTORY = __DIR__.'/..';
+    protected const string ASSET_DIRECTORY = __DIR__.'/..';
 
-    protected const LOGGER_NAME = self::CONFIG_KEY.'-logger';
+    protected const string LOGGER_NAME = self::CONFIG_KEY.'-logger';
 
-    protected const LOG_FILE_BASENAME = self::CONFIG_KEY;
+    protected const string LOG_FILE_BASENAME = self::CONFIG_KEY;
 
     /**
      * List of commands.
@@ -53,6 +54,7 @@ final class ServiceProvider extends ReliqArtsServiceProvider
      *
      * @throws BindingResolutionException
      */
+    #[Override]
     public function boot(): void
     {
         $this->handleConfig();
@@ -64,6 +66,7 @@ final class ServiceProvider extends ReliqArtsServiceProvider
     /**
      * @throws InvalidArgumentException
      */
+    #[Override]
     public function register(): void
     {
         $this->configProvider = new ConfigProvider(
@@ -121,6 +124,7 @@ final class ServiceProvider extends ReliqArtsServiceProvider
         );
     }
 
+    #[Override]
     public function provides(): array
     {
         return array_merge(

@@ -22,17 +22,17 @@ use Symfony\Component\HttpFoundation\File\Exception\FileNotFoundException;
 
 final class ImageUploader implements ImageUploaderContract
 {
-    private const ERROR_INVALID_IMAGE = 'Invalid image size or type.';
+    private const string ERROR_INVALID_IMAGE = 'Invalid image size or type.';
 
-    private const KEY_FILE = 'file';
+    private const string KEY_FILE = 'file';
 
-    private const MESSAGE_IMAGE_REUSED = 'Image reused.';
+    private const string MESSAGE_IMAGE_REUSED = 'Image reused.';
 
-    private const UPLOAD_DATE_SUB_DIRECTORIES_PATTERN = 'Y/m/d/H/i';
+    private const string UPLOAD_DATE_SUB_DIRECTORIES_PATTERN = 'Y/m/d/H/i';
 
-    private const UPLOAD_VISIBILITY = Filesystem::VISIBILITY_PUBLIC;
+    private const string UPLOAD_VISIBILITY = Filesystem::VISIBILITY_PUBLIC;
 
-    private const TEMP_FILE_PREFIX = 'LGI_';
+    private const string TEMP_FILE_PREFIX = 'LGI_';
 
     private ConfigProvider $configProvider;
 

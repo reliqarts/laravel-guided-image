@@ -10,17 +10,26 @@ use ReliqArts\GuidedImage\Contract\FileHelper;
 
 final class UploadedImage implements Arrayable
 {
-    public const KEY_SIZE = 'size';
-    public const KEY_NAME = 'name';
-    private const KEY_MIME_TYPE = 'mime_type';
-    private const KEY_EXTENSION = 'extension';
-    private const KEY_LOCATION = 'location';
-    private const KEY_FULL_PATH = 'full_path';
-    private const KEY_WIDTH = 'width';
-    private const KEY_HEIGHT = 'height';
+    public const string KEY_SIZE = 'size';
+
+    public const string KEY_NAME = 'name';
+
+    private const string KEY_MIME_TYPE = 'mime_type';
+
+    private const string KEY_EXTENSION = 'extension';
+
+    private const string KEY_LOCATION = 'location';
+
+    private const string KEY_FULL_PATH = 'full_path';
+
+    private const string KEY_WIDTH = 'width';
+
+    private const string KEY_HEIGHT = 'height';
 
     private FileHelper $fileHelper;
+
     private UploadedFile $file;
+
     private string $destination;
 
     /**

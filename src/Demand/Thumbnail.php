@@ -9,15 +9,15 @@ use ReliqArts\GuidedImage\Contract\GuidedImage;
 
 final class Thumbnail extends ExistingImage
 {
-    public const ROUTE_TYPE_NAME = 'thumb';
+    public const string ROUTE_TYPE_NAME = 'thumb';
 
-    private const METHOD_CROP = 'crop';
+    private const string METHOD_CROP = 'crop';
 
-    private const METHOD_COVER = 'cover';
+    private const string METHOD_COVER = 'cover';
 
-    private const METHOD_FIT = 'fit';
+    private const string METHOD_FIT = 'fit';
 
-    private const METHODS = [self::METHOD_CROP, self::METHOD_COVER, self::METHOD_FIT];
+    private const array METHODS = [self::METHOD_CROP, self::METHOD_COVER, self::METHOD_FIT];
 
     public function __construct(
         Request $request,

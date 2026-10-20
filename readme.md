@@ -1,6 +1,6 @@
 # Laravel Guided Image
 
-Guided Image is an image utility package for Laravel based on Intervention Image.
+Guided Image is an image utility package for Laravel 12 and 13, based on Intervention Image. It requires PHP 8.3 or newer.
 
 [![Built For Laravel](https://img.shields.io/badge/built%20for-laravel-red.svg?style=flat-square)](http://laravel.com)
 [![Build Status (all)](https://img.shields.io/travis/com/reliqarts/laravel-guided-image?style=flat-square)](https://travis-ci.com/reliqarts/laravel-guided-image)
@@ -48,7 +48,7 @@ or require in *composer.json*:
 ```json
 {
     "require": {
-        "reliqarts/laravel-guided-image": "^5.0"
+        "reliqarts/laravel-guided-image": "^6.0"
     }
 }
 ```
