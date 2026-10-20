@@ -9,7 +9,7 @@ use ReliqArts\GuidedImage\Contract\GuidedImage;
 
 final class Resize extends ExistingImage
 {
-    public const ROUTE_TYPE_NAME = 'resize';
+    public const string ROUTE_TYPE_NAME = 'resize';
 
     public function __construct(
         Request $request,

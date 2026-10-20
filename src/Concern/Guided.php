@@ -35,7 +35,7 @@ trait Guided
     {
         $implementedInterfaces = class_implements(static::class);
 
-        if (!in_array(GuidedImageContract::class, $implementedInterfaces, true)) {
+        if (! in_array(GuidedImageContract::class, $implementedInterfaces, true)) {
             throw new BadImplementation(sprintf('Model (%s) must implement `%s` to be guided!', static::class, GuidedImageContract::class));
         }
     }
@@ -43,8 +43,8 @@ trait Guided
     /**
      * Get resized/thumbnail photo link.
      *
-     * @param string $type   request type (thumbnail or resize)
-     * @param array  $params parameters to pass to route
+     * @param  string  $type  request type (thumbnail or resize)
+     * @param  array  $params  parameters to pass to route
      */
     public function getRoutedUrl(string $type, array $params = []): string
     {
@@ -66,8 +66,7 @@ trait Guided
      * Since a single image may be re-used this method is used to determine
      * when an image can be safely deleted from disk.
      *
-     * @param int $safeAmount a photo is safe to delete if it is used by $safe_num amount of records
-     *
+     * @param  int  $safeAmount  a photo is safe to delete if it is used by $safe_num amount of records
      * @return bool whether image is safe for delete
      */
     public function isSafeForDelete(int $safeAmount = 1): bool
@@ -78,7 +77,7 @@ trait Guided
     /**
      * Get link to resized photo.
      *
-     * @param array $params parameters to pass to route
+     * @param  array  $params  parameters to pass to route
      */
     public function routeResized(array $params = []): string
     {
@@ -88,7 +87,7 @@ trait Guided
     /**
      * Get link to photo thumbnail.
      *
-     * @param array $params parameters to pass to route
+     * @param  array  $params  parameters to pass to route
      */
     public function routeThumbnail(array $params = []): string
     {
@@ -100,14 +99,14 @@ trait Guided
      */
     public function getClassName(): string
     {
-        return get_class($this);
+        return $this::class;
     }
 
     /**
      *  Get URL/path to image.
      *
-     * @param bool $diskRelative whether to return `full path` (relative to disk),
-     *                           hence skipping call to Storage facade
+     * @param  bool  $diskRelative  whether to return `full path` (relative to disk),
+     *                              hence skipping call to Storage facade
      *
      * @uses \Illuminate\Support\Facades\Storage
      */

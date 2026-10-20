@@ -27,19 +27,19 @@ use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 
 final class ImageDispenser implements ImageDispenserContract
 {
-    private const KEY_IMAGE_URL = 'image url';
+    private const string KEY_IMAGE_URL = 'image url';
 
-    private const KEY_CACHE_FILE = 'cache file';
+    private const string KEY_CACHE_FILE = 'cache file';
 
-    private const RESPONSE_HTTP_OK = SymfonyResponse::HTTP_OK;
+    private const int RESPONSE_HTTP_OK = SymfonyResponse::HTTP_OK;
 
-    private const RESPONSE_HTTP_NOT_FOUND = SymfonyResponse::HTTP_NOT_FOUND;
+    private const int RESPONSE_HTTP_NOT_FOUND = SymfonyResponse::HTTP_NOT_FOUND;
 
-    private const ONE_DAY_IN_SECONDS = 60 * 60 * 24;
+    private const int ONE_DAY_IN_SECONDS = 60 * 60 * 24;
 
-    private const DEFAULT_IMAGE_ENCODING_MIME_TYPE = 'image/png';
+    private const string DEFAULT_IMAGE_ENCODING_MIME_TYPE = 'image/png';
 
-    private const DEFAULT_IMAGE_ENCODING_QUALITY = 90;
+    private const int DEFAULT_IMAGE_ENCODING_QUALITY = 90;
 
     private Filesystem $cacheDisk;
 

@@ -6,7 +6,7 @@ namespace ReliqArts\GuidedImage\Contract;
 
 interface ConfigProvider
 {
-    public const ROUTE_GROUP_KEY_PUBLIC = 'public';
+    public const string ROUTE_GROUP_KEY_PUBLIC = 'public';
 
     public function getAllowedExtensions(): array;
 

@@ -26,16 +26,16 @@ final class ClearSkimDirectories extends Command
     /**
      * Execute the console command.
      */
-    public function handle(ImageDispenser $imageDispenser): bool
+    public function handle(ImageDispenser $imageDispenser): int
     {
         if ($imageDispenser->emptyCache()) {
-            $this->line(PHP_EOL . '<info>✔</info> Success! Guided Image cache cleared.');
+            $this->line(PHP_EOL.'<info>✔</info> Success! Guided Image cache cleared.');
 
-            return true;
+            return Command::SUCCESS;
         }
 
-        $this->line(PHP_EOL . '<info>✘</info> Couldn\'t clear Guided Image cache.');
+        $this->line(PHP_EOL.'<info>✘</info> Couldn\'t clear Guided Image cache.');
 
-        return false;
+        return Command::FAILURE;
     }
 }

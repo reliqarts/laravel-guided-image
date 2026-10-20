@@ -6,7 +6,7 @@ namespace ReliqArts\GuidedImage\Demand;
 
 final class Dummy extends Image
 {
-    public const DEFAULT_COLOR = 'eefefe';
+    public const string DEFAULT_COLOR = 'eefefe';
 
     /**
      * Dummy constructor.

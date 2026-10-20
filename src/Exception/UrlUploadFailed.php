@@ -9,7 +9,7 @@ use Throwable;
 
 final class UrlUploadFailed extends RuntimeException
 {
-    private const ERROR_TEMPLATE = 'Failed to upload image from url: %s. %s';
+    private const string ERROR_TEMPLATE = 'Failed to upload image from url: %s. %s';
 
     private string $url;
 
